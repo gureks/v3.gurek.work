@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useAppStore } from './store/useAppStore';
+import { ChatPage } from './pages/ChatPage';
 
 function App() {
   const { theme } = useAppStore();
@@ -16,14 +17,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route 
-          path="/" 
-          element={
-            <div className="bg-background text-foreground min-h-screen">
-              Gurek AI-Twin v3 Foundation
-            </div>
-          } 
-        />
+        <Route path="/" element={<ChatPage />} />
       </Routes>
     </BrowserRouter>
   );

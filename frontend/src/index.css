@@ -2,18 +2,122 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ==========================================================================
+   DESIGN SYSTEM — CSS Custom Properties
+   Extracted from Figma: L95Qbm2qizmTPnyWstPwdP
+   Source: design/global.scss
+   ========================================================================== */
+
 :root {
-  --background: #0a0a0a;
-  --background-elevated: #262626;
-  --accent: #006eff;
-  --foreground: #ffffff;
-  --foreground-muted: #a1a1a1;
-  --border: #404040;
-  --border-subtle: #000000;
+  /* Color Primitives (Neutral — Zinc-based) */
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-neutral-950: #0a0a0a;
+  --color-neutral-900: #202020;
+  --color-neutral-800: #262626;
+  --color-neutral-700: #404040;
+  --color-neutral-500: #737373;
+  --color-neutral-400: #a1a1a1;
+
+  /* Accent */
+  --color-accent: #006eff;
+
+  /* Semantic Tokens — Dark mode (default) */
+  --background: var(--color-neutral-950);
+  --background-elevated: var(--color-neutral-800);
+  --background-elevated-alt: rgba(38, 38, 38, 0.40);
+  --background-nav: rgba(32, 32, 32, 0.80);
+  --background-input: var(--color-neutral-800);
+  --background-tooltip: var(--color-neutral-700);
+
+  --foreground: var(--color-white);
+  --foreground-muted: var(--color-neutral-400);
+  --foreground-secondary: var(--color-neutral-500);
+
+  --border: var(--color-neutral-700);
+  --border-subtle: var(--color-black);
+  --border-input: var(--color-neutral-700);
+
+  --accent: var(--color-accent);
+  --accent-foreground: var(--color-white);
+
+  --overlay-light: rgba(0, 0, 0, 0.20);
+  --overlay-dark: rgba(38, 38, 38, 0.40);
+
+  /* Typography */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+                Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0px 1px 3px 0px rgba(0, 0, 0, 0.10),
+               0px 1px 2px -1px rgba(0, 0, 0, 0.10);
+  --shadow-lg: 0px 10px 15px -3px rgba(0, 0, 0, 0.10),
+               0px 4px 6px -4px rgba(0, 0, 0, 0.10);
+  --shadow-tooltip: 0px 10px 15px 0px rgba(0, 0, 0, 0.10),
+                    0px 4px 6px 0px rgba(0, 0, 0, 0.10);
+  --glow-accent: 0px 0px 15px -2px var(--accent);
+
+  /* Backdrop Blur */
+  --blur-sm: 8px;
+  --blur-md: 16px;
+  --blur-lg: 20px;
+  --blur-xl: 40px;
+
+  /* Layout */
+  --nav-width: 108px;
+  --content-max-width: 702px;
+  --avatar-sm: 20px;
+  --avatar-md: 32px;
+
+  /* Transitions */
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+  --easing-default: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-body { 
-  background-color: var(--background); 
-  color: var(--foreground); 
-  font-family: 'Inter', sans-serif; 
+/* Base Reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: var(--foreground);
+  background-color: var(--background);
+}
+
+/* Custom scrollbar (dark theme) */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-neutral-700);
+  border-radius: var(--radius-full);
 }
