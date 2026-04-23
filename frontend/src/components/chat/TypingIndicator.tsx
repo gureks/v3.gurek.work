@@ -1,15 +1,22 @@
 import { motion } from 'framer-motion';
 
+/**
+ * TypingIndicator — Figma-accurate loading indicator.
+ * 
+ * Matches AI message row layout: bot avatar (32x32) + gap 16px + bubble.
+ * Bubble uses background-tooltip (#404040), radius/lg (16px), padding space/4 (16px).
+ */
 export function TypingIndicator() {
   return (
-    <div className="flex items-start gap-4">
-      {/* Bot avatar */}
+    <div className="flex items-start" style={{ gap: 'var(--space-4)' }}>
+      {/* Bot avatar — same as MessageBubble AI avatar */}
       <div
-        className="flex-shrink-0 flex items-center justify-center rounded-md text-foreground"
+        className="flex-shrink-0 flex items-center justify-center text-foreground"
         style={{
           width: 'var(--avatar-md)',
           height: 'var(--avatar-md)',
-          backgroundColor: 'var(--background-elevated)',
+          borderRadius: 'var(--radius-md)',
+          backgroundColor: 'var(--background)',
         }}
       >
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -19,13 +26,14 @@ export function TypingIndicator() {
         </svg>
       </div>
 
-      {/* Bouncy dots */}
+      {/* Bouncy dots bubble — same style as AI message bubble */}
       <div
-        className="flex items-center gap-[6px]"
+        className="flex items-center"
         style={{
           padding: 'var(--space-4)',
           borderRadius: 'var(--radius-lg)',
-          backgroundColor: 'var(--background-elevated-alt)',
+          backgroundColor: 'var(--background-tooltip)',
+          gap: '6px',
         }}
       >
         {[0, 1, 2].map((i) => (
@@ -41,7 +49,12 @@ export function TypingIndicator() {
               delay: i * 0.15,
               ease: 'easeInOut',
             }}
-            className="block w-[8px] h-[8px] rounded-full bg-foreground-muted"
+            className="block rounded-full"
+            style={{
+              width: '8px',
+              height: '8px',
+              backgroundColor: 'var(--foreground-muted)',
+            }}
           />
         ))}
       </div>
