@@ -19,14 +19,16 @@ Interactive, query-driven discovery of Gurek's work through a highly responsive,
 ### Active
 
 - [ ] Complete frontend rewrite from scratch in the `frontend` folder using React + Vite + Tailwind.
-- [ ] Implement Conversational AI interface (chat-style UI with streaming) via `/query/stream` endpoint.
+- [ ] Implement Conversational AI interface via standard `/query` endpoint (no streaming).
 - [ ] Implement Project "Gems" (Responsive sidebar navigation for deep-dive summaries).
-- [ ] Implement Scroll Gallery (Infinite scroll gallery for projects, media, blogs).
-- [ ] Remove all 3rd-party component libraries including shadcn.
+- [ ] Implement Scroll Gallery (Infinite scroll) strictly within the bounds of the chat interface.
+- [ ] Remove all 3rd-party component libraries including shadcn, using Figma MCP to extract tokens/styles.
 - [ ] Implement responsive UI strictly adhering to Figma designs (Slide-out sheets on mobile, fixed sidebars on desktop).
+- [ ] Create templated pages for different sections (project description, projects listing, fpv gallery, etc.).
 - [ ] Render rich content in chat (GFM, tables, raw HTML, custom components) via `react-markdown`.
 - [ ] Create templated system prompts in frontend for use-case specific outputs.
 - [ ] Implement Templated Responses (Redirection): If LightRAG associates the query with a dedicated page, redirect the user using a predefined mapping of URLs to content.
+- [ ] Maintain page-specific chat history in session or storage.
 
 ### Out of Scope
 
