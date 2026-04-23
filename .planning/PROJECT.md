@@ -26,6 +26,7 @@ Interactive, query-driven discovery of Gurek's work through a highly responsive,
 - [ ] Implement responsive UI strictly adhering to Figma designs (Slide-out sheets on mobile, fixed sidebars on desktop).
 - [ ] Render rich content in chat (GFM, tables, raw HTML, custom components) via `react-markdown`.
 - [ ] Create templated system prompts in frontend for use-case specific outputs.
+- [ ] Implement Templated Responses (Redirection): If LightRAG associates the query with a dedicated page, redirect the user using a predefined mapping of URLs to content.
 
 ### Out of Scope
 
