@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #0a0a0a;
+  --background-elevated: #262626;
+  --accent: #006eff;
+  --foreground: #ffffff;
+  --foreground-muted: #a1a1a1;
+  --border: #404040;
+  --border-subtle: #000000;
+}
+
+body { 
+  background-color: var(--background); 
+  color: var(--foreground); 
+  font-family: 'Inter', sans-serif; 
+}
