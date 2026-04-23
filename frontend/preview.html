@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { font-family: sans-serif; display: flex; flex-wrap: wrap; gap: 20px; }
+  .icon-box { border: 1px solid #ccc; padding: 10px; width: 120px; text-align: center; }
+  .icon-box svg { width: 40px; height: 40px; }
+  .label { font-size: 10px; word-break: break-all; margin-top: 10px; }
+</style>
+</head>
+<body>
+<script>
+  async function load() {
+    const filenames = [
+"035c7d6b1e9c9e841c6b30a468d43a9459f8be04.svg",
+"05745c4b00ca84c1c1b7e23481ac757528945040.svg",
+"05cc4454dc509c0fb117b262a5c760f46d9d9d29.svg",
+"071b80896cbca4ddcdb8cf340722faa1bb292ca2.svg",
+"0f6c92a3ae1686968c43078419951365f74e2989.svg",
+"157744bc5217820dc2609ec99a8f1c51fdf78ac4.svg",
+"1799a5e40ee80139c37576fc24375597110c718c.svg",
+"27bf6d4f73fbfadeb4c67d8e2f8c6f3e68b6448f.svg",
+"292a37386a1d0ee776deb41a2949b615c8d4ecf4.svg",
+"3a1738b0ea084edbf0d2b930c6e4f6795372e1f5.svg",
+"3bb8bc18f2fe38923f29c190aba6daed42406f17.svg",
+"3d1a1cc229e89647129c8030e8b8128dbd4c7c9b.svg",
+"47a832812ae1228b5516fc0506c4e7f857af99bf.svg",
+"4a2ffd9d85a3e57da8afefd2975af11a4f388db2.svg",
+"4fa8fb5ff5f3b87787ab585f53729b99f3f76e2d.svg",
+"5303e432e34b251f8a6396776419028f615778f5.svg",
+"5891e7b9afc440d301c473e31c50bdd0066771fe.svg",
+"60f1958452fdb3c95a541e7c399647b5989ead64.svg",
+"66cfe4662dfba2f99ac289fdbaa918b8f2f7918d.svg",
+"7936b9b91392839633c708315d0ca6a29634d424.svg",
+"7c6503d5002a0c3c4c87cf44671541a47c269cec.svg",
+"7cdcb847b83a1a420cfc549faeb8c7c8cd334bd7.svg",
+"80d736c71fae8751cd0fbbf5d584e6bf655203b2.svg",
+"82c0ec0eafb84c04d3fbb07864bf9216999164a7.svg",
+"833be1075de34dd98db76797d6ec0d4d8aa8a153.svg",
+"990a457b4cc4281e64828ea6bb6ca3cc7f97c1ce.svg",
+"9c1dff089e9e82b1c8ef7df796ed6292c877eeb2.svg",
+"9cfa0055b3ad92a31eadfd0c37d052afdf62fa76.svg",
+"b5ab98e3e7c246a0c58d5334255931d98f58c2c4.svg",
+"b673fcf199c89fce0275497b652fc3c7a93814df.svg",
+"b6f676db4c12b34144ee817d9f8044ecc3aa72ff.svg",
+"b908aba2dbd12431b318b6e82daf8950125c3bee.svg",
+"b9fde5bf992180b720fe6c1fcf5cca4b5874feca.svg",
+"ba1c866153f121e9e46c6571c8c0993c70c09dbf.svg",
+"db188f9b0d3e1f5595a338abdfaa6a9916f761ab.svg",
+"e1787c42ca9d9273b4dbff33eb7c93d8fb5f7459.svg",
+"e9ee8a75e01b22d792b77291d69def22d9727eee.svg",
+"f7a0a0dec2342951ee16e17636abc963ba315a67.svg",
+"f7bc310184ec3e2d5c1d0166d20d456b24cf8402.svg"
+    ];
+    for(const f of filenames) {
+      const res = await fetch('src/assets/svgs/'+f);
+      const text = await res.text();
+      document.body.innerHTML += `<div class="icon-box">${text}<div class="label">${f.substring(0,8)}...</div></div>`;
+    }
+  }
+  load();
+</script>
+</body>
+</html>
