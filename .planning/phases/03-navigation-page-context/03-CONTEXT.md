@@ -1,12 +1,12 @@
 # Phase 3: Navigation & Page Context - Context
 
-**Gathered:** 2026-04-26
+**Gathered:** 2026-04-28
 **Status:** Ready for planning
 
 <domain>
 ## Phase Boundary
 
-Build the responsive outer shell, manage page-specific content integration within the chat UI, and implement global chat history with context injection for navigation.
+Build the responsive outer shell, manage page-specific content integration within the chat UI, and implement chat history with context injection for navigation and AI-driven route redirection.
 
 </domain>
 
@@ -20,19 +20,19 @@ Build the responsive outer shell, manage page-specific content integration withi
 - **D-04: Desktop Sidebar Overflow:** Implement a custom scrollbar contained strictly within the sidebar itself, ensuring the main chat area remains fixed.
 
 ### Chat History Persistence
-- **D-05: Storage Mechanism:** Chat history for the global chat should persist across browser reloads and closed tabs using `localStorage`.
+- **D-05: Storage Mechanism:** Chat history should persist across browser reloads and closed tabs using `localStorage`.
 - **D-06: Active Link Behavior:** Clicking an already active navigation link should keep the chat history intact, not clearing it.
-- **D-07: Message Limit:** All messages should be kept in state, without an arbitrary limit, as performance is not expected to be an issue for this use case.
+- **D-07: Message Limit:** All messages should be kept in state, without an arbitrary limit.
+- **D-08: Chat Isolation:** **UPDATED** Chat history is tied to specific pages/routes. Each page maintains its own isolated chat thread that is visible upon return.
 
-### Navigation Routing Hierarchy
-- **D-08: Chat Isolation:** A single, global chat history should be maintained across the application. Page-specific context will be dynamically injected.
-- **D-09: Visual Transition:** Instant swap between routes for the chat feed to provide a standard Single Page Application (SPA) experience.
-- **D-10: Backend Communication for Context:** The frontend will prepend a hidden system prompt prefix to the user's message before sending it to the LightRAG backend, based on the current route. This guides LightRAG's responses without modifying the backend.
+### Navigation Routing & AI Redirection
+- **D-09: AI-Driven Redirection:** The frontend will dynamically inject available templated pages/routes into the backend system prompt. The backend will decide whether to return a chat response or a redirection signal. The frontend will parse this response to either display the chat or programmatically redirect the user to the requested page.
+- **D-10: Gallery & Gems Activation:** Project Gems and Scroll Galleries can be accessed via two methods: directly clicking sidebar navigation links, OR by asking the AI, which triggers the AI-driven redirection mechanism to the relevant templated page.
 
 ### Page Templates Structure
-- **D-11: Content Integration:** Templated page content (e.g., Project Gallery, Resume) will appear *within* the chat UI. Different UI variants of the chat component will be displayed based on the active section.
-- **D-12: Chat UI Collapsibility:** The chat UI's width will remain fixed. Templated pages must adapt to the available space.
-- **D-13: Content Sourcing:** Initial layout content for templated pages will be sourced from hardcoded React components, which will be extracted directly from Figma designs.
+- **D-11: Content Integration:** **UPDATED** Templated page content (e.g., Project Gallery, Resume) will be injected *within* the chat feed UI as rich chat components, rather than replacing the chat feed entirely.
+- **D-12: Chat UI Collapsibility:** The chat UI's width will remain fixed. Templated components must adapt to the available space within the feed.
+- **D-13: Content Sourcing:** Initial layout content for templated components will be sourced from hardcoded React components extracted from Figma designs.
 
 </decisions>
 
@@ -42,14 +42,14 @@ Build the responsive outer shell, manage page-specific content integration withi
 **Downstream agents MUST read these before planning or implementing.**
 
 ### Project Specs
-- `.planning/PROJECT.md` — Core project vision, values, and constraints (e.g., no 3rd-party component libraries).
+- `.planning/PROJECT.md` — Core project vision, values, and constraints.
 - `.planning/ROADMAP.md` — Overall project roadmap and phase details.
-- `.planning/REQUIREMENTS.md` — Detailed requirements for the project, including LAY-03, LAY-04, LAY-05, CHAT-07 for this phase.
-- `.planning/phases/01-project-foundation-styling/01-CONTEXT.md` — Prior decisions on initial setup, styling, routing, and state management.
-- `.planning/phases/02-core-chat-ui/02-CONTEXT.md` — Prior decisions on core chat UI features like markdown rendering and animations.
+- `.planning/REQUIREMENTS.md` — Detailed requirements for the project, including LAY-03, LAY-04, LAY-05, CHAT-07, GAL-01, GAL-02.
+- `.planning/phases/01-project-foundation-styling/01-CONTEXT.md`
+- `.planning/phases/02-core-chat-ui/02-CONTEXT.md`
 
 ### Figma Designs
-- `https://www.figma.com/design/L95Qbm2qizmTPnyWstPwdP/v2.gurek.work?node-id=12-643&m=dev` — Figma design for the navigation component, guiding mobile backdrop, navigation link alignment, and overall sidebar structure.
+- `https://www.figma.com/design/L95Qbm2qizmTPnyWstPwdP/v2.gurek.work?node-id=12-643&m=dev`
 
 </canonical_refs>
 
@@ -57,16 +57,16 @@ Build the responsive outer shell, manage page-specific content integration withi
 ## Existing Code Insights
 
 ### Reusable Assets
-- `frontend/src/store/useAppStore.ts`: Global Zustand store, already established for state management, will be used for chat history persistence.
-- `react-router-dom`: Already integrated for application routing, forming the basis for navigation hierarchy.
-- Tailwind CSS: Established as the primary styling framework, to be used for all UI components and transitions.
+- `frontend/src/store/useChatStore.ts`: Global Zustand store to be updated to support route-keyed chat history and persistence.
+- `react-router-dom`: Used for application routing and redirection.
+- Tailwind CSS: Primary styling framework.
 
 ### Established Patterns
 - Pure Tailwind CSS with custom CSS variables (from Phase 1).
 - Direct `fetch` integrated with Zustand state (from Phase 2).
 
 ### Integration Points
-- Frontend will communicate with `localhost:9621/query` (FastAPI orchestrator) for LightRAG responses, requiring context injection for navigation.
+- Frontend communicates with `localhost:9621/query`. The `sendMessage` pipeline must be updated to inject route awareness into the prompt and handle redirection parsing.
 
 </code_context>
 
@@ -80,4 +80,4 @@ Build the responsive outer shell, manage page-specific content integration withi
 ---
 
 *Phase: 03-navigation-page-context*
-*Context gathered: 2026-04-26*
+*Context gathered: 2026-04-28*
