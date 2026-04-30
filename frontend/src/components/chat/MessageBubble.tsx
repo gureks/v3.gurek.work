@@ -79,6 +79,11 @@ export function MessageBubble({ message, onSuggestionClick }: MessageBubbleProps
           ) : (
             <MarkdownRenderer content={message.content} />
           )}
+          {message.component && (
+            <div className="mt-4">
+              {message.component}
+            </div>
+          )}
         </div>
         
       </div>

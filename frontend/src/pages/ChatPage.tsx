@@ -6,7 +6,12 @@ import { MessageBubble } from '../components/chat/MessageBubble';
 import { TypingIndicator } from '../components/chat/TypingIndicator';
 import { Header } from '../components/layout/Header';
 
-export function ChatPage() {
+export interface ChatPageProps {
+  templatedComponent?: React.ReactNode;
+  introMessage?: React.ReactNode;
+}
+
+export function ChatPage({ templatedComponent, introMessage }: ChatPageProps = {}) {
   const { sessions, isLoading, sendMessage } = useChatStore();
   const location = useLocation();
   const navigate = useNavigate();
@@ -26,8 +31,6 @@ export function ChatPage() {
   const lastAssistantMessage = [...messages].reverse().find(msg => msg.role === 'assistant');
   const activeSuggestions = lastAssistantMessage?.suggestions;
 
-  const isTemplatedPage = pathname === '/projects' || pathname === '/about';
-
   return (
     <div className="flex flex-col flex-1 relative h-full">
       {/* Header */}
@@ -38,7 +41,7 @@ export function ChatPage() {
         {messages.length === 0 && !isLoading ? (
           /* Empty State matching System Chat Bubble */
           <div className="flex flex-col flex-1 text-left justify-end w-full pb-[40px] items-center">
-            {isTemplatedPage && (
+            {templatedComponent && (
               <div className="w-full text-center text-foreground-muted mb-8 italic">
                 Rendering Inline Templated Page ({pathname})...
               </div>
@@ -61,18 +64,22 @@ export function ChatPage() {
                   backgroundColor: 'var(--background-tooltip)'
                 }}
               >
-                <p className="font-normal whitespace-pre-wrap" style={{ fontSize: '14px', lineHeight: '20px' }}>Hi, I'm Gurek.
-
-Let's start by knowing each other!
-What's your name and profession?</p>
+                <p className="font-normal whitespace-pre-wrap" style={{ fontSize: '14px', lineHeight: '20px' }}>
+                  {introMessage || `Hi, I'm Gurek.\n\nLet's start by knowing each other!\nWhat's your name and profession?`}
+                </p>
               </div>
             </div>
+            {templatedComponent && (
+              <div className="w-full mt-4">
+                {templatedComponent}
+              </div>
+            )}
           </div>
         ) : (
           <div className="flex flex-col w-full" style={{ maxWidth: '654px', gap: 'var(--space-6)' }}>
-            {isTemplatedPage && (
-              <div className="w-full text-center text-foreground-muted italic bg-background-elevated-alt p-4 rounded-lg my-4 border border-border-subtle">
-                [Templated Component Rendered Here]
+            {templatedComponent && (
+              <div className="w-full my-4">
+                {templatedComponent}
               </div>
             )}
             {messages.map((msg) => (

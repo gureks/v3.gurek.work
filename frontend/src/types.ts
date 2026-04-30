@@ -14,6 +14,7 @@ export interface Message {
     [key: string]: unknown;
   };
   isTyping?: boolean;
+  component?: import('react').ReactNode;
 }
 
 export type GemCategory = 'AI Innovations' | 'Growth & UX' | 'Design Systems' | 'Leadership';

@@ -3,6 +3,8 @@ import { persist } from 'zustand/middleware';
 import { sendQuery } from '../services/api';
 import { getSystemContext } from '../utils/chat';
 
+import * as React from 'react';
+
 export interface ChatMessage {
   id: string;
   role: 'user' | 'assistant';
@@ -10,11 +12,15 @@ export interface ChatMessage {
   suggestions?: string[];
   timestamp: number;
   isError?: boolean;
+  component?: React.ReactNode;
 }
 
 interface ChatState {
   sessions: Record<string, ChatMessage[]>;
   isLoading: boolean;
+  activeSessionId: string;
+  setActiveSession: (pathname: string) => void;
+  injectMessages: (pathname: string, messages: ChatMessage[]) => void;
   sendMessage: (content: string, pathname: string, navigate?: (path: string) => void) => Promise<void>;
   clearMessages: (pathname: string) => void;
 }
@@ -24,6 +30,24 @@ export const useChatStore = create<ChatState>()(
     (set, get) => ({
       sessions: {},
       isLoading: false,
+      activeSessionId: '/',
+
+      setActiveSession: (pathname: string) =>
+        set((state) => ({
+          activeSessionId: pathname,
+          sessions: {
+            ...state.sessions,
+            [pathname]: state.sessions[pathname] || [],
+          },
+        })),
+
+      injectMessages: (pathname: string, messages: ChatMessage[]) =>
+        set((state) => ({
+          sessions: {
+            ...state.sessions,
+            [pathname]: [...(state.sessions[pathname] || []), ...messages],
+          },
+        })),
 
       sendMessage: async (content: string, pathname: string, navigate?: (path: string) => void) => {
         const systemContext = getSystemContext(pathname);
