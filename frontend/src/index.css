@@ -145,3 +145,12 @@ body {
   background: var(--color-neutral-700);
   border-radius: var(--radius-full);
 }
+
+/* Hide scrollbar while keeping scroll functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
