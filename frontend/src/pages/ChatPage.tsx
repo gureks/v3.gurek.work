@@ -73,7 +73,7 @@ What's your name and profession?</p>
               </div>
             )}
             {messages.map((msg) => (
-              <MessageBubble key={msg.id} message={msg} />
+              <MessageBubble key={msg.id} message={msg} onSuggestionClick={handleSend} />
             ))}
             {isLoading && <TypingIndicator />}
             <div ref={bottomRef} />

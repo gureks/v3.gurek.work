@@ -4,9 +4,22 @@ import type { ChatMessage } from '../../store/useChatStore';
 
 interface MessageBubbleProps {
   message: ChatMessage;
+  onSuggestionClick?: (suggestion: string) => void;
 }
 
-export function MessageBubble({ message }: MessageBubbleProps) {
+/**
+ * MessageBubble — Figma-accurate chat message row.
+ * 
+ * Layout from Figma (node 214:14045, 214:14040):
+ * - Message row: avatar (32x32) + gap (16px) + bubble container
+ * - User bubble: bg = semantic/background-elevated (#262626), radius/lg (16px), padding space/4 (16px)
+ * - AI bubble:   bg = semantic/background-tooltip (#404040), radius/lg (16px), padding space/4 (16px)
+ * - Avatar: 32x32, bot = bg transparent on page bg, user = accent (#006eff) with glow
+ * - User row: avatar on the RIGHT side (flex-row-reverse)
+ * - AI row: avatar on the LEFT side (flex-row)
+ * - Gap between avatar and bubble: 16px (derived from Figma x=48 - avatar width 32 = 16px gap)
+ */
+export function MessageBubble({ message, onSuggestionClick }: MessageBubbleProps) {
   const isUser = message.role === 'user';
 
   return (
@@ -15,18 +28,18 @@ export function MessageBubble({ message }: MessageBubbleProps) {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: 'easeOut' }}
-      className={`flex items-start w-full ${isUser ? 'flex-row-reverse' : 'flex-row'}`}
+      className={`flex items-start ${isUser ? 'flex-row-reverse' : 'flex-row'}`}
       style={{ gap: 'var(--space-4)' }}
     >
       {/* Avatar — 32x32 per Figma */}
       <div
         className="flex-shrink-0 flex items-center justify-center"
         style={{
-          width: '32px',
-          height: '32px',
-          borderRadius: isUser ? 'var(--radius-md)' : '8px', // Figma: user is radius/md (10px)
-          backgroundColor: isUser ? 'var(--accent)' : 'transparent',
-          boxShadow: isUser ? '0px 0px 15px -2px #006eff' : 'none',
+          width: 'var(--avatar-md)',
+          height: 'var(--avatar-md)',
+          borderRadius: 'var(--radius-md)',
+          backgroundColor: isUser ? 'var(--accent)' : 'var(--background)',
+          boxShadow: isUser ? 'var(--glow-accent)' : 'none',
           color: 'var(--foreground)',
           fontSize: isUser ? '11.8px' : 'inherit',
           fontWeight: 500,
@@ -35,35 +48,53 @@ export function MessageBubble({ message }: MessageBubbleProps) {
       >
         {isUser ? 'AB' : (
           /* Bot avatar — Gurek logo placeholder (simple icon on page bg) */
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-foreground">
-            <circle cx="16" cy="16" r="14" stroke="currentColor" strokeWidth="2"/>
-            <path d="M10 24C10 18 14 16 16 16C18 16 22 18 22 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-            <circle cx="16" cy="12" r="4" stroke="currentColor" strokeWidth="2"/>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="10" cy="10" r="9" stroke="currentColor" strokeWidth="1.2"/>
+            <circle cx="10" cy="8" r="3" stroke="currentColor" strokeWidth="1.2"/>
+            <path d="M4 16.5C4 13.5 6.5 12 10 12C13.5 12 16 13.5 16 16.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
           </svg>
         )}
       </div>
 
-      {/* Bubble */}
-      <div
-        className={`text-foreground flex-1 flex flex-col items-start ${message.isError ? 'border border-red-500/30' : ''}`}
-        style={{
-          padding: 'var(--space-4)',
-          borderRadius: 'var(--radius-lg)',
-          backgroundColor: isUser
-            ? 'var(--background-elevated)'   /* Figma: semantic/background-elevated #262626 */
-            : 'var(--background-tooltip)',     /* Figma: semantic/background-tooltip #404040 */
-          fontSize: '14px',
-          fontWeight: 400,
-          lineHeight: '20px',
-        }}
-      >
-        <div className="w-full text-left">
+      {/* Bubble Container */}
+      <div className="flex flex-col gap-2" style={{ maxWidth: '606px' }}>
+        {/* Bubble — Figma: padding space/4 (16px), radius/lg (16px) */}
+        <div
+          className={`text-foreground ${message.isError ? 'border border-red-500/30' : ''}`}
+          style={{
+            padding: 'var(--space-4)',
+            borderRadius: 'var(--radius-lg)',
+            backgroundColor: isUser
+              ? 'var(--background-elevated)'   /* Figma: semantic/background-elevated #262626 */
+              : 'var(--background-tooltip)',     /* Figma: semantic/background-tooltip #404040 */
+            fontSize: '14px',
+            fontWeight: 400,
+            lineHeight: '20px',
+            width: 'fit-content',
+            marginLeft: isUser ? 'auto' : '0'
+          }}
+        >
           {isUser ? (
             <p className="whitespace-pre-wrap">{message.content}</p>
           ) : (
             <MarkdownRenderer content={message.content} />
           )}
         </div>
+        
+        {/* Suggestions */}
+        {!isUser && message.suggestions && message.suggestions.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-1">
+            {message.suggestions.map((suggestion, index) => (
+              <button
+                key={index}
+                onClick={() => onSuggestionClick?.(suggestion)}
+                className="text-xs px-3 py-1.5 rounded-full border border-border-input bg-background-elevated hover:bg-background-elevated-alt transition-colors text-foreground-muted hover:text-foreground text-left"
+              >
+                {suggestion}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </motion.div>
   );

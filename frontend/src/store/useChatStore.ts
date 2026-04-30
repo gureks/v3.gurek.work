@@ -7,6 +7,7 @@ export interface ChatMessage {
   id: string;
   role: 'user' | 'assistant';
   content: string;
+  suggestions?: string[];
   timestamp: number;
   isError?: boolean;
 }
@@ -59,20 +60,29 @@ export const useChatStore = create<ChatState>()(
           });
 
           const replyText = response.response.trim();
+          
+          let parsedResponse;
+          try {
+            // Strip potential markdown code block backticks if the LLM wrapped the JSON
+            const cleanJson = replyText.replace(/```json/i, '').replace(/```/g, '').trim();
+            parsedResponse = JSON.parse(cleanJson);
+          } catch (e) {
+            console.error("Failed to parse backend JSON response", replyText);
+            throw new Error("Invalid response format");
+          }
 
           // Check for redirection signal
-          const redirectMatch = replyText.match(/^\[REDIRECT:(.+)\]$/i);
-          if (redirectMatch && navigate) {
-            const redirectPath = redirectMatch[1];
+          if (parsedResponse.redirect && navigate) {
             set({ isLoading: false });
-            navigate(redirectPath);
+            navigate(parsedResponse.redirect);
             return;
           }
 
           const assistantMessage: ChatMessage = {
             id: crypto.randomUUID(),
             role: 'assistant',
-            content: replyText,
+            content: parsedResponse.response || '',
+            suggestions: parsedResponse.suggestions || [],
             timestamp: Date.now(),
           };
 
