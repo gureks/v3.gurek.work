@@ -66,7 +66,7 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-None yet.
+- Need to add more pages and available redirections in chat.ts (to be added in a later phase)
 
 ### Blockers/Concerns
 
@@ -78,7 +78,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 | Category | Item | Status | Deferred At |
 |----------|------|--------|-------------|
-| *(none)* | | | |
+| UI | Inline Templated Page Rendering (chat timeline UI not rendering) | Deferred to later phase for Figma | 2026-05-01 |
 
 ## Session Continuity
 
