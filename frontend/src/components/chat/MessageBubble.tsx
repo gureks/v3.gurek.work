@@ -81,20 +81,6 @@ export function MessageBubble({ message, onSuggestionClick }: MessageBubbleProps
           )}
         </div>
         
-        {/* Suggestions */}
-        {!isUser && message.suggestions && message.suggestions.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-1">
-            {message.suggestions.map((suggestion, index) => (
-              <button
-                key={index}
-                onClick={() => onSuggestionClick?.(suggestion)}
-                className="text-xs px-3 py-1.5 rounded-full border border-border-input bg-background-elevated hover:bg-background-elevated-alt transition-colors text-foreground-muted hover:text-foreground text-left"
-              >
-                {suggestion}
-              </button>
-            ))}
-          </div>
-        )}
       </div>
     </motion.div>
   );

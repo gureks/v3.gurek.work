@@ -4,6 +4,7 @@ import { SendIcon } from '../../assets/custom-icons';
 interface ChatInputProps {
   onSend: (message: string) => void;
   disabled?: boolean;
+  suggestions?: string[];
 }
 
 const DEFAULT_SUGGESTIONS = [
@@ -14,7 +15,7 @@ const DEFAULT_SUGGESTIONS = [
   "What does he do after 9-5?"
 ];
 
-export function ChatInput({ onSend, disabled }: ChatInputProps) {
+export function ChatInput({ onSend, disabled, suggestions }: ChatInputProps) {
   const [value, setValue] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -54,12 +55,14 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
     inputRef.current?.focus();
   };
 
+  const currentSuggestions = suggestions && suggestions.length > 0 ? suggestions : DEFAULT_SUGGESTIONS;
+
   return (
     <div className="relative w-full" ref={containerRef}>
       {/* Suggestions Overlay */}
       {isFocused && !value && (
         <div className="absolute flex flex-col gap-[8px] justify-center p-[16px] right-0 z-10" style={{ bottom: '100%', alignItems: 'flex-end' }}>
-          {DEFAULT_SUGGESTIONS.map((suggestion, index) => (
+          {currentSuggestions.map((suggestion, index) => (
             <button
               key={index}
               onClick={() => handleSuggestionClick(suggestion)}

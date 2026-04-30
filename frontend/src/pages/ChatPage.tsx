@@ -23,6 +23,9 @@ export function ChatPage() {
     sendMessage(content, pathname, navigate);
   };
 
+  const lastAssistantMessage = [...messages].reverse().find(msg => msg.role === 'assistant');
+  const activeSuggestions = lastAssistantMessage?.suggestions;
+
   const isTemplatedPage = pathname === '/projects' || pathname === '/about';
 
   return (
@@ -84,7 +87,7 @@ What's your name and profession?</p>
       {/* Input Area */}
       <div className="absolute bottom-0 left-0 w-full flex justify-center bg-background/80 pt-6" style={{ backdropFilter: 'blur(20px)' }}>
         <div className="w-full" style={{ maxWidth: '702px' }}>
-          <ChatInput onSend={handleSend} disabled={isLoading} />
+          <ChatInput onSend={handleSend} disabled={isLoading} suggestions={activeSuggestions} />
         </div>
       </div>
     </div>
