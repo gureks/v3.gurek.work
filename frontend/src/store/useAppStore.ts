@@ -1,11 +1,26 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 interface AppState {
   theme: 'dark' | 'light';
   setTheme: (theme: 'dark' | 'light') => void;
 }
 
-export const useAppStore = create<AppState>((set) => ({
-  theme: 'dark', // default to dark per design
-  setTheme: (theme) => set({ theme }),
-}));
+const getSystemTheme = (): 'dark' | 'light' => {
+  if (typeof window !== 'undefined' && window.matchMedia) {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  return 'dark';
+};
+
+export const useAppStore = create<AppState>()(
+  persist(
+    (set) => ({
+      theme: getSystemTheme(),
+      setTheme: (theme) => set({ theme }),
+    }),
+    {
+      name: 'theme-storage',
+    }
+  )
+);

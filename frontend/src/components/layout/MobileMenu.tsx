@@ -1,27 +1,171 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { NavSidebar } from './NavSidebar';
+import { NAV_PRIMARY, NAV_SOCIAL, isSeparator, type NavItemConfig } from '../../config/nav.config';
+import {
+  HomeIcon, ProjectsIcon, ResumeIcon, BuildsIcon, PromptsIcon,
+  PlaygroundIcon, FpvIcon, InstagramIcon, LinkedinIcon, GithubIcon,
+  EmailIcon, ShareIcon, SearchIcon
+} from '../../assets/custom-icons';
+import { useAppStore } from '../../store/useAppStore';
 
-interface MobileMenuProps {
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
-}
+const ICON_MAP: Record<string, React.FC<{ size?: number | string; className?: string }>> = {
+  home: HomeIcon,
+  projects: ProjectsIcon,
+  resume: ResumeIcon,
+  builds: BuildsIcon,
+  prompts: PromptsIcon,
+  playground: PlaygroundIcon,
+  fpv: FpvIcon,
+  instagram: InstagramIcon,
+  linkedin: LinkedinIcon,
+  github: GithubIcon,
+  email: EmailIcon,
+};
 
-const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, setIsOpen }) => {
+const MobileMenu: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { theme, setTheme } = useAppStore();
+
+  const handleNavClick = (href: string) => {
+    // If we had a real router navigate, we'd use it here, but href works for now
+    window.location.href = href;
+    setIsOpen(false);
+  };
+
+  const getActiveId = () => {
+    const allEntries = [...NAV_PRIMARY, ...NAV_SOCIAL];
+    const match = allEntries.find((e) => !isSeparator(e) && (e as NavItemConfig).href === location.pathname);
+    return match ? (match as NavItemConfig).id : 'home';
+  };
+
+  const activeId = getActiveId();
 
   return (
-    <div className={`fixed inset-0 z-50 md:hidden pointer-events-none`}>
-      {/* Backdrop */}
+    <>
+      {/* Dimmed backdrop when menu is open */}
       <div 
-        className={`absolute inset-0 bg-black/40 backdrop-blur-[10px] transition-opacity duration-300 ease-in-out pointer-events-auto ${isOpen ? 'opacity-100' : 'opacity-0 !pointer-events-none'}`}
+        className={`fixed inset-0 bg-black/40 backdrop-blur-[4px] z-40 transition-opacity duration-300 md:hidden ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
         onClick={() => setIsOpen(false)}
       />
-      {/* Sidebar Content */}
-      <div className={`absolute left-0 top-0 h-full p-4 transform transition-transform duration-300 ease-in-out pointer-events-auto ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <NavSidebar activeRoute={location.pathname} />
+
+      {/* Floating Top Nav */}
+      <div className="fixed top-0 left-0 w-full z-50 md:hidden pointer-events-none flex justify-center">
+        <div className="backdrop-blur-[10px] flex flex-col items-center p-[24px] relative rounded-[16px] shrink-0 w-[360px] max-w-full pointer-events-auto">
+          <div className="backdrop-blur-[20px] bg-[var(--background-elevated)] border border-[var(--border)] border-solid flex flex-col items-start relative rounded-[16px] shrink-0 w-full transition-all duration-300 shadow-[var(--shadow-lg)] overflow-hidden">
+            
+            {/* Header / Closed State */}
+            <div className="flex items-center justify-between px-[12px] py-[8px] shrink-0 w-full">
+              <div className="flex gap-0 items-center py-[12px] shrink-0">
+                {/* Gurek Logo */}
+                <div className="relative shrink-0 size-[32px] rounded-[10px] bg-[var(--background-input)] flex items-center justify-center border border-[var(--border-subtle)]">
+                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                     <circle cx="12" cy="12" r="10" stroke="var(--foreground)" strokeWidth="1.5"/>
+                     <circle cx="12" cy="10" r="3.5" stroke="var(--foreground)" strokeWidth="1.5"/>
+                     <path d="M5 19.5C5 16 8 14 12 14C16 14 19 16 19 19.5" stroke="var(--foreground)" strokeWidth="1.5" strokeLinecap="round"/>
+                   </svg>
+                </div>
+              </div>
+              <div className="flex gap-[8px] items-center py-[12px] shrink-0">
+                {/* Dark mode toggle */}
+                <button 
+                  onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                  className="bg-[var(--background-tooltip)] flex items-center justify-center p-[8px] rounded-[8px] text-foreground hover:bg-white/10 transition-colors"
+                >
+                  <ShareIcon size={20} />
+                </button>
+                {/* Menu Toggle Button */}
+                <button 
+                  onClick={() => setIsOpen(!isOpen)}
+                  className="bg-[var(--background-tooltip)] border border-[var(--border)] flex items-center p-[8px] rounded-[8px] text-foreground hover:bg-white/10 transition-colors"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    {isOpen ? (
+                      <>
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                      </>
+                    ) : (
+                      <>
+                        <line x1="4" y1="12" x2="20" y2="12" />
+                        <line x1="4" y1="6" x2="20" y2="6" />
+                        <line x1="4" y1="18" x2="20" y2="18" />
+                      </>
+                    )}
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            {/* Open State / Dropdown List */}
+            {isOpen && (
+              <div className="flex flex-col items-start p-[8px] shrink-0 w-full">
+                {[...NAV_PRIMARY].map((entry, index) => {
+                  if (isSeparator(entry)) {
+                    return (
+                      <div key={`sep-${index}`} className="h-[8px] w-full flex items-center justify-center py-2">
+                        <div className="w-full border-t border-[var(--border-subtle)]" />
+                      </div>
+                    );
+                  }
+                  
+                  const item = entry as NavItemConfig;
+                  if (!item.visible) return null;
+                  
+                  const Icon = ICON_MAP[item.id];
+                  const isActive = item.id === activeId;
+                  
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => handleNavClick(item.href)}
+                      className={`flex gap-[16px] items-center px-[16px] py-[12px] rounded-[8px] w-full transition-colors ${isActive ? 'bg-foreground text-background' : 'text-foreground hover:bg-white/5'}`}
+                    >
+                      {Icon && <Icon size={20} />}
+                      <span className="text-[14px] leading-[20px] font-normal">{item.label}</span>
+                    </button>
+                  );
+                })}
+                
+                <div className="h-[8px] w-full flex items-center justify-center py-2">
+                  <div className="w-full border-t border-[var(--border-subtle)]" />
+                </div>
+
+                {[...NAV_SOCIAL].map((entry, index) => {
+                  if (isSeparator(entry)) return null;
+                  
+                  const item = entry as NavItemConfig;
+                  if (!item.visible) return null;
+                  
+                  const Icon = ICON_MAP[item.id];
+                  
+                  return (
+                    <a
+                      key={item.id}
+                      href={item.href}
+                      target={item.external ? '_blank' : undefined}
+                      className="flex gap-[16px] items-center px-[16px] py-[12px] w-full text-foreground hover:bg-white/5 rounded-[8px] transition-colors"
+                    >
+                      {Icon && <Icon size={20} />}
+                      <span className="text-[14px] leading-[20px] font-normal">{item.label}</span>
+                    </a>
+                  );
+                })}
+                
+                <div className="pt-2 w-full">
+                  <a
+                    href="mailto:hello@example.com"
+                    className="bg-[var(--accent)] flex gap-[16px] items-center justify-center px-[16px] py-[12px] rounded-[8px] w-full text-white shadow-[var(--glow-accent)] hover:opacity-90 transition-opacity"
+                  >
+                    <span className="text-[14px] leading-[20px] font-normal">Get in Touch</span>
+                  </a>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
