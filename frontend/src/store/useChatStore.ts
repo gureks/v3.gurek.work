@@ -132,7 +132,13 @@ export const useChatStore = create<ChatState>()(
             if (!retrySuccess) {
               // Graceful degradation — render raw text as markdown if it looks like prose
               if (rawText && rawText.length > 10 && /[a-zA-Z\s]/.test(rawText)) {
-                parsedResponse = { redirect: null, response: rawText, suggestions: [] };
+                // Filter out technical [no-context] strings from the UI
+                const cleanText = rawText.replace(/\[no-context\]/g, '').trim();
+                parsedResponse = { 
+                  redirect: null, 
+                  response: cleanText || "I'm sorry, I don't have specific information on that. Can I show you Gurek's projects instead?", 
+                  suggestions: ["Show me projects", "Tell me about his experience"] 
+                };
               } else {
                 throw new Error('Response could not be parsed after retries');
               }

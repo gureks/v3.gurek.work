@@ -58,7 +58,7 @@ export const NAV_PRIMARY: NavEntry[] = [
   {
     id: 'resume',
     label: 'Resume',
-    href: '/resume',
+    href: '/about',
     visible: true,
   },
   { type: 'separator' },

@@ -57,11 +57,6 @@ export function ChatPage({ templatedComponent, introMessage }: ChatPageProps = {
         {messages.length === 0 && !isLoading ? (
           /* Empty State matching System Chat Bubble */
           <div className="flex flex-col flex-1 text-left justify-end w-full pb-[40px] items-center">
-            {templatedComponent && (
-              <div className="w-full text-center text-foreground-muted mb-8 italic">
-                Rendering Inline Templated Page ({pathname})...
-              </div>
-            )}
             <div className="flex items-start gap-4 w-full" style={{ maxWidth: '654px' }}>
               {/* Bot Avatar */}
               <div className="flex-shrink-0 flex items-center justify-center" style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: 'transparent' }}>
