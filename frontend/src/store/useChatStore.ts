@@ -18,11 +18,27 @@ export interface ChatMessage {
 interface ChatState {
   sessions: Record<string, ChatMessage[]>;
   isLoading: boolean;
+  retryAttempt: number | null;
   activeSessionId: string;
   setActiveSession: (pathname: string) => void;
   injectMessages: (pathname: string, messages: ChatMessage[]) => void;
-  sendMessage: (content: string, pathname: string, navigate?: (path: string) => void) => Promise<void>;
+  sendMessage: (content: string, pathname: string, navigate?: (path: string, options?: { state?: Record<string, unknown> }) => void) => Promise<void>;
   clearMessages: (pathname: string) => void;
+}
+
+const RETRY_DELAYS = [500, 1000, 2000];
+
+function cleanAndParseJSON(raw: string): { redirect: string | null; response: string; suggestions: string[] } {
+  // Strip markdown code fences
+  let cleaned = raw.trim();
+  cleaned = cleaned.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/g, '').trim();
+  // Find the outermost JSON object
+  const firstBrace = cleaned.indexOf('{');
+  const lastBrace = cleaned.lastIndexOf('}');
+  if (firstBrace !== -1 && lastBrace > firstBrace) {
+    cleaned = cleaned.substring(firstBrace, lastBrace + 1);
+  }
+  return JSON.parse(cleaned);
 }
 
 export const useChatStore = create<ChatState>()(
@@ -30,6 +46,7 @@ export const useChatStore = create<ChatState>()(
     (set, get) => ({
       sessions: {},
       isLoading: false,
+      retryAttempt: null,
       activeSessionId: '/',
 
       setActiveSession: (pathname: string) =>
@@ -49,7 +66,7 @@ export const useChatStore = create<ChatState>()(
           },
         })),
 
-      sendMessage: async (content: string, pathname: string, navigate?: (path: string) => void) => {
+      sendMessage: async (content: string, pathname: string, navigate?: (path: string, options?: { state?: Record<string, unknown> }) => void) => {
         const systemContext = getSystemContext(pathname);
         const contentWithContext = `${systemContext}\n\nUser Message:\n${content}`;
 
@@ -68,6 +85,7 @@ export const useChatStore = create<ChatState>()(
               [pathname]: [...currentSession, userMessage],
             },
             isLoading: true,
+            retryAttempt: null,
           };
         });
 
@@ -84,24 +102,82 @@ export const useChatStore = create<ChatState>()(
           });
 
           const replyText = response.response.trim();
-          
+
+          // Attempt to parse JSON response with retry logic
           let parsedResponse;
+          let rawText = replyText;
           try {
-            // Strip potential markdown code block backticks if the LLM wrapped the JSON
-            const cleanJson = replyText.replace(/```json/i, '').replace(/```/g, '').trim();
-            parsedResponse = JSON.parse(cleanJson);
-          } catch (e) {
-            console.error("Failed to parse backend JSON response", replyText);
-            throw new Error("Invalid response format");
+            parsedResponse = cleanAndParseJSON(rawText);
+          } catch (parseErr) {
+            // Retry loop with exponential backoff
+            let retrySuccess = false;
+            for (let attempt = 0; attempt < RETRY_DELAYS.length; attempt++) {
+              set({ retryAttempt: attempt + 1 });
+              await new Promise(resolve => setTimeout(resolve, RETRY_DELAYS[attempt]));
+              try {
+                const retryResponse = await sendQuery({
+                  query: contentWithContext,
+                  mode: 'mix',
+                  conversation_history: history,
+                });
+                rawText = retryResponse.response.trim();
+                parsedResponse = cleanAndParseJSON(rawText);
+                retrySuccess = true;
+                break;
+              } catch (retryErr) {
+                // Continue to next attempt
+              }
+            }
+            set({ retryAttempt: null });
+            if (!retrySuccess) {
+              // Graceful degradation — render raw text as markdown if it looks like prose
+              if (rawText && rawText.length > 10 && /[a-zA-Z\s]/.test(rawText)) {
+                parsedResponse = { redirect: null, response: rawText, suggestions: [] };
+              } else {
+                throw new Error('Response could not be parsed after retries');
+              }
+            }
           }
 
-          // Check for redirection signal
+          // Handle redirect flows
           if (parsedResponse.redirect && navigate) {
-            set({ isLoading: false });
-            navigate(parsedResponse.redirect);
-            return;
+            if (parsedResponse.response && parsedResponse.response.trim().length > 0) {
+              // REDIRECT + ANSWER: render message first, then navigate
+              const assistantMessage: ChatMessage = {
+                id: crypto.randomUUID(),
+                role: 'assistant',
+                content: parsedResponse.response,
+                suggestions: parsedResponse.suggestions || [],
+                timestamp: Date.now(),
+              };
+              set((state) => ({
+                sessions: {
+                  ...state.sessions,
+                  [pathname]: [...(state.sessions[pathname] || []), assistantMessage],
+                },
+                isLoading: false,
+                retryAttempt: null,
+              }));
+              // Brief delay so user sees the response before redirect
+              await new Promise(resolve => setTimeout(resolve, 1500));
+              navigate(parsedResponse.redirect, {
+                state: { suggestions: parsedResponse.suggestions },
+              });
+              return;
+            } else {
+              // REDIRECT ONLY: navigate immediately, skip adding empty response message
+              set({ isLoading: false, retryAttempt: null });
+              navigate(parsedResponse.redirect, {
+                state: {
+                  suggestions: parsedResponse.suggestions,
+                  toast: parsedResponse.response || null,
+                },
+              });
+              return;
+            }
           }
 
+          // Non-redirect response — add as assistant message
           const assistantMessage: ChatMessage = {
             id: crypto.randomUUID(),
             role: 'assistant',
@@ -118,6 +194,7 @@ export const useChatStore = create<ChatState>()(
                 [pathname]: [...currentSession, assistantMessage],
               },
               isLoading: false,
+              retryAttempt: null,
             };
           });
         } catch (error) {
@@ -137,6 +214,7 @@ export const useChatStore = create<ChatState>()(
                 [pathname]: [...currentSession, errorMessage],
               },
               isLoading: false,
+              retryAttempt: null,
             };
           });
         }
