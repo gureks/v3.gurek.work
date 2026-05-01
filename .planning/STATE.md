@@ -66,6 +66,7 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
+- [UI] Implement Rich Component Templating & Dynamic Rendering (2026-05-01-rich-component-templating.md)
 - Need to add more pages and available redirections in chat.ts (to be added in a later phase)
 
 ### Blockers/Concerns
