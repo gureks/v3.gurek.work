@@ -6,7 +6,6 @@ import { MessageBubble } from '../components/chat/MessageBubble';
 import { TypingIndicator } from '../components/chat/TypingIndicator';
 import { Header } from '../components/layout/Header';
 import { ProjectCardGallery, type ProjectCard } from '../components/chat/ProjectCardGallery';
-import { PROJECT_REGISTRY } from '../data/projects';
 
 /* ─────────────────────────────────────────────
    Project data — sourced from Figma node 36:755

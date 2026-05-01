@@ -7,6 +7,7 @@ import ProjectsPage from './pages/ProjectsPage';
 import AboutPage from './pages/AboutPage';
 import PlaygroundPage from './pages/PlaygroundPage';
 import ProjectPage from './pages/ProjectPage';
+import { Toast } from './components/ui/Toast';
 
 function App() {
   const { theme } = useAppStore();
@@ -21,6 +22,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <Toast />
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<ChatPage />} />

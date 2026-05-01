@@ -4,6 +4,9 @@ import { persist } from 'zustand/middleware';
 interface AppState {
   theme: 'dark' | 'light';
   setTheme: (theme: 'dark' | 'light') => void;
+  toast: { message: string; id: string } | null;
+  showToast: (message: string) => void;
+  dismissToast: () => void;
 }
 
 const getSystemTheme = (): 'dark' | 'light' => {
@@ -18,9 +21,13 @@ export const useAppStore = create<AppState>()(
     (set) => ({
       theme: getSystemTheme(),
       setTheme: (theme) => set({ theme }),
+      toast: null,
+      showToast: (message: string) => set({ toast: { message, id: crypto.randomUUID() } }),
+      dismissToast: () => set({ toast: null }),
     }),
     {
       name: 'theme-storage',
+      partialize: (state) => ({ theme: state.theme }), // Only persist theme, NOT toast (ephemeral)
     }
   )
 );

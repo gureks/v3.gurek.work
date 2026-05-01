@@ -104,7 +104,7 @@ export const useChatStore = create<ChatState>()(
           const replyText = response.response.trim();
 
           // Attempt to parse JSON response with retry logic
-          let parsedResponse;
+          let parsedResponse: { redirect: string | null; response: string; suggestions: string[] } | undefined;
           let rawText = replyText;
           try {
             parsedResponse = cleanAndParseJSON(rawText);
@@ -139,15 +139,18 @@ export const useChatStore = create<ChatState>()(
             }
           }
 
+          // At this point parsedResponse is always defined (or we threw above)
+          const parsed = parsedResponse as { redirect: string | null; response: string; suggestions: string[] };
+
           // Handle redirect flows
-          if (parsedResponse.redirect && navigate) {
-            if (parsedResponse.response && parsedResponse.response.trim().length > 0) {
+          if (parsed.redirect && navigate) {
+            if (parsed.response && parsed.response.trim().length > 0) {
               // REDIRECT + ANSWER: render message first, then navigate
               const assistantMessage: ChatMessage = {
                 id: crypto.randomUUID(),
                 role: 'assistant',
-                content: parsedResponse.response,
-                suggestions: parsedResponse.suggestions || [],
+                content: parsed.response,
+                suggestions: parsed.suggestions || [],
                 timestamp: Date.now(),
               };
               set((state) => ({
@@ -160,17 +163,17 @@ export const useChatStore = create<ChatState>()(
               }));
               // Brief delay so user sees the response before redirect
               await new Promise(resolve => setTimeout(resolve, 1500));
-              navigate(parsedResponse.redirect, {
-                state: { suggestions: parsedResponse.suggestions },
+              navigate(parsed.redirect!, {
+                state: { suggestions: parsed.suggestions },
               });
               return;
             } else {
               // REDIRECT ONLY: navigate immediately, skip adding empty response message
               set({ isLoading: false, retryAttempt: null });
-              navigate(parsedResponse.redirect, {
+              navigate(parsed.redirect!, {
                 state: {
-                  suggestions: parsedResponse.suggestions,
-                  toast: parsedResponse.response || null,
+                  suggestions: parsed.suggestions,
+                  toast: parsed.response || null,
                 },
               });
               return;
@@ -181,8 +184,8 @@ export const useChatStore = create<ChatState>()(
           const assistantMessage: ChatMessage = {
             id: crypto.randomUUID(),
             role: 'assistant',
-            content: parsedResponse.response || '',
-            suggestions: parsedResponse.suggestions || [],
+            content: parsed.response || '',
+            suggestions: parsed.suggestions || [],
             timestamp: Date.now(),
           };
 
@@ -229,9 +232,16 @@ export const useChatStore = create<ChatState>()(
         })),
     }),
     {
-      name: 'chat-storage', // name of the item in the storage (must be unique)
-      getStorage: () => localStorage, // (optional) by default, 'localStorage' is used
-      partialize: (state) => ({ sessions: state.sessions }), // only persist the 'sessions' slice
+      name: 'chat-storage',
+      storage: {
+        getItem: (name) => {
+          const str = localStorage.getItem(name);
+          return str ? JSON.parse(str) : null;
+        },
+        setItem: (name, value) => localStorage.setItem(name, JSON.stringify(value)),
+        removeItem: (name) => localStorage.removeItem(name),
+      },
+      partialize: (state) => ({ sessions: state.sessions }) as unknown as ChatState,
     }
   )
 );

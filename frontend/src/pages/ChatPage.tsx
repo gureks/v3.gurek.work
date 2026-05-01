@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useChatStore } from '../store/useChatStore';
+import { useAppStore } from '../store/useAppStore';
 import { ChatInput } from '../components/chat/ChatInput';
 import { MessageBubble } from '../components/chat/MessageBubble';
 import { TypingIndicator } from '../components/chat/TypingIndicator';
@@ -20,6 +21,17 @@ export function ChatPage({ templatedComponent, introMessage }: ChatPageProps = {
   const pathname = location.pathname;
   const messages = sessions[pathname] || [];
 
+  const locationState = location.state as { suggestions?: string[]; toast?: string } | null;
+
+  // Consume toast from redirect navigation state
+  useEffect(() => {
+    if (locationState?.toast) {
+      useAppStore.getState().showToast(locationState.toast);
+      // Clear the state so it doesn't re-trigger
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.key]);
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
@@ -28,8 +40,12 @@ export function ChatPage({ templatedComponent, introMessage }: ChatPageProps = {
     sendMessage(content, pathname, navigate);
   };
 
+  // Suggestion carry-over: use carried suggestions on fresh arrival from redirect
+  const carriedSuggestions = locationState?.suggestions;
   const lastAssistantMessage = [...messages].reverse().find(msg => msg.role === 'assistant');
-  const activeSuggestions = lastAssistantMessage?.suggestions;
+  const activeSuggestions = (messages.length === 0 && carriedSuggestions?.length)
+    ? carriedSuggestions
+    : lastAssistantMessage?.suggestions;
 
   return (
     <div className="flex flex-col flex-1 relative h-full">
