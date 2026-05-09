@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { useChatStore } from '../store/useChatStore';
 import { ChatPage } from './ChatPage';
-import { EpaperProject } from './projects/EpaperProject';
+import { epaperSequence } from './projects/EpaperProject';
 
 export const ProjectPage: React.FC = () => {
   const { name } = useParams<{ name: string }>();
@@ -13,9 +13,11 @@ export const ProjectPage: React.FC = () => {
     setActiveSession(location.pathname);
   }, [location.pathname, setActiveSession]);
 
+  let initialSequence = undefined;
   let templatedComponent = null;
+
   if (name === 'epaper') {
-    templatedComponent = <EpaperProject />;
+    initialSequence = epaperSequence;
   } else {
     templatedComponent = (
       <div className="bg-background-elevated-alt p-6 rounded-lg border border-border-subtle mt-2 text-center">
@@ -28,7 +30,8 @@ export const ProjectPage: React.FC = () => {
   return (
     <ChatPage 
       templatedComponent={templatedComponent}
-      introMessage={`Here is the deep-dive case study for ${name}.`}
+      initialSequence={initialSequence}
+      introMessage={!initialSequence ? `Here is the deep-dive case study for ${name}.` : undefined}
     />
   );
 };
