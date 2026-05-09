@@ -3,6 +3,7 @@ import React from 'react';
 interface GalleryItem {
   imageUrl: string;
   caption: string;
+  description?: string;
 }
 
 interface ProjectGalleryProps {
@@ -15,14 +16,21 @@ export const ProjectGallery: React.FC<ProjectGalleryProps> = ({ items }) => {
       {items.map((item, index) => (
         <div 
           key={index} 
-          className="bg-[var(--background-tooltip)] border border-[var(--border)] flex flex-col gap-[var(--space-2)] p-[var(--space-2)] rounded-[var(--radius-lg)] shrink-0"
+          className="bg-[var(--background-tooltip)] border border-[var(--border)] flex flex-col gap-[var(--space-2)] p-[var(--space-2)] rounded-[var(--radius-lg)] shrink-0 max-w-[400px] w-[300px] sm:w-[400px]"
         >
-          <div className="h-[200px] w-[300px] relative rounded-[var(--radius-sm)] overflow-hidden shrink-0">
+          <div className="w-full relative rounded-[var(--radius-sm)] overflow-hidden shrink-0" style={{ aspectRatio: '1280/768' }}>
             <img src={item.imageUrl} alt={item.caption} className="absolute inset-0 w-full h-full object-cover" />
           </div>
-          <p className="text-[14px] leading-[20px] text-[var(--foreground)] m-0">
-            {item.caption}
-          </p>
+          <div className="flex flex-col gap-1 w-full px-1 pb-1">
+            <p className="text-[14px] leading-[20px] font-bold text-[var(--foreground)] m-0">
+              {item.caption}
+            </p>
+            {item.description && (
+              <p className="text-[14px] leading-[20px] text-[var(--foreground-muted)] m-0 whitespace-pre-wrap">
+                {item.description}
+              </p>
+            )}
+          </div>
         </div>
       ))}
     </div>
