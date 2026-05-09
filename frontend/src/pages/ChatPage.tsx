@@ -4,7 +4,7 @@ import { useChatStore } from '../store/useChatStore';
 import { useAppStore } from '../store/useAppStore';
 import { ChatInput } from '../components/chat/ChatInput';
 import { MessageBubble } from '../components/chat/MessageBubble';
-import { RichContentContainer } from '../components/chat/RichContentContainer';
+import { RichContentContainer } from '../components/rich-content/RichContentContainer';
 import { TypingIndicator } from '../components/chat/TypingIndicator';
 import { Header } from '../components/layout/Header';
 

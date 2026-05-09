@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { sendQuery } from '../services/api';
 import { getSystemContext } from '../utils/chat';
+import { RichContentContainer, RichContentType } from '../components/rich-content/RichContentContainer';
 
 import * as React from 'react';
 
@@ -13,6 +14,7 @@ export interface ChatMessage {
   timestamp: number;
   isError?: boolean;
   component?: React.ReactNode;
+  richContentType?: string;
 }
 
 interface ChatState {
@@ -28,7 +30,7 @@ interface ChatState {
 
 const RETRY_DELAYS = [500, 1000, 2000];
 
-function cleanAndParseJSON(raw: string): { redirect: string | null; response: string; suggestions: string[] } {
+function cleanAndParseJSON(raw: string): { redirect: string | null; response: string; suggestions: string[]; richContent?: RichContentType | null } {
   // Strip markdown code fences
   let cleaned = raw.trim();
   cleaned = cleaned.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/g, '').trim();
@@ -68,7 +70,6 @@ export const useChatStore = create<ChatState>()(
 
       sendMessage: async (content: string, pathname: string, navigate?: (path: string, options?: { state?: Record<string, unknown> }) => void) => {
         const systemContext = getSystemContext(pathname);
-        const contentWithContext = `${systemContext}\n\nUser Message:\n${content}`;
 
         const userMessage: ChatMessage = {
           id: crypto.randomUUID(),
@@ -96,7 +97,10 @@ export const useChatStore = create<ChatState>()(
           }));
 
           const response = await sendQuery({
-            query: contentWithContext,
+            query: content,
+            user_prompt: systemContext,
+            response_type: 'a strictly formatted JSON object exactly matching the requested OUTPUT FORMAT. Do not use Markdown fences outside the JSON.',
+            include_references: false,
             mode: 'mix',
             conversation_history: history,
           });
@@ -104,7 +108,7 @@ export const useChatStore = create<ChatState>()(
           const replyText = response.response.trim();
 
           // Attempt to parse JSON response with retry logic
-          let parsedResponse: { redirect: string | null; response: string; suggestions: string[] } | undefined;
+          let parsedResponse: { redirect: string | null; response: string; suggestions: string[]; richContent?: RichContentType | null } | undefined;
           let rawText = replyText;
           try {
             parsedResponse = cleanAndParseJSON(rawText);
@@ -116,7 +120,10 @@ export const useChatStore = create<ChatState>()(
               await new Promise(resolve => setTimeout(resolve, RETRY_DELAYS[attempt]));
               try {
                 const retryResponse = await sendQuery({
-                  query: contentWithContext,
+                  query: content,
+                  user_prompt: systemContext,
+                  response_type: 'a strictly formatted JSON object exactly matching the requested OUTPUT FORMAT. Do not use Markdown fences outside the JSON.',
+                  include_references: false,
                   mode: 'mix',
                   conversation_history: history,
                 });
@@ -137,7 +144,8 @@ export const useChatStore = create<ChatState>()(
                 parsedResponse = { 
                   redirect: null, 
                   response: cleanText || "I'm sorry, I don't have specific information on that. Can I show you Gurek's projects instead?", 
-                  suggestions: ["Show me projects", "Tell me about his experience"] 
+                  suggestions: ["Show me projects", "Tell me about his experience"],
+                  richContent: null
                 };
               } else {
                 throw new Error('Response could not be parsed after retries');
@@ -146,7 +154,7 @@ export const useChatStore = create<ChatState>()(
           }
 
           // At this point parsedResponse is always defined (or we threw above)
-          const parsed = parsedResponse as { redirect: string | null; response: string; suggestions: string[] };
+          const parsed = parsedResponse as { redirect: string | null; response: string; suggestions: string[]; richContent?: RichContentType | null };
 
           // Handle redirect flows
           if (parsed.redirect && navigate) {
@@ -158,6 +166,7 @@ export const useChatStore = create<ChatState>()(
                 content: parsed.response,
                 suggestions: parsed.suggestions || [],
                 timestamp: Date.now(),
+                component: parsed.richContent ? React.createElement(RichContentContainer, { type: parsed.richContent as RichContentType }) : undefined,
               };
               set((state) => ({
                 sessions: {
@@ -193,6 +202,7 @@ export const useChatStore = create<ChatState>()(
             content: parsed.response || '',
             suggestions: parsed.suggestions || [],
             timestamp: Date.now(),
+            component: parsed.richContent ? React.createElement(RichContentContainer, { type: parsed.richContent as RichContentType }) : undefined,
           };
 
           set((state) => {
@@ -247,7 +257,14 @@ export const useChatStore = create<ChatState>()(
         setItem: (name, value) => localStorage.setItem(name, JSON.stringify(value)),
         removeItem: (name) => localStorage.removeItem(name),
       },
-      partialize: (state) => ({ sessions: state.sessions }) as unknown as ChatState,
+      partialize: (state) => {
+        // Strip non-serializable `component` field from messages before persisting
+        const cleanSessions: Record<string, ChatMessage[]> = {};
+        for (const [key, msgs] of Object.entries(state.sessions)) {
+          cleanSessions[key] = msgs.map(({ component, ...rest }) => rest);
+        }
+        return { sessions: cleanSessions } as unknown as ChatState;
+      },
     }
   )
 );
