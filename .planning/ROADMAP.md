@@ -6,11 +6,11 @@ A full rebuild of the frontend portfolio in React, driven by a conversational AI
 
 ## Phases
 
-- [ ] **Phase 1: Project Foundation & Styling** - Setup React + Vite + Tailwind and Figma MCP integration.
-- [ ] **Phase 2: Core Chat UI** - Build the standard request/response cycle, markdown rendering, and typing indicators.
-- [ ] **Phase 3: Navigation & Page Context** - Implement responsive shell, templated pages, and page-specific chat history.
-- [ ] **Phase 4: Galleries & Interactive Gems** - Build the infinite scroll gallery and sidebar project gems.
-- [ ] **Phase 5: Prompt Templating & Redirection** - Implement use-case prompts and dynamic redirection logic based on LightRAG responses.
+- [x] **Phase 1: Project Foundation & Styling** - Setup React + Vite + Tailwind and Figma MCP integration.
+- [x] **Phase 2: Core Chat UI** - Build the standard request/response cycle, markdown rendering, and typing indicators.
+- [x] **Phase 3: Navigation & Page Context** - Implement responsive shell, templated pages, and page-specific chat history.
+- [x] **Phase 4: Galleries & Interactive Gems** - Build the infinite scroll gallery and sidebar project gems.
+- [x] **Phase 5: Prompt Templating & Redirection** - Implement use-case prompts and dynamic redirection logic based on LightRAG responses.
 
 ## Phase Details
 
@@ -69,8 +69,28 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Project Foundation & Styling | 0/TBD | Not started | - |
-| 2. Core Chat UI | 0/TBD | Not started | - |
-| 3. Navigation & Page Context | 0/TBD | Not started | - |
-| 4. Galleries & Interactive Gems | 0/TBD | Not started | - |
-| 5. Prompt Templating & Redirection | 0/TBD | Not started | - |
+| 1. Project Foundation & Styling | 2/2 | [DONE] | 2026-04-26 |
+| 2. Core Chat UI | 2/2 | [DONE] | 2026-04-27 |
+| 3. Navigation & Page Context | 3/3 | [DONE] | 2026-04-28 |
+| 4. Galleries & Interactive Gems | 3/3 | [DONE] | 2026-04-30 |
+| 5. Prompt Templating & Redirection | 3/3 | [DONE] | 2026-05-01 |
+
+### Phase 6: Make UI pixel-perfect, add chat redirections, and implement Rich Component Templating
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 5
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 6 to break down)
+
+### Phase 7: Implement project pages either templated or rich chat component modular and easily templatized. epaper project figma ready here - https://www.figma.com/design/L95Qbm2qizmTPnyWstPwdP/v2.gurek.work?node-id=322-13318&t=ZMD9k4dSZHxWhlWX-11
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 6
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 7 to break down)
