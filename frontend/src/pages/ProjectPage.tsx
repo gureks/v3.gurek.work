@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { useChatStore } from '../store/useChatStore';
+import { ChatPage } from './ChatPage';
 import { EpaperProject } from './projects/EpaperProject';
 
 export const ProjectPage: React.FC = () => {
@@ -12,21 +13,23 @@ export const ProjectPage: React.FC = () => {
     setActiveSession(location.pathname);
   }, [location.pathname, setActiveSession]);
 
+  let templatedComponent = null;
   if (name === 'epaper') {
-    return <EpaperProject />;
+    templatedComponent = <EpaperProject />;
+  } else {
+    templatedComponent = (
+      <div className="bg-background-elevated-alt p-6 rounded-lg border border-border-subtle mt-2 text-center">
+        <h2 className="text-xl font-semibold mb-2">Project: {name}</h2>
+        <p className="text-foreground-muted mb-4">Detailed interactive case study and gallery for this project will be rendered here.</p>
+      </div>
+    );
   }
 
   return (
-    <div className="w-full h-full flex flex-col bg-background">
-      <div className="flex-1 overflow-y-auto">
-        <div className="max-w-4xl mx-auto px-4 py-12 flex flex-col items-center justify-center h-full text-center">
-          <h1 className="text-3xl font-bold text-foreground mb-4">Project Not Found</h1>
-          <p className="text-foreground-muted">
-            The project "{name}" is either coming soon or does not exist.
-          </p>
-        </div>
-      </div>
-    </div>
+    <ChatPage 
+      templatedComponent={templatedComponent}
+      introMessage={`Here is the deep-dive case study for ${name}.`}
+    />
   );
 };
 

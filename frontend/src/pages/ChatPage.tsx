@@ -4,15 +4,26 @@ import { useChatStore } from '../store/useChatStore';
 import { useAppStore } from '../store/useAppStore';
 import { ChatInput } from '../components/chat/ChatInput';
 import { MessageBubble } from '../components/chat/MessageBubble';
+import { RichContentContainer } from '../components/chat/RichContentContainer';
 import { TypingIndicator } from '../components/chat/TypingIndicator';
 import { Header } from '../components/layout/Header';
+
+export interface ChatSequenceMessage {
+  role: 'user' | 'assistant';
+  content: string;
+  component?: React.ReactNode;
+  richContentType?: string;
+  suggestions?: string[];
+  delayMs?: number;
+}
 
 export interface ChatPageProps {
   templatedComponent?: React.ReactNode;
   introMessage?: React.ReactNode;
+  initialSequence?: ChatSequenceMessage[];
 }
 
-export function ChatPage({ templatedComponent, introMessage }: ChatPageProps = {}) {
+export function ChatPage({ templatedComponent, introMessage, initialSequence }: ChatPageProps = {}) {
   const { sessions, isLoading, sendMessage } = useChatStore();
   const location = useLocation();
   const navigate = useNavigate();
@@ -20,6 +31,7 @@ export function ChatPage({ templatedComponent, introMessage }: ChatPageProps = {
 
   const pathname = location.pathname;
   const messages = sessions[pathname] || [];
+  const sequenceStarted = useRef(false);
 
   const locationState = location.state as { suggestions?: string[]; toast?: string } | null;
 
@@ -36,16 +48,66 @@ export function ChatPage({ templatedComponent, introMessage }: ChatPageProps = {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
 
+  // Home page default sequence
+  const defaultHomeSequence: ChatSequenceMessage[] = [
+    { role: 'assistant', content: "Hola! I'm Gurek - Product Generalist, UX Systems Designer and an AI-Native Builder.", delayMs: 800 },
+    { role: 'assistant', content: "Versatile product thinker with 5+ years of experience across Product Strategy, AI-led Feature Development, UX Design, and qualitative product-led experience improvements.", delayMs: 500 },
+    { role: 'assistant', content: "Currently focused on AI-driven personalised content systems, Vector DBs, RAGs, graph knowledge bases, and stock market UX.", delayMs: 800 },
+    { role: 'user', content: "What are the tools you work with?", delayMs: 600 },
+    { role: 'assistant', content: "This is my toolbox:", richContentType: 'tools', delayMs: 500 },
+    { role: 'assistant', content: "Using it I can be a jack of all trades!", richContentType: 'skills', delayMs: 800 },
+    { role: 'user', content: "What are some of the metrics that you have achieved?", delayMs: 500 },
+    { role: 'assistant', content: "Here’s a gallery of projects currently available. Just a click away to dive deeper into any of them!", richContentType: 'projects', suggestions: ["Dive deeper into Growfast", "Can you describe his role in the Times Intelligence Layer", "What was the impact of ePaper?", "Tell me more about ET Markets Design System?", "Where can I reach you?"], delayMs: 800 }
+  ];
+
+  const sequenceToRun = initialSequence || (pathname === '/' ? defaultHomeSequence : null);
+
+  useEffect(() => {
+    // Run sequence if the chat is completely empty
+    if (sequenceToRun && messages.length === 0 && !isLoading && !sequenceStarted.current) {
+      sequenceStarted.current = true;
+      const runSequence = async () => {
+        for (let i = 0; i < sequenceToRun.length; i++) {
+          const msg = sequenceToRun[i];
+          const delay = msg.delayMs || 800;
+
+          if (msg.role === 'assistant') {
+            useChatStore.setState({ isLoading: true });
+            await new Promise(r => setTimeout(r, delay));
+            useChatStore.setState({ isLoading: false });
+          } else {
+            await new Promise(r => setTimeout(r, delay));
+          }
+
+          useChatStore.setState(state => {
+            const currentSessions = { ...state.sessions };
+            const currentMessages = currentSessions[pathname] || [];
+            return {
+              sessions: {
+                ...currentSessions,
+                [pathname]: [...currentMessages, { 
+                  id: crypto.randomUUID(), 
+                  role: msg.role as 'user' | 'assistant', 
+                  content: msg.content, 
+                  component: msg.component || (msg.richContentType ? <RichContentContainer type={msg.richContentType as any} /> : undefined),
+                  richContentType: msg.richContentType,
+                  suggestions: msg.suggestions || [],
+                  timestamp: Date.now() 
+                }]
+              }
+            };
+          });
+        }
+      };
+      runSequence();
+    }
+  }, [pathname, messages.length, isLoading, sequenceToRun]);
+
   const handleSend = (content: string) => {
     sendMessage(content, pathname, navigate);
   };
 
-  // Suggestion carry-over: use carried suggestions on fresh arrival from redirect
-  const carriedSuggestions = locationState?.suggestions;
-  const lastAssistantMessage = [...messages].reverse().find(msg => msg.role === 'assistant');
-  const activeSuggestions = (messages.length === 0 && carriedSuggestions?.length)
-    ? carriedSuggestions
-    : lastAssistantMessage?.suggestions;
+
 
   return (
     <div className="flex flex-col flex-1 relative h-full">
@@ -71,8 +133,9 @@ export function ChatPage({ templatedComponent, introMessage }: ChatPageProps = {
                 className="flex flex-col flex-1 text-left text-foreground"
                 style={{
                   padding: 'var(--space-4)',
-                  borderRadius: 'var(--radius-lg)',
-                  backgroundColor: 'var(--background-tooltip)'
+                  borderRadius: '0 var(--radius-lg) var(--radius-lg) var(--radius-lg)',
+                  backgroundColor: 'var(--background-tooltip)',
+                  border: '1px solid var(--border)',
                 }}
               >
                 <p className="font-normal whitespace-pre-wrap" style={{ fontSize: '14px', lineHeight: '20px' }}>
@@ -85,6 +148,7 @@ export function ChatPage({ templatedComponent, introMessage }: ChatPageProps = {
                 {templatedComponent}
               </div>
             )}
+            {isLoading && <TypingIndicator />}
           </div>
         ) : (
           <div className="flex flex-col w-full" style={{ maxWidth: '654px', gap: 'var(--space-6)' }}>
@@ -93,9 +157,18 @@ export function ChatPage({ templatedComponent, introMessage }: ChatPageProps = {
                 {templatedComponent}
               </div>
             )}
-            {messages.map((msg) => (
-              <MessageBubble key={msg.id} message={msg} onSuggestionClick={handleSend} />
-            ))}
+            {messages.map((msg, idx) => {
+              const lastAssistantIndex = messages.map(m => m.role).lastIndexOf('assistant');
+              const isLastAssistant = msg.role === 'assistant' && idx === lastAssistantIndex;
+              return (
+                <MessageBubble 
+                  key={msg.id} 
+                  message={msg} 
+                  onSuggestionClick={handleSend} 
+                  isLastAssistantMessage={isLastAssistant} 
+                />
+              );
+            })}
             {isLoading && <TypingIndicator />}
             <div ref={bottomRef} />
           </div>
@@ -103,9 +176,9 @@ export function ChatPage({ templatedComponent, introMessage }: ChatPageProps = {
       </main>
 
       {/* Input Area */}
-      <div className="absolute bottom-0 left-0 w-full flex justify-center bg-background/80 pt-6" style={{ backdropFilter: 'blur(20px)' }}>
+      <div className="absolute bottom-0 left-0 w-full flex justify-center bg-background/80 pt-6" style={{ }}>
         <div className="w-full" style={{ maxWidth: '702px' }}>
-          <ChatInput onSend={handleSend} disabled={isLoading} suggestions={activeSuggestions} />
+          <ChatInput onSend={handleSend} disabled={isLoading} />
         </div>
       </div>
     </div>
