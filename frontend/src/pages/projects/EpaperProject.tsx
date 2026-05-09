@@ -1,9 +1,9 @@
 import React from 'react';
 import { MessageBubble } from '../../components/chat/MessageBubble';
-import { ProjectHero } from '../../components/case-study/ProjectHero';
-import { ProjectMetrics } from '../../components/case-study/ProjectMetrics';
-import { ProjectGallery } from '../../components/case-study/ProjectGallery';
-import { Carousel } from '../../components/case-study/Carousel';
+import { ProjectHero } from '../../components/rich-content/ProjectHero';
+import { ProjectMetrics } from '../../components/rich-content/ProjectMetrics';
+import { ProjectGallery } from '../../components/rich-content/ProjectGallery';
+import { Carousel } from '../../components/rich-content/Carousel';
 
 const imgHero = "/assets/projects/epaper/fd0b2da01413441fa046b98efad20c7c55b55f14.png";
 const imgGallery1 = "/assets/projects/epaper/d4123ebfa4c539388d400a85481fcceb5e993461.png";

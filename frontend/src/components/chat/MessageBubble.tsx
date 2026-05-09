@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { MarkdownRenderer } from './MarkdownRenderer';
-import { RichContentContainer } from './RichContentContainer';
+import { RichContentContainer } from '../rich-content/RichContentContainer';
 import { GurekAvatarIcon } from '@/assets/custom-icons';
 import type { ChatMessage } from '../../store/useChatStore';
 
