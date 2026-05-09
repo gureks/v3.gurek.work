@@ -1,92 +1,168 @@
 import { motion } from 'framer-motion';
 import { MarkdownRenderer } from './MarkdownRenderer';
+import { RichContentContainer } from './RichContentContainer';
+import { GurekAvatarIcon } from '@/assets/custom-icons';
 import type { ChatMessage } from '../../store/useChatStore';
 
 interface MessageBubbleProps {
-  message: ChatMessage;
+  message?: ChatMessage;
+  role?: 'system' | 'user';
+  children?: React.ReactNode;
+  noPadding?: boolean;
   onSuggestionClick?: (suggestion: string) => void;
+  isLastAssistantMessage?: boolean;
 }
 
 /**
  * MessageBubble — Figma-accurate chat message row.
- * 
- * Layout from Figma (node 214:14045, 214:14040):
- * - Message row: avatar (32x32) + gap (16px) + bubble container
- * - User bubble: bg = semantic/background-elevated (#262626), radius/lg (16px), padding space/4 (16px)
- * - AI bubble:   bg = semantic/background-tooltip (#404040), radius/lg (16px), padding space/4 (16px)
- * - Avatar: 32x32, bot = bg transparent on page bg, user = accent (#006eff) with glow
- * - User row: avatar on the RIGHT side (flex-row-reverse)
- * - AI row: avatar on the LEFT side (flex-row)
- * - Gap between avatar and bubble: 16px (derived from Figma x=48 - avatar width 32 = 16px gap)
+ *
+ * Verified against Figma node 190:6225 (ChatBubble component).
+ *
+ * User bubble (state=User, type=Default):
+ *   - Row: flex-row-reverse, gap=16px (space/4), pl=80px (space/20)
+ *   - Bubble: bg=primitive/accent (#006eff), rounded-tl-lg + rounded-tr-lg + rounded-bl-lg (NO br)
+ *   - Avatar: 32x32 pill (radius/full), bg=accent-foreground (white), text=accent (#006eff)
+ *   - Font: Inter Regular 14/20
+ *
+ * System bubble (state=System, type=Default):
+ *   - Row: flex-row, gap=16px (space/4), pr=80px (space/20)
+ *   - Avatar: 32x32 gurek.svg
+ *   - Bubble: bg=background-tooltip (#404040), border=border (#404040),
+ *     rounded-bl-lg + rounded-tr-lg + rounded-br-lg (NO tl)
+ *   - Font: Inter Regular 14/20
+ *
+ * Suggestion Pills (node 320:13229):
+ *   - Container: flex-wrap, gap=8px, pl=48px (space/12)
+ *   - Each pill: bg=background-input-80 (rgba(38,38,38,0.8)), border=border-input (#404040),
+ *     radius=16px, px=16px, py=4px, backdrop-blur(8px), font 12px/16px Inter Regular
  */
-export function MessageBubble({ message, onSuggestionClick }: MessageBubbleProps) {
-  const isUser = message.role === 'user';
+export function MessageBubble({ 
+  message, 
+  role, 
+  children, 
+  noPadding, 
+  onSuggestionClick, 
+  isLastAssistantMessage 
+}: MessageBubbleProps) {
+  const isUser = role === 'user' || message?.role === 'user';
 
   return (
     <motion.div
-      // @ts-expect-error framer-motion v12 type declarations missing animation props from motion-dom
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: 'easeOut' }}
-      className={`flex items-start ${isUser ? 'flex-row-reverse' : 'flex-row'}`}
-      style={{ gap: 'var(--space-4)' }}
+      className="flex flex-col"
+      style={{ gap: 'var(--space-2)' }}
     >
-      {/* Avatar — 32x32 per Figma */}
+      {/* Message row */}
       <div
-        className="flex-shrink-0 flex items-center justify-center"
+        className={`flex items-start ${isUser ? 'flex-row-reverse' : 'flex-row'}`}
         style={{
-          width: 'var(--avatar-md)',
-          height: 'var(--avatar-md)',
-          borderRadius: 'var(--radius-md)',
-          backgroundColor: isUser ? 'var(--accent)' : 'var(--background)',
-          boxShadow: isUser ? 'var(--glow-accent)' : 'none',
-          color: 'var(--foreground)',
-          fontSize: isUser ? '11.8px' : 'inherit',
-          fontWeight: 500,
-          lineHeight: '16px',
+          gap: 'var(--space-4)',
+          paddingLeft: isUser ? 'var(--space-20)' : '0',
+          paddingRight: isUser ? '0' : 'var(--space-20)',
         }}
       >
-        {isUser ? 'AB' : (
-          /* Bot avatar — Gurek logo placeholder (simple icon on page bg) */
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="10" cy="10" r="9" stroke="currentColor" strokeWidth="1.2"/>
-            <circle cx="10" cy="8" r="3" stroke="currentColor" strokeWidth="1.2"/>
-            <path d="M4 16.5C4 13.5 6.5 12 10 12C13.5 12 16 13.5 16 16.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
-          </svg>
-        )}
-      </div>
-
-      {/* Bubble Container */}
-      <div className="flex flex-col gap-2" style={{ maxWidth: '606px' }}>
-        {/* Bubble — Figma: padding space/4 (16px), radius/lg (16px) */}
+        {/* Avatar — 32x32 per Figma */}
         <div
-          className={`text-foreground ${message.isError ? 'border border-red-500/30' : ''}`}
+          className="flex-shrink-0 flex items-center justify-center overflow-hidden"
           style={{
-            padding: 'var(--space-4)',
-            borderRadius: 'var(--radius-lg)',
-            backgroundColor: isUser
-              ? 'var(--background-elevated)'   /* Figma: semantic/background-elevated #262626 */
-              : 'var(--background-tooltip)',     /* Figma: semantic/background-tooltip #404040 */
-            fontSize: '14px',
-            fontWeight: 400,
-            lineHeight: '20px',
-            width: 'fit-content',
-            marginLeft: isUser ? 'auto' : '0'
+            width: 'var(--avatar-md)',
+            height: 'var(--avatar-md)',
+            borderRadius: isUser ? 'var(--radius-full)' : 'var(--radius-md)',
+            backgroundColor: isUser ? 'var(--accent-foreground)' : 'var(--background)',
+            color: isUser ? 'var(--accent)' : 'var(--foreground)',
+            fontSize: '11.8px',
+            fontWeight: 500,
+            lineHeight: '16px',
           }}
         >
-          {isUser ? (
-            <p className="whitespace-pre-wrap">{message.content}</p>
-          ) : (
-            <MarkdownRenderer content={message.content} />
-          )}
-          {message.component && (
-            <div className="mt-4">
-              {message.component}
+          {isUser ? 'AB' : (
+            <div className="flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-full bg-white text-black shadow-sm relative overflow-hidden">
+              <GurekAvatarIcon size={32} />
             </div>
           )}
         </div>
-        
+
+        {/* Bubble Container */}
+        <div className="flex flex-col flex-1 min-w-0" style={{ gap: 'var(--space-2)' }}>
+          {/* Bubble — Figma specs */}
+          {(message?.content || children) && (
+            <div
+              className={`text-foreground ${message?.isError ? 'border border-red-500/30' : ''}`}
+              style={{
+                padding: noPadding ? '0' : 'var(--space-4)',
+                borderRadius: isUser
+                  ? 'var(--radius-lg) var(--radius-lg) 0 var(--radius-lg)'   /* tl tr br=0 bl */
+                  : '0 var(--radius-lg) var(--radius-lg) var(--radius-lg)',   /* tl=0 tr br bl */
+                backgroundColor: isUser
+                  ? 'var(--accent)'                  /* Figma: primitive/accent #006eff */
+                  : 'var(--background-tooltip)',      /* Figma: semantic/background-tooltip #404040 */
+                border: isUser ? 'none' : '1px solid var(--border)',
+                fontSize: '14px',
+                fontWeight: 400,
+                lineHeight: '20px',
+                width: children && !isUser ? '100%' : 'fit-content',
+                marginLeft: isUser ? 'auto' : '0',
+                alignSelf: isUser ? 'flex-end' : 'flex-start',
+                overflow: 'hidden'
+              }}
+            >
+              {children ? (
+                children
+              ) : isUser ? (
+                <p className="whitespace-pre-wrap m-0">{message?.content}</p>
+              ) : (
+                message?.content && <MarkdownRenderer content={message.content} />
+              )}
+            </div>
+          )}
+          
+          {(message?.component || message?.richContentType) && (
+            <div className="w-full flex flex-col mt-2">
+              {message?.component || (message?.richContentType && <RichContentContainer type={message.richContentType as Parameters<typeof RichContentContainer>[0]['type']} />)}
+            </div>
+          )}
+        </div>
       </div>
+
+      {/* Suggestion Pills — Figma node 320:13229 */}
+      {isLastAssistantMessage && message?.suggestions && message.suggestions.length > 0 && (
+        <div
+          className="flex flex-wrap items-start"
+          style={{
+            gap: 'var(--space-2)',
+            paddingLeft: 'var(--space-12)',
+          }}
+        >
+          {message.suggestions.map((suggestion, index) => (
+            <button
+              key={index}
+              onClick={() => onSuggestionClick?.(suggestion)}
+              className="flex items-center justify-center shrink-0 transition-opacity hover:opacity-80"
+              style={{
+                backgroundColor: 'var(--background-input-80)',
+                border: '1px solid var(--border-input)',
+                borderRadius: '16px',
+                paddingLeft: '16px',
+                paddingRight: '16px',
+                paddingTop: '4px',
+                paddingBottom: '4px',
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)',
+                fontSize: '12px',
+                fontWeight: 400,
+                lineHeight: '16px',
+                color: 'var(--foreground)',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {suggestion}
+            </button>
+          ))}
+        </div>
+      )}
     </motion.div>
   );
 }
