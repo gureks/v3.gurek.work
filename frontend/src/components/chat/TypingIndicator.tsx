@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { useChatStore } from '../../store/useChatStore';
+import { GurekAvatarIcon } from '@/assets/custom-icons';
 
 /**
  * TypingIndicator — Figma-accurate loading indicator.
@@ -25,11 +26,9 @@ export function TypingIndicator() {
           backgroundColor: 'var(--background)',
         }}
       >
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="10" cy="10" r="9" stroke="currentColor" strokeWidth="1.2"/>
-          <circle cx="10" cy="8" r="3" stroke="currentColor" strokeWidth="1.2"/>
-          <path d="M4 16.5C4 13.5 6.5 12 10 12C13.5 12 16 13.5 16 16.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
-        </svg>
+        <div className="flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-full bg-white text-black shadow-sm relative overflow-hidden">
+          <GurekAvatarIcon size={32} />
+        </div>
       </div>
 
       {/* Bouncy dots bubble + optional retry indicator */}
@@ -46,7 +45,6 @@ export function TypingIndicator() {
           {[0, 1, 2].map((i) => (
             <motion.span
               key={i}
-              // @ts-expect-error framer-motion v12 type declarations missing animation props from motion-dom
               animate={{
                 y: [0, -6, 0],
               }}

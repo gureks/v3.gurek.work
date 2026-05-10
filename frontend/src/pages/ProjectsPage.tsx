@@ -6,6 +6,7 @@ import { MessageBubble } from '../components/chat/MessageBubble';
 import { TypingIndicator } from '../components/chat/TypingIndicator';
 import { Header } from '../components/layout/Header';
 import { RichContentContainer } from '../components/rich-content/RichContentContainer';
+import { useSEO } from '../hooks/useSEO';
 
 /* ─────────────────────────────────────────────
    Seed data — the initial conversation shown on /projects
@@ -38,6 +39,11 @@ const SEED_MESSAGES: ChatMessage[] = [
 ];
 
 const ProjectsPage: React.FC = () => {
+  useSEO({
+    title: 'Projects',
+    description: 'Explore Gurek Singh\'s portfolio — ePaper, Growfast, ET Markets Design System, Times Intelligence Layer, and more.',
+    canonicalPath: '/projects',
+  });
   const { sessions, isLoading, sendMessage, injectMessages } = useChatStore();
   const location = useLocation();
   const navigate = useNavigate();
@@ -71,8 +77,8 @@ const ProjectsPage: React.FC = () => {
       <Header />
 
       {/* Chat Area */}
-      <main className="flex-1 overflow-y-auto flex flex-col items-center pb-[130px]">
-        <div className="flex flex-col w-full" style={{ maxWidth: '654px', gap: '24px' }}>
+      <main className="flex-1 overflow-y-auto flex flex-col items-center pb-[140px] md:pb-[130px]">
+        <div className="flex flex-col w-full px-4 md:px-0" style={{ maxWidth: '654px', gap: '24px' }}>
           {messages.map((msg, idx) => {
             const lastAssistantIndex = messages.map(m => m.role).lastIndexOf('assistant');
             const isLastAssistant = msg.role === 'assistant' && idx === lastAssistantIndex;
@@ -93,8 +99,8 @@ const ProjectsPage: React.FC = () => {
 
       {/* Input Area */}
       <div
-        className="absolute bottom-0 left-0 w-full flex justify-center bg-background/80 pt-6"
-        style={{  }}
+        className="absolute bottom-0 left-0 w-full flex justify-center bg-background/80 pt-6 px-4 md:px-0"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
       >
         <div className="w-full" style={{ maxWidth: '702px' }}>
           <ChatInput onSend={handleSend} disabled={isLoading} />

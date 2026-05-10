@@ -30,7 +30,6 @@ function ChatBubbleWrapper({ children, className = '' }: { children: React.React
         borderRadius: '0 var(--radius-lg) var(--radius-lg) var(--radius-lg)',
         padding: 'var(--space-4)',
         width: '100%',
-        maxWidth: '654px',
       }}
     >
       {children}
@@ -585,7 +584,7 @@ function ProjectCard({ project, navigate }: { project: ProjectEntry, navigate: (
 
   return (
     <div
-      className="flex gap-6 w-full shrink-0 transition-opacity hover:opacity-90 items-start"
+      className="flex flex-col sm:flex-row gap-4 sm:gap-6 w-full shrink-0 transition-opacity hover:opacity-90 active:opacity-80 items-start"
       style={{
         backgroundColor: 'var(--background-tooltip)',
         border: '1px solid var(--border)',
@@ -594,9 +593,13 @@ function ProjectCard({ project, navigate }: { project: ProjectEntry, navigate: (
         cursor: 'pointer',
       }}
       onClick={() => navigate(`/project/${project.slug}`)}
+      role="button"
+      tabIndex={0}
+      aria-label={`View ${project.title} case study`}
+      onKeyDown={(e) => e.key === 'Enter' && navigate(`/project/${project.slug}`)}
     >
       <div 
-        className="relative overflow-hidden shrink-0" 
+        className="relative overflow-hidden shrink-0 w-full sm:w-auto" 
         style={{ 
           aspectRatio: '30/20', 
           borderRadius: 'var(--radius-sm)',
@@ -607,11 +610,13 @@ function ProjectCard({ project, navigate }: { project: ProjectEntry, navigate: (
         <img 
           src={project.coverImage} 
           alt={project.title} 
+          loading="lazy"
+          decoding="async"
           className="absolute inset-0 w-full h-full object-cover" 
         />
       </div>
-      <div className="flex flex-col justify-between shrink-0" style={{ flex: '1 1 0%', minWidth: 0, alignSelf: 'stretch' }}>
-        <div className="flex flex-col gap-1 w-full shrink-0 mb-6 justify-center">
+      <div className="flex flex-col justify-between shrink-0 w-full sm:w-auto" style={{ flex: '1 1 0%', minWidth: 0, alignSelf: 'stretch' }}>
+        <div className="flex flex-col gap-1 w-full shrink-0 mb-4 sm:mb-6 justify-center">
           <p 
             className="w-full shrink-0 m-0 whitespace-pre-wrap" 
             style={{ 
@@ -637,14 +642,14 @@ function ProjectCard({ project, navigate }: { project: ProjectEntry, navigate: (
             {project.shortDescription}
           </p>
         </div>
-        <div className="flex items-center gap-6 w-full shrink-0 whitespace-nowrap overflow-x-auto scrollbar-hide mt-auto">
+        <div className="flex items-center gap-4 sm:gap-6 w-full shrink-0 overflow-x-auto scrollbar-hide mt-auto">
           {project.stats.map((stat, idx) => (
             <div key={idx} className="flex flex-col flex-1 items-start min-w-0 relative">
               <span 
                 style={{ 
                   fontFamily: "'Newsreader', serif", 
                   fontStyle: 'italic', 
-                  fontSize: '20px', 
+                  fontSize: '18px', 
                   lineHeight: '1.1', 
                   color: stat.isNegative ? '#ff6b6b' : 'var(--stat-positive)', 
                   fontWeight: 400 

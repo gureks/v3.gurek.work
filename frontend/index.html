@@ -4,7 +4,94 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/gurek.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>frontend</title>
+
+    <!-- Security Headers (enforced via meta — supplement server-level headers in production) -->
+    <!--
+      Content Security Policy:
+      - default-src 'self'         : Only load resources from same origin by default
+      - script-src 'self' 'unsafe-inline' (Vite dev only) + trusted CDNs
+      - style-src  'self' 'unsafe-inline' fonts.googleapis.com
+      - img-src    'self' data: https: (images from CDNs/Unsplash/devicons)
+      - font-src   'self' fonts.gstatic.com
+      - connect-src 'self' localhost:* (API calls; tighten to domain in prod)
+      - frame-src  'none'          : Block iframes entirely
+      - object-src 'none'          : Block <object>/<embed>
+      - base-uri   'self'          : Prevent base tag hijacking
+      - form-action 'self'         : Restrict form targets
+    -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' 'unsafe-eval';
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+        img-src 'self' data: https: blob:;
+        font-src 'self' https://fonts.gstatic.com;
+        connect-src 'self' http://localhost:* https://localhost:* https://gurek.work wss://localhost:* https://lrag-gurek.onrender.com;
+        frame-src 'none';
+        object-src 'none';
+        base-uri 'self';
+        form-action 'self';
+        upgrade-insecure-requests;
+      "
+    />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+    <!-- Primary SEO Meta -->
+    <title>Gurek Singh — Product Generalist & AI-Native Builder</title>
+    <meta name="description" content="Gurek Singh — Product Generalist, UX Systems Designer, and AI-Native Builder with 5+ years across Product Strategy, AI Feature Development, and Design Systems." />
+    <meta name="keywords" content="Gurek Singh, Product Manager, UX Designer, AI Builder, Design Systems, LightRAG, Portfolio" />
+    <meta name="author" content="Gurek Singh" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://gurek.work/" />
+
+    <!-- Open Graph (Facebook, LinkedIn) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://gurek.work/" />
+    <meta property="og:title" content="Gurek Singh — Product Generalist & AI-Native Builder" />
+    <meta property="og:description" content="Versatile product thinker with 5+ years of experience across Product Strategy, AI-led Feature Development, UX Design, and AI-Native systems." />
+    <meta property="og:image" content="https://gurek.work/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="Gurek Singh Portfolio" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@gureksingh" />
+    <meta name="twitter:creator" content="@gureksingh" />
+    <meta name="twitter:title" content="Gurek Singh — Product Generalist & AI-Native Builder" />
+    <meta name="twitter:description" content="Versatile product thinker with 5+ years across Product Strategy, AI Feature Development, and UX Design." />
+    <meta name="twitter:image" content="https://gurek.work/og-image.jpg" />
+
+    <!-- Theme Color (for mobile browser chrome) -->
+    <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+
+    <!-- Fonts: Inter + Newsreader (used in design) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,wght@1,400&display=swap" rel="stylesheet" />
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Gurek Singh",
+      "url": "https://gurek.work",
+      "jobTitle": "Product Generalist & UX Systems Designer",
+      "description": "AI-Native Builder with 5+ years across Product Strategy, AI Feature Development, UX Design, and Design Systems.",
+      "sameAs": [
+        "https://linkedin.com/in/gureksingh",
+        "https://instagram.com/gureksingh",
+        "https://github.com/gureksingh"
+      ]
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>

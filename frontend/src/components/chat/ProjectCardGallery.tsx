@@ -57,7 +57,6 @@ export function ProjectCardGallery({ cards, onCardClick }: ProjectCardGalleryPro
         {cards.map((card, idx) => (
           <motion.button
             key={card.id}
-            // @ts-expect-error framer-motion v12 type mismatch
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.08, duration: 0.4, ease: [0.18, 0.71, 0.11, 1] }}

@@ -7,6 +7,7 @@ import { MessageBubble } from '../components/chat/MessageBubble';
 import { RichContentContainer } from '../components/rich-content/RichContentContainer';
 import { TypingIndicator } from '../components/chat/TypingIndicator';
 import { Header } from '../components/layout/Header';
+import { useSEO } from '../hooks/useSEO';
 
 export interface ChatSequenceMessage {
   role: 'user' | 'assistant';
@@ -24,6 +25,11 @@ export interface ChatPageProps {
 }
 
 export function ChatPage({ templatedComponent, introMessage, initialSequence }: ChatPageProps = {}) {
+  useSEO({
+    title: 'Chat — Gurek Singh',
+    description: 'Chat with Gurek\'s AI Twin — ask about his work, projects, skills, and experience.',
+    canonicalPath: '/',
+  });
   const { sessions, isLoading, sendMessage } = useChatStore();
   const location = useLocation();
   const navigate = useNavigate();
@@ -115,11 +121,11 @@ export function ChatPage({ templatedComponent, introMessage, initialSequence }: 
       <Header />
 
       {/* Chat Area Container */}
-      <main className="flex-1 overflow-y-auto flex flex-col items-center pb-[130px]">
+      <main className="flex-1 overflow-y-auto flex flex-col items-center pb-[140px] md:pb-[130px]">
         {messages.length === 0 && !isLoading ? (
           /* Empty State matching System Chat Bubble */
           <div className="flex flex-col flex-1 text-left justify-end w-full pb-[40px] items-center">
-            <div className="flex items-start gap-4 w-full" style={{ maxWidth: '654px' }}>
+            <div className="flex items-start gap-4 w-full px-4 md:px-0" style={{ maxWidth: '654px' }}>
               {/* Bot Avatar */}
               <div className="flex-shrink-0 flex items-center justify-center" style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: 'transparent' }}>
                 <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-foreground">
@@ -151,7 +157,7 @@ export function ChatPage({ templatedComponent, introMessage, initialSequence }: 
             {isLoading && <TypingIndicator />}
           </div>
         ) : (
-          <div className="flex flex-col w-full" style={{ maxWidth: '654px', gap: 'var(--space-6)' }}>
+          <div className="flex flex-col w-full px-4 md:px-0" style={{ maxWidth: '654px', gap: 'var(--space-6)' }}>
             {templatedComponent && (
               <div className="w-full my-4">
                 {templatedComponent}
@@ -176,7 +182,7 @@ export function ChatPage({ templatedComponent, introMessage, initialSequence }: 
       </main>
 
       {/* Input Area */}
-      <div className="absolute bottom-0 left-0 w-full flex justify-center bg-background/80 pt-6" style={{ }}>
+      <div className="absolute bottom-0 left-0 w-full flex justify-center bg-background/80 pt-6 px-4 md:px-0" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
         <div className="w-full" style={{ maxWidth: '702px' }}>
           <ChatInput onSend={handleSend} disabled={isLoading} />
         </div>

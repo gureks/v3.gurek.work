@@ -3,11 +3,22 @@ import { useParams, useLocation } from 'react-router-dom';
 import { useChatStore } from '../store/useChatStore';
 import { ChatPage } from './ChatPage';
 import { epaperSequence } from './projects/EpaperProject';
+import { useSEO } from '../hooks/useSEO';
 
 export const ProjectPage: React.FC = () => {
   const { name } = useParams<{ name: string }>();
   const location = useLocation();
   const { setActiveSession } = useChatStore();
+
+  const projectTitle = name
+    ? name.charAt(0).toUpperCase() + name.slice(1).replace(/-/g, ' ')
+    : 'Project';
+
+  useSEO({
+    title: `${projectTitle} — Case Study`,
+    description: `Deep-dive case study for ${projectTitle} by Gurek Singh — interactive chat walkthrough of goals, execution, and impact.`,
+    canonicalPath: `/project/${name}`,
+  });
 
   useEffect(() => {
     setActiveSession(location.pathname);

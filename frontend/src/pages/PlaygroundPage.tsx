@@ -1,6 +1,5 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { DraggableContainer, GridBody, GridItem } from '../components/ui/infinite-drag-scroll';
-import { useChatStore } from '../store/useChatStore';
 
 const MOCK_IMAGES = [
   { id: 1, src: "https://images.unsplash.com/photo-1512692723619-8b3e68365c9c?q=80&w=1974&auto=format&fit=crop" },

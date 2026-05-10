@@ -1,46 +1,31 @@
-import { useState, KeyboardEvent, useRef, useEffect } from 'react';
+import { useState, KeyboardEvent, useRef, useCallback } from 'react';
 import { SendIcon } from '../../assets/custom-icons';
+import { sanitizeUserInput } from '../../utils/security';
 
 interface ChatInputProps {
   onSend: (message: string) => void;
   disabled?: boolean;
-  suggestions?: string[];
 }
 
-const DEFAULT_SUGGESTIONS = [
-  "What enterprise projects has he built?",
-  "What are some of the metrics he has achieved?",
-  "Share his Work Experience",
-  "Here for prompts...",
-  "What does he do after 9-5?"
-];
-
-export function ChatInput({ onSend, disabled, suggestions }: ChatInputProps) {
+export function ChatInput({ onSend, disabled }: ChatInputProps) {
   const [value, setValue] = useState('');
   const [isFocused, setIsFocused] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  useEffect(() => {
-    // Handle clicks outside to close suggestions
-    const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setIsFocused(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  const handleSend = () => {
+  const handleSend = useCallback(() => {
     const trimmed = value.trim();
     if (!trimmed || disabled) return;
-    onSend(trimmed);
+    // Sanitize before sending — strips XSS attempts
+    const safe = sanitizeUserInput(trimmed);
+    if (!safe) return;
+    onSend(safe);
     setValue('');
     setIsFocused(false);
-  };
+    // Auto-resize reset
+    if (inputRef.current) {
+      inputRef.current.style.height = 'auto';
+    }
+  }, [value, disabled, onSend]);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -49,61 +34,52 @@ export function ChatInput({ onSend, disabled, suggestions }: ChatInputProps) {
     }
   };
 
-  const handleSuggestionClick = (suggestion: string) => {
-    setValue(suggestion);
-    setIsFocused(false);
-    inputRef.current?.focus();
+  // Auto-grow textarea up to 200px
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setValue(e.target.value);
+    e.target.style.height = 'auto';
+    e.target.style.height = `${Math.min(e.target.scrollHeight, 200)}px`;
   };
 
-  const currentSuggestions = suggestions && suggestions.length > 0 ? suggestions : DEFAULT_SUGGESTIONS;
-
   return (
-    <div className="relative w-full" ref={containerRef}>
-      {/* Suggestions Overlay */}
-      {isFocused && !value && (
-        <div className="absolute flex flex-col gap-[8px] justify-center p-[16px] right-0 z-10" style={{ bottom: '100%', alignItems: 'flex-end' }}>
-          {currentSuggestions.map((suggestion, index) => (
-            <button
-              key={index}
-              onClick={() => handleSuggestionClick(suggestion)}
-              className="bg-[var(--background-tooltip)] border border-[var(--border-subtle)] text-foreground-muted hover:text-foreground transition-colors px-[16px] py-[8px] rounded-[16px] text-[14px] whitespace-nowrap shadow-[var(--shadow-md)]"
-            >
-              {suggestion}
-            </button>
-          ))}
-        </div>
-      )}
-
+    <div className="content-stretch flex flex-col isolate items-start pb-[32px] md:pb-[40px] relative size-full w-full">
       {/* Input Box */}
       <div
-        className="flex items-end gap-3 rounded-[16px] border px-4 py-4 w-full transition-colors relative z-20"
+        className="flex flex-col items-start p-[14px] md:p-[17px] w-full transition-colors relative z-[1] rounded-[16px] border border-solid shadow-[0px_4px_6px_-4px_rgba(0,0,0,0.1),0px_10px_15px_-3px_rgba(0,0,0,0.1)] overflow-clip"
         style={{ 
-          backgroundColor: 'var(--background-elevated)',
-          borderColor: isFocused ? 'var(--border)' : 'var(--border-subtle)', 
-          height: '118px',
-          boxShadow: 'var(--shadow-lg)'
+          backgroundColor: 'var(--background-elevated, #262626)',
+          borderColor: isFocused ? 'var(--border-input, #404040)' : 'var(--border, #404040)', 
         }}
       >
-        <textarea
-          ref={inputRef}
-          id="chat-input"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          onKeyDown={handleKeyDown}
-          onFocus={() => setIsFocused(true)}
-          placeholder="Describe what you want to know about Gurek or his work here..."
-          disabled={disabled}
-          className="flex-1 h-full resize-none bg-transparent text-foreground placeholder-[#a1a1a1] focus:outline-none text-[14px] leading-[20px] font-normal"
-        />
-        <button
-          onClick={handleSend}
-          disabled={disabled || !value.trim()}
-          aria-label="Send Message"
-          className="flex items-center justify-center rounded-[8px] bg-foreground text-background transition-opacity disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90"
-          style={{ width: '36px', height: '36px', flexShrink: 0 }}
-        >
-          <SendIcon size={16} />
-        </button>
+        <div className="flex w-full gap-[8px] items-start justify-center relative bg-clip-padding border-0 border-transparent border-solid">
+          <div className="flex flex-col items-start relative shrink-0 w-full flex-[1_0_0] min-w-px">
+            <textarea
+              ref={inputRef}
+              id="chat-input"
+              value={value}
+              onChange={handleChange}
+              onKeyDown={handleKeyDown}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
+              placeholder="Describe what you want to know about Gurek or his work here..."
+              disabled={disabled}
+              rows={1}
+              aria-label="Chat message input"
+              aria-multiline="true"
+              className="w-full resize-none bg-transparent text-[color:var(--foreground)] placeholder-[color:var(--foreground-muted,#a1a1a1)] focus:outline-none leading-[20px] font-normal font-['Inter:Regular',sans-serif]"
+              style={{ minHeight: '44px', maxHeight: '200px', overflow: 'auto', fontSize: '16px' }}
+            />
+          </div>
+          <button
+            onClick={handleSend}
+            disabled={disabled || !value.trim()}
+            aria-label="Send message"
+            className="flex items-center justify-center p-[12px] rounded-[8px] bg-[var(--foreground,white)] text-[var(--background,black)] shrink-0 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90 active:scale-95 shadow-[0px_1px_2px_-1px_rgba(0,0,0,0.1),0px_1px_3px_0px_rgba(0,0,0,0.1)]"
+            style={{ width: '44px', height: '44px', minWidth: '44px' }}
+          >
+            <SendIcon size={20} />
+          </button>
+        </div>
       </div>
     </div>
   );

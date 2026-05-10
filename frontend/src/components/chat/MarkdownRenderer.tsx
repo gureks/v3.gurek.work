@@ -1,6 +1,10 @@
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import rehypeRaw from 'rehype-raw';
+// NOTE: rehype-raw is intentionally NOT used here.
+// Allowing raw HTML in LLM-generated markdown is an XSS vector.
+// All content is pre-sanitized via DOMPurify in security.ts before reaching
+// this renderer. If raw HTML support is ever needed, gate it with a
+// strict allowlist via rehype-sanitize, not rehype-raw.
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
@@ -8,11 +12,18 @@ interface MarkdownRendererProps {
   content: string;
 }
 
+/** Validates that a href is safe before rendering as a link. */
+function isSafeHref(href: string | undefined): boolean {
+  if (!href) return false;
+  // Allow only http, https, mailto — block javascript:, data:, vbscript:
+  return /^(https?:|mailto:)/.test(href);
+}
+
 export function MarkdownRenderer({ content }: MarkdownRendererProps) {
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
-      rehypePlugins={[rehypeRaw]}
+      // No rehype-raw — prevents XSS from LLM-injected HTML
       components={{
         code({ className, children, ...props }) {
           const match = /language-(\w+)/.exec(className || '');
@@ -92,6 +103,11 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
           return <h3 className="text-[16px] font-semibold leading-[24px] mb-2">{children}</h3>;
         },
         a({ href, children }) {
+          // Security: only render safe hrefs, and always force noopener noreferrer
+          if (!isSafeHref(href)) {
+            // Render as plain text if href is unsafe
+            return <span className="text-accent">{children}</span>;
+          }
           return (
             <a
               href={href}
@@ -102,6 +118,11 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
               {children}
             </a>
           );
+        },
+        // Block raw HTML elements from rendering (img could be used for tracking pixels)
+        img({ alt }) {
+          // Images from LLM responses are blocked — render alt text only
+          return <span className="text-foreground-muted italic">[image: {alt}]</span>;
         },
       }}
     >

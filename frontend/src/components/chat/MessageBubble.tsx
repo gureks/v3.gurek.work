@@ -59,8 +59,8 @@ export function MessageBubble({
         className={`flex items-start ${isUser ? 'flex-row-reverse' : 'flex-row'}`}
         style={{
           gap: 'var(--space-4)',
-          paddingLeft: isUser ? 'var(--space-20)' : '0',
-          paddingRight: isUser ? '0' : 'var(--space-20)',
+          paddingLeft: isUser ? 'var(--space-8)' : '0',
+          paddingRight: isUser ? '0' : 'var(--space-8)',
         }}
       >
         {/* Avatar — 32x32 per Figma */}
@@ -126,7 +126,7 @@ export function MessageBubble({
         </div>
       </div>
 
-      {/* Suggestion Pills — Figma node 320:13229 */}
+      {/* Suggestion Pills — touch-friendly, wrappable */}
       {isLastAssistantMessage && message?.suggestions && message.suggestions.length > 0 && (
         <div
           className="flex flex-wrap items-start"
@@ -139,15 +139,16 @@ export function MessageBubble({
             <button
               key={index}
               onClick={() => onSuggestionClick?.(suggestion)}
-              className="flex items-center justify-center shrink-0 transition-opacity hover:opacity-80"
+              className="flex items-center justify-center shrink-0 transition-opacity hover:opacity-80 active:opacity-60"
               style={{
                 backgroundColor: 'var(--background-input-80)',
                 border: '1px solid var(--border-input)',
                 borderRadius: '16px',
-                paddingLeft: '16px',
-                paddingRight: '16px',
-                paddingTop: '4px',
-                paddingBottom: '4px',
+                paddingLeft: '14px',
+                paddingRight: '14px',
+                paddingTop: '6px',
+                paddingBottom: '6px',
+                minHeight: '32px',
                 backdropFilter: 'blur(8px)',
                 WebkitBackdropFilter: 'blur(8px)',
                 fontSize: '12px',
@@ -155,7 +156,8 @@ export function MessageBubble({
                 lineHeight: '16px',
                 color: 'var(--foreground)',
                 cursor: 'pointer',
-                whiteSpace: 'nowrap',
+                whiteSpace: 'normal',
+                textAlign: 'left',
               }}
             >
               {suggestion}

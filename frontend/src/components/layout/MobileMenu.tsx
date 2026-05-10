@@ -4,7 +4,7 @@ import { NAV_PRIMARY, NAV_SOCIAL, isSeparator, type NavItemConfig } from '../../
 import {
   HomeIcon, ProjectsIcon, ResumeIcon, BuildsIcon, PromptsIcon,
   PlaygroundIcon, FpvIcon, InstagramIcon, LinkedinIcon, GithubIcon,
-  EmailIcon, ShareIcon, SearchIcon
+  EmailIcon, ShareIcon, GurekAvatarIcon
 } from '../../assets/custom-icons';
 import { useAppStore } from '../../store/useAppStore';
 
@@ -58,13 +58,7 @@ const MobileMenu: React.FC = () => {
             <div className="flex items-center justify-between px-[12px] py-[8px] shrink-0 w-full">
               <div className="flex gap-0 items-center py-[12px] shrink-0">
                 {/* Gurek Logo */}
-                <div className="relative shrink-0 size-[32px] rounded-[10px] bg-[var(--background-input)] flex items-center justify-center border border-[var(--border-subtle)]">
-                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                     <circle cx="12" cy="12" r="10" stroke="var(--foreground)" strokeWidth="1.5"/>
-                     <circle cx="12" cy="10" r="3.5" stroke="var(--foreground)" strokeWidth="1.5"/>
-                     <path d="M5 19.5C5 16 8 14 12 14C16 14 19 16 19 19.5" stroke="var(--foreground)" strokeWidth="1.5" strokeLinecap="round"/>
-                   </svg>
-                </div>
+                <GurekAvatarIcon size={32} />
               </div>
               <div className="flex gap-[8px] items-center py-[12px] shrink-0">
                 {/* Dark mode toggle */}
@@ -131,7 +125,7 @@ const MobileMenu: React.FC = () => {
                   <div className="w-full border-t border-[var(--border-subtle)]" />
                 </div>
 
-                {[...NAV_SOCIAL].map((entry, index) => {
+                {[...NAV_SOCIAL].map((entry) => {
                   if (isSeparator(entry)) return null;
                   
                   const item = entry as NavItemConfig;

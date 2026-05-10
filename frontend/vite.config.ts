@@ -10,6 +10,30 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    // Target modern browsers for smaller bundle
+    target: 'es2020',
+    // Enable source maps only in development
+    sourcemap: false,
+    // Rollup output options for optimal code splitting
+    rollupOptions: {
+      output: {
+        // Manual chunking — keeps vendor code separate for long-term caching
+        manualChunks: {
+          // React core — rarely changes
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          // Animation library
+          'vendor-motion': ['framer-motion', 'motion'],
+          // Markdown rendering
+          'vendor-markdown': ['react-markdown', 'remark-gfm', 'rehype-highlight', 'rehype-raw'],
+          // State management
+          'vendor-state': ['zustand'],
+        },
+      },
+    },
+    // Warn on chunks > 500kB
+    chunkSizeWarningLimit: 500,
+  },
   test: {
     globals: true,
     environment: "jsdom",

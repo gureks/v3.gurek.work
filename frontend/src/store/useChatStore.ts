@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { sendQuery } from '../services/api';
 import { getSystemContext } from '../utils/chat';
+import { sanitizeUserInput, validateLLMResponse, validateRedirectPath, validateSuggestions } from '../utils/security';
 import { RichContentContainer, RichContentType } from '../components/rich-content/RichContentContainer';
 
 import * as React from 'react';
@@ -40,7 +41,16 @@ function cleanAndParseJSON(raw: string): { redirect: string | null; response: st
   if (firstBrace !== -1 && lastBrace > firstBrace) {
     cleaned = cleaned.substring(firstBrace, lastBrace + 1);
   }
-  return JSON.parse(cleaned);
+  const parsed = JSON.parse(cleaned);
+  // Validate and sanitize the parsed response shape
+  const validated = validateLLMResponse(parsed);
+  if (!validated) throw new Error('LLM response failed validation');
+  return {
+    redirect: validated.redirect,
+    response: validated.response,
+    suggestions: validated.suggestions,
+    richContent: validated.richContent as RichContentType | null,
+  };
 }
 
 export const useChatStore = create<ChatState>()(
@@ -71,10 +81,14 @@ export const useChatStore = create<ChatState>()(
       sendMessage: async (content: string, pathname: string, navigate?: (path: string, options?: { state?: Record<string, unknown> }) => void) => {
         const systemContext = getSystemContext(pathname);
 
+        // Sanitize user input before storing or sending
+        const safeContent = sanitizeUserInput(content);
+        if (!safeContent) return; // Reject empty/fully-stripped input
+
         const userMessage: ChatMessage = {
           id: crypto.randomUUID(),
           role: 'user',
-          content: content, // Display original content to user
+          content: safeContent,
           timestamp: Date.now(),
         };
 
@@ -93,7 +107,8 @@ export const useChatStore = create<ChatState>()(
         try {
           const history = (get().sessions[pathname] || []).map((m) => ({
             role: m.role,
-            content: m.content,
+            // Sanitize history entries before sending to API
+            content: sanitizeUserInput(m.content),
           }));
 
           const response = await sendQuery({
@@ -143,7 +158,7 @@ export const useChatStore = create<ChatState>()(
                 const cleanText = rawText.replace(/\[no-context\]/g, '').trim();
                 parsedResponse = { 
                   redirect: null, 
-                  response: cleanText || "I'm sorry, I don't have specific information on that. Can I show you Gurek's projects instead?", 
+                  response: sanitizeUserInput(cleanText) || "I'm sorry, I don't have specific information on that. Can I show you Gurek's projects instead?", 
                   suggestions: ["Show me projects", "Tell me about his experience"],
                   richContent: null
                 };
@@ -158,7 +173,11 @@ export const useChatStore = create<ChatState>()(
 
           // Handle redirect flows
           if (parsed.redirect && navigate) {
-            if (parsed.response && parsed.response.trim().length > 0) {
+            // Extra validation of redirect — defence-in-depth beyond cleanAndParseJSON
+            const safeRedirect = validateRedirectPath(parsed.redirect);
+            if (!safeRedirect) {
+              console.warn('[security] Blocked unsafe redirect:', parsed.redirect);
+            } else if (parsed.response && parsed.response.trim().length > 0) {
               // REDIRECT + ANSWER: render message first, then navigate
               const assistantMessage: ChatMessage = {
                 id: crypto.randomUUID(),
@@ -178,14 +197,14 @@ export const useChatStore = create<ChatState>()(
               }));
               // Brief delay so user sees the response before redirect
               await new Promise(resolve => setTimeout(resolve, 1500));
-              navigate(parsed.redirect!, {
+              navigate(safeRedirect, {
                 state: { suggestions: parsed.suggestions },
               });
               return;
             } else {
               // REDIRECT ONLY: navigate immediately, skip adding empty response message
               set({ isLoading: false, retryAttempt: null });
-              navigate(parsed.redirect!, {
+              navigate(safeRedirect, {
                 state: {
                   suggestions: parsed.suggestions,
                   toast: parsed.response || null,

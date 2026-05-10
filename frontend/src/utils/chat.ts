@@ -19,6 +19,12 @@ export const getPageContext = (pathname: string): string => {
   if (pathname === '/playground') {
     return 'User is browsing the interactive playground gallery.';
   }
+  if (pathname === '/experience') {
+    return 'User is viewing the professional experience and career timeline.';
+  }
+  if (pathname === '/contact') {
+    return 'User is viewing the contact information and ways to get in touch.';
+  }
   if (pathname.startsWith('/project/')) {
     const slug = pathname.split('/project/')[1];
     const project = PROJECT_REGISTRY.find(p => p.slug === slug);
@@ -62,6 +68,8 @@ ${getPageContext(pathname)}
   * /projects : Project Gallery showcasing built works
   * /about : Resume, work experience, and professional background (Use this for all resume/about queries)
   * /playground : Interactive playground gallery
+  * /experience : Detailed professional experience and career timeline
+  * /contact : Contact information and ways to reach out
 ${projectRoutes}
 
 [REDIRECT DECISION RULES]
@@ -83,10 +91,12 @@ CHAT ONLY (redirect is null, answer inline):
 IMPORTANT: Redirection is the PREFERRED way to show sections. If a user wants to see projects or the about page, ALWAYS provide the redirect path.
 
 [OUTPUT FORMAT]
-You MUST reply with a strictly formatted JSON object. Do not include any other text outside the JSON. The JSON structure must be exactly as follows:
+You MUST reply with a strictly formatted JSON object. DO NOT include any markdown code fences, conversational filler, or references before or after the JSON.
+Your JSON structure must be EXACTLY as follows:
 {
-  "redirect": string | null, // Set to a valid route from the AVAILABLE REDIRECTIONS list ONLY when redirect rules are satisfied. Otherwise, set to null.
-  "response": string, // Your conversational reply formatted in Markdown. Keep responses concise and scannable. Maximum 500 characters.
+  "action": "redirect" | "chat", // Use "redirect" if you set the redirect field. Use "chat" if redirect is null.
+  "redirect": string | null, // Set to a valid route from the AVAILABLE REDIRECTIONS list ONLY when redirect rules are satisfied. MUST BE NULL otherwise. IMPORTANT: Redirection takes priority over answering directly.
+  "response": string, // Your conversational reply formatted in Markdown. Keep responses concise and scannable. Maximum 500 characters. DO NOT include "References".
   "suggestions": string[] // Exactly 5 followup suggested questions (1 line each) based on the current context to keep the user engaged.
 }
 
