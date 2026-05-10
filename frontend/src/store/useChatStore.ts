@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { sendQuery } from '../services/api';
 import { getSystemContext } from '../utils/chat';
-import { sanitizeUserInput, validateLLMResponse, validateRedirectPath, validateSuggestions } from '../utils/security';
+import { sanitizeUserInput, validateLLMResponse, validateRedirectPath } from '../utils/security';
 import { RichContentContainer, RichContentType } from '../components/rich-content/RichContentContainer';
 
 import * as React from 'react';

@@ -62,7 +62,7 @@ export function RichContentContainer({ type, data }: RichContentContainerProps) 
     case 'projects':
       return <ProjectsGallery />;
     case 'carousel':
-      return <Carousel slides={data} />;
+      return <Carousel slides={Array.isArray(data) ? data : []} />;
     case 'gallery':
       return <ProjectGallery items={data} />;
     case 'hero':

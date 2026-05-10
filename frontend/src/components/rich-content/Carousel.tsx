@@ -5,15 +5,30 @@ interface CarouselImage {
   caption?: string;
 }
 
-interface CarouselProps {
-  images: CarouselImage[];
-  slug: string;
+/** Richer slide format used by project pages */
+interface SlideItem {
+  image: string;
+  caption?: string;
+  description?: string;
 }
 
-export const Carousel: React.FC<CarouselProps> = ({ images, slug }) => {
+/** Accepts either the legacy asset-relative format {images, slug} or the direct-URL {slides} format */
+type CarouselProps =
+  | { images: CarouselImage[]; slug: string; slides?: never }
+  | { slides: SlideItem[]; images?: never; slug?: never };
+
+export const Carousel: React.FC<CarouselProps> = (props) => {
   const [current, setCurrent] = useState(0);
 
-  if (!images || images.length === 0) {
+  // Normalize both prop shapes into a unified internal list
+  const items: { imgUrl: string; caption?: string; description?: string }[] = props.slides
+    ? props.slides.map((s) => ({ imgUrl: s.image, caption: s.caption, description: s.description }))
+    : (props.images ?? []).map((img) => ({
+        imgUrl: new URL(`../../../assets/projects/${props.slug}/${img.src}`, import.meta.url).href,
+        caption: img.caption,
+      }));
+
+  if (items.length === 0) {
     return (
       <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-gradient-to-br from-[hsl(var(--muted))] to-[hsl(var(--card))] border border-[var(--border)] flex items-center justify-center text-center p-6">
         <span className="text-sm font-medium text-[hsl(var(--foreground-muted))] italic opacity-60">
@@ -23,33 +38,32 @@ export const Carousel: React.FC<CarouselProps> = ({ images, slug }) => {
     );
   }
 
-  const currentImg = images[current];
-  const imgUrl = new URL(`../../../assets/projects/${slug}/${currentImg.src}`, import.meta.url).href;
+  const currentItem = items[current];
 
   const nextSlide = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setCurrent((c) => (c + 1) % images.length);
+    setCurrent((c) => (c + 1) % items.length);
   };
 
   const prevSlide = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setCurrent((c) => (c - 1 + images.length) % images.length);
+    setCurrent((c) => (c - 1 + items.length) % items.length);
   };
 
   return (
     <div className="w-full flex flex-col gap-2">
       <div className="relative aspect-video w-full rounded-xl overflow-hidden border border-[var(--border)] group">
-        <img 
-          src={imgUrl} 
-          alt={currentImg.caption || 'Project screenshot'} 
+        <img
+          src={currentItem.imgUrl}
+          alt={currentItem.caption || 'Project screenshot'}
           className="w-full h-full object-cover transition-opacity duration-300"
         />
 
-        {images.length > 1 && (
+        {items.length > 1 && (
           <>
             {/* Slide counter */}
             <div className="absolute top-3 right-3 bg-black/60 px-2 py-1 rounded-md text-xs text-white/90 font-medium z-10 backdrop-blur-sm">
-              {current + 1} / {images.length}
+              {current + 1} / {items.length}
             </div>
 
             {/* Left Button */}
@@ -76,7 +90,7 @@ export const Carousel: React.FC<CarouselProps> = ({ images, slug }) => {
 
             {/* Indicators */}
             <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10">
-              {images.map((_, idx) => (
+              {items.map((_, idx) => (
                 <button
                   key={idx}
                   onClick={(e) => { e.stopPropagation(); setCurrent(idx); }}
@@ -91,9 +105,14 @@ export const Carousel: React.FC<CarouselProps> = ({ images, slug }) => {
         )}
       </div>
 
-      {currentImg.caption && (
+      {currentItem.caption && (
         <p className="text-xs text-center text-[hsl(var(--foreground-muted))] mt-1 px-4 italic">
-          {currentImg.caption}
+          {currentItem.caption}
+        </p>
+      )}
+      {currentItem.description && (
+        <p className="text-xs text-center text-[hsl(var(--foreground-muted))] px-4 whitespace-pre-wrap">
+          {currentItem.description}
         </p>
       )}
     </div>

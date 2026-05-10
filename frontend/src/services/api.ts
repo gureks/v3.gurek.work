@@ -8,8 +8,15 @@
  * - Domain validation to prevent SSRF-like abuse
  */
 
-const API_BASE = (import.meta.env.VITE_API_URL as string | undefined);
+const API_BASE_RAW = (import.meta.env.VITE_API_URL as string | undefined);
 const API_TOKEN = import.meta.env.VITE_API_TOKEN as string | undefined;
+
+if (!API_BASE_RAW) {
+  throw new Error('[config] VITE_API_URL is not set. Add it to your .env file.');
+}
+
+/** Narrowed to string after the guard above */
+const API_BASE: string = API_BASE_RAW;
 
 /** Throw if we're in production and the API URL is not HTTPS */
 function assertSecureOrigin(url: string): void {

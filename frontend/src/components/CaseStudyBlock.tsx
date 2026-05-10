@@ -1,5 +1,11 @@
 import { useEffect, useState } from 'react';
-import { HeroBlock, StatCardRow, TagRow, Carousel, MarkdownTable } from './case-study';
+import { Carousel } from './rich-content/Carousel';
+
+// Stub legacy components (referenced in this file but not yet migrated)
+const HeroBlock = (_props: { slug: string; title: string; cover: string }) => null;
+const StatCardRow = (_props: { stats: { label: string; value: string }[] }) => null;
+const TagRow = (_props: { tags: string[]; stack: string[] }) => null;
+const MarkdownTable = (_props: { markdown: string }) => null;
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 

@@ -5,8 +5,8 @@ import DOMPurify from 'dompurify';
 /** Max characters a user is allowed to send in a single message. */
 const MAX_INPUT_LENGTH = 2000;
 
-/** Regex: only allow printable Unicode characters + newlines + tabs. */
-const ALLOWED_CHARS_RE = /^[\p{L}\p{N}\p{P}\p{Z}\p{S}\n\t]+$/u;
+
+
 
 /** Patterns that look like script injection attempts. */
 const DANGEROUS_PATTERNS = [
