@@ -1,22 +1,45 @@
 /**
- * Hardened API client — wraps fetch with:
- * - Environment-aware base URL (no hardcoded localhost in prod)
- * - Enforced HTTPS in production
+ * Hardened API client
+ *
+ * Architecture:
+ *   Browser → /api/query (Vercel serverless proxy) → LightRAG server
+ *
+ * The Vercel proxy holds all credentials server-side (LIGHTRAG_API_KEY,
+ * LIGHTRAG_USERNAME, LIGHTRAG_PASSWORD). Nothing sensitive is in VITE_* vars.
+ *
+ * In local dev the proxy is not available, so requests fall back to
+ * VITE_API_URL (direct to LightRAG). Set VITE_DEV_DIRECT=true to force
+ * this path, or run `vercel dev` for an end-to-end local proxy.
+ *
+ * Hardening retained:
+ * - HTTPS enforcement in production
  * - Request timeout (AbortController)
  * - Response size guard
- * - Authorization header injection
- * - Domain validation to prevent SSRF-like abuse
+ * - Domain validation (dev path only)
  */
 
 const API_BASE_RAW = (import.meta.env.VITE_API_URL as string | undefined);
-const API_KEY = import.meta.env.VITE_API_KEY as string | undefined;
 
-if (!API_BASE_RAW) {
+/**
+ * In production: call our own Vercel proxy function (relative URL).
+ * In dev: call LightRAG directly via VITE_API_URL (fallback path).
+ *
+ * VITE_DEV_DIRECT=true forces the direct path in any environment
+ * (useful for testing without `vercel dev`).
+ */
+const IS_DEV_DIRECT = import.meta.env.DEV || import.meta.env.VITE_DEV_DIRECT === 'true';
+
+if (IS_DEV_DIRECT && !API_BASE_RAW) {
   throw new Error('[config] VITE_API_URL is not set. Add it to your .env file.');
 }
 
-/** Narrowed to string after the guard above */
-const API_BASE: string = API_BASE_RAW;
+/** Endpoint the frontend actually calls */
+const QUERY_ENDPOINT: string = IS_DEV_DIRECT
+  ? `${API_BASE_RAW}/query`   // dev: direct to LightRAG
+  : '/api/query';              // prod: Vercel proxy
+
+/** Used for domain validation in dev mode only */
+const API_BASE: string = API_BASE_RAW ?? '';
 
 /** Throw if we're in production and the API URL is not HTTPS */
 function assertSecureOrigin(url: string): void {
@@ -85,19 +108,16 @@ export async function sendQuery(request: QueryRequest): Promise<QueryResponse> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-    'X-Requested-With': 'XMLHttpRequest', // Helps backend CSRF detection
+    // In dev-direct mode, add X-API-Key so local requests still authenticate.
+    // In production this header is added server-side by the Vercel proxy.
+    ...(IS_DEV_DIRECT && import.meta.env.VITE_API_KEY
+      ? { 'X-API-Key': import.meta.env.VITE_API_KEY as string }
+      : {}),
   };
-
-  // LightRAG uses X-API-Key for static API key authentication
-  // See: LightRAG/docs/LightRAG-API-Server.md § "API Key and Authentication"
-  if (API_KEY) {
-    headers['X-API-Key'] = API_KEY;
-  }
 
   let res: Response;
   try {
-
-    res = await fetch(`${API_BASE}/query`, {
+    res = await fetch(QUERY_ENDPOINT, {
       method: 'POST',
       headers,
       body: JSON.stringify({
