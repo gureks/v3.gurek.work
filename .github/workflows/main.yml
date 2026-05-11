@@ -2,9 +2,10 @@ name: Keep Alive
 on:
   schedule:
     - cron: '*/12 * * * *' 
+  workflow_dispatch: 
 jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
       - name: Ping Render App
-        run: curl -s https://v2.gurek.work/
+        run: curl -s -L -I https://v2.gurek.work/health
