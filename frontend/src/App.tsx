@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { useAppStore } from './store/useAppStore';
 import MainLayout from './components/layout/MainLayout';
 import { Toast } from './components/ui/Toast';
@@ -68,6 +69,7 @@ function App() {
           } />
         </Route>
       </Routes>
+      <SpeedInsights />
     </BrowserRouter>
   );
 }
