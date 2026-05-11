@@ -9,7 +9,7 @@
  */
 
 const API_BASE_RAW = (import.meta.env.VITE_API_URL as string | undefined);
-const API_TOKEN = import.meta.env.VITE_API_TOKEN as string | undefined;
+const API_KEY = import.meta.env.VITE_API_KEY as string | undefined;
 
 if (!API_BASE_RAW) {
   throw new Error('[config] VITE_API_URL is not set. Add it to your .env file.');
@@ -88,13 +88,15 @@ export async function sendQuery(request: QueryRequest): Promise<QueryResponse> {
     'X-Requested-With': 'XMLHttpRequest', // Helps backend CSRF detection
   };
 
-  if (API_TOKEN) {
-    headers['Authorization'] = `Bearer ${API_TOKEN}`;
+  // LightRAG uses X-API-Key for static API key authentication
+  // See: LightRAG/docs/LightRAG-API-Server.md § "API Key and Authentication"
+  if (API_KEY) {
+    headers['X-API-Key'] = API_KEY;
   }
 
   let res: Response;
   try {
-    console.log(API_BASE, API_TOKEN);
+
     res = await fetch(`${API_BASE}/query`, {
       method: 'POST',
       headers,
