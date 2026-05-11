@@ -70,8 +70,12 @@ function assertTrustedDomain(url: string): void {
   }
 }
 
-// Validate once at module load
-assertTrustedDomain(API_BASE);
+// Domain/origin validation only applies in dev-direct mode.
+// In production the fetch target is a relative /api/query URL on the
+// same Vercel origin — there is no external host to validate.
+if (IS_DEV_DIRECT && API_BASE) {
+  assertTrustedDomain(API_BASE);
+}
 
 /** Max response body size we'll read — 512 KB */
 const MAX_RESPONSE_BYTES = 512 * 1024;
@@ -100,7 +104,10 @@ export interface QueryResponse {
 }
 
 export async function sendQuery(request: QueryRequest): Promise<QueryResponse> {
-  assertSecureOrigin(API_BASE);
+  // Origin checks only apply when calling LightRAG directly (dev mode).
+  if (IS_DEV_DIRECT) {
+    assertSecureOrigin(API_BASE);
+  }
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
