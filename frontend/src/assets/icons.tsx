@@ -26,6 +26,7 @@ import {
   PhoneIcon,
   CaretdownIcon,
   SendIcon,
+  CloseIcon,
   HamburgerIcon,
 } from './custom-icons';
 

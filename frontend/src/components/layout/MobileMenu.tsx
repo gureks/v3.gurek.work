@@ -4,7 +4,7 @@ import { NAV_PRIMARY, NAV_SOCIAL, isSeparator, type NavItemConfig } from '../../
 import {
   HomeIcon, ProjectsIcon, ResumeIcon, BuildsIcon, PromptsIcon,
   PlaygroundIcon, FpvIcon, InstagramIcon, LinkedinIcon, GithubIcon,
-  EmailIcon, PhoneIcon, ShareIcon, GurekAvatarIcon, HamburgerIcon, NightmodeIcon, CloseIcon
+  EmailIcon, PhoneIcon, GurekAvatarIcon, HamburgerIcon, NightmodeIcon, CloseIcon
 } from '../../assets/custom-icons';
 import { useAppStore } from '../../store/useAppStore';
 
