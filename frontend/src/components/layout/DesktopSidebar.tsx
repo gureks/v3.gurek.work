@@ -5,7 +5,7 @@ import { NavSidebar } from './NavSidebar';
 const DesktopSidebar: React.FC = () => {
   const location = useLocation();
   return (
-    <div className="hidden md:block h-full p-4 flex-shrink-0">
+    <div className="hidden md:block h-full flex-shrink-0">
       <NavSidebar activeRoute={location.pathname} />
     </div>
   );

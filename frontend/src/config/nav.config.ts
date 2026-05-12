@@ -66,7 +66,7 @@ export const NAV_PRIMARY: NavEntry[] = [
     id: 'builds',
     label: 'Builds',
     href: '/builds',
-    visible: true,
+    visible: false,
     comingSoon: true,
   },
   {
@@ -98,28 +98,28 @@ export const NAV_SOCIAL: NavEntry[] = [
   {
     id: 'instagram',
     label: 'Instagram',
-    href: 'https://instagram.com/gurek_singh',
+    href: 'https://instagram.com/gureksingh',
     external: true,
     visible: true,
   },
   {
     id: 'linkedin',
     label: 'LinkedIn',
-    href: 'https://linkedin.com/in/gureksingh',
+    href: 'https://linkedin.com/in/gureks',
     external: true,
     visible: true,
   },
   {
     id: 'github',
     label: 'Github',
-    href: 'https://github.com/gureksingh',
+    href: 'https://github.com/gureks',
     external: true,
     visible: true,
   },
   {
     id: 'email',
     label: 'Email',
-    href: 'mailto:gurek@example.com',
+    href: 'mailto:gurek15033@iiitd.ac.in',
     external: true,
     visible: true,
   },
@@ -128,15 +128,15 @@ export const NAV_SOCIAL: NavEntry[] = [
 // ─── Header CTA ──────────────────────────
 export const HEADER_CTA = {
   label: 'Get in Touch',
-  href: 'mailto:gurek@example.com',
+  href: 'mailto:gurek15033@iiitd.ac.in',
   visible: true,
 };
 
 // ─── Suggestion Chips (Chat Input) ────────
 export const SUGGESTION_CHIPS: string[] = [
   "Projects he's built",
-  'Share his Work Ex',
-  'Here for prompts...',
+  "Share his Work Ex",
+  "Here for prompts...",
   "What's after 9-5?",
-  'Check his resume',
+  "Check his resume",
 ];

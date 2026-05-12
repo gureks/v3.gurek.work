@@ -73,7 +73,7 @@ export function NavSidebar({ activeRoute = '/' }: NavSidebarProps) {
         <div className="flex flex-col items-start justify-center w-full p-[8px]">
           <a
             href={NAV_LOGO.href}
-            className="flex items-center justify-center w-full p-[12px]"
+            className="flex items-center justify-center w-full py-[8px]"
           >
             {/* Gurek logo */}
             <GurekAvatarIcon size={32} />
@@ -88,13 +88,12 @@ export function NavSidebar({ activeRoute = '/' }: NavSidebarProps) {
             return (
               <div
                 key={`sep-${index}`}
-                className="w-full h-[8px] my-[4px]"
+                className="flex mx-4 my-[4px]"
                 style={{
-                  backgroundImage: 'radial-gradient(circle, var(--border-subtle) 1px, transparent 1px)',
-                  backgroundSize: '4px 4px',
-                  backgroundPosition: 'center',
-                  backgroundRepeat: 'repeat-x',
-                  opacity: 0.5
+                  background: "var(--border)",
+                  width: "stretch",
+                  height: "2px", 
+                  borderRadius: 'var(--radius-sm)',
                 }}
               />
             );
@@ -110,7 +109,7 @@ export function NavSidebar({ activeRoute = '/' }: NavSidebarProps) {
           return (
             <div key={item.id} className="flex flex-col items-start px-[8px] py-[12px] relative w-full shrink-0">
               <a
-                href={item.href}
+                href={item.comingSoon ? '#' : item.href}
                 target={item.external ? '_blank' : undefined}
                 rel={item.external ? 'noopener noreferrer' : undefined}
                 className="relative flex items-center justify-center px-[12px] py-[8px] gap-[12px] transition-colors w-full shrink-0"
@@ -144,6 +143,9 @@ export function NavSidebar({ activeRoute = '/' }: NavSidebarProps) {
                     }}
                   >
                     {item.label}
+                    {item.comingSoon && (
+                      <span className="ml-2 text-xs text-gray-500">Coming soon</span>
+                    )}
                   </span>
                 )}
               </a>

@@ -543,8 +543,8 @@ function LeadershipTimeline() {
 
 function ContactCards() {
   const contacts = [
-    { label: 'Drop a Mail', icon: <EmailIcon size={20} className="text-[color:var(--foreground)]" />, link: 'mailto:gurek.singh@example.com' },
-    { label: 'Connect on Linkedin', icon: <LinkedinIcon size={20} className="text-[color:var(--foreground)]" />, link: 'https://linkedin.com/in/gureksingh' },
+    { label: 'Drop a Mail', icon: <EmailIcon size={20} className="text-[color:var(--foreground)]" />, link: 'mailto:gurek15033@iiitd.ac.in' },
+    { label: 'Connect on Linkedin', icon: <LinkedinIcon size={20} className="text-[color:var(--foreground)]" />, link: 'https://linkedin.com/in/gureks' },
     { label: 'Follow on Instagram', icon: <InstagramIcon size={20} className="text-[color:var(--foreground)]" />, link: 'https://instagram.com/gureksingh' },
   ];
 

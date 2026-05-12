@@ -26,6 +26,7 @@ import {
   PhoneIcon,
   CaretdownIcon,
   SendIcon,
+  HamburgerIcon,
 } from './custom-icons';
 
 type IconType = React.FC<{ size?: number | string; className?: string }>;
@@ -43,6 +44,8 @@ export const NavIcons: Record<string, IconType> = {
   linkedin: LinkedinIcon as IconType,
   github: GithubIcon as IconType,
   email: EmailIcon as IconType,
+  hamburger: HamburgerIcon as IconType,
+  close: CloseIcon as IconType,
 };
 
 // ─── Header Action Icons ─── //
