@@ -51,7 +51,7 @@ const MobileMenu: React.FC = () => {
 
       {/* Floating Top Nav */}
       <div className="fixed top-0 left-0 w-full z-50 md:hidden pointer-events-none flex justify-center">
-        <div className="flex flex-col items-center p-[16px] relative rounded-[16px] shrink-0 w-[360px] max-w-full pointer-events-auto">
+        <div className="flex flex-col items-center p-[16px] relative rounded-[16px] shrink-0 w-full max-w-full pointer-events-auto">
           <div className="backdrop-blur-[20px] bg-[var(--background-elevated)] border border-[var(--border)] border-solid flex flex-col items-start relative rounded-[16px] shrink-0 w-full transition-all duration-300 shadow-[var(--shadow-lg)] overflow-hidden">
             
             {/* Header / Closed State */}

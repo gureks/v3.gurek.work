@@ -6,7 +6,7 @@ export function Header() {
   const { theme, setTheme } = useAppStore();
 
   return (
-    <header className="border-b border-solid border-[var(--border-subtle)] flex flex-col items-end justify-center px-4 md:px-6 relative w-full" style={{ minHeight: '60px', height: '60px' }} aria-label="Site header">
+    <header className="border-b border-solid border-[var(--border-subtle)] flex-col items-end justify-center px-4 md:px-6 relative w-full hidden md:flex" style={{ minHeight: '60px', height: '60px' }} aria-label="Site header">
       <div className="flex gap-2 items-center justify-center relative shrink-0">
         {/* Icon Buttons */}
         <button className="flex items-center justify-center transition-colors hover:bg-black/10 dark:hover:bg-white/10 text-foreground backdrop-blur-[4px] shrink-0" style={{ width: '36px', height: '36px', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--background-elevated)', padding: '8px' }}>

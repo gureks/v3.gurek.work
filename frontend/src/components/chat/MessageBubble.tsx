@@ -56,33 +56,24 @@ export function MessageBubble({
     >
       {/* Message row */}
       <div
-        className={`flex items-start ${isUser ? 'flex-row-reverse' : 'flex-row'}`}
-        style={{
-          gap: 'var(--space-4)',
-          paddingLeft: isUser ? 'var(--space-8)' : '0',
-          paddingRight: isUser ? '0' : 'var(--space-8)',
-        }}
+        className={`flex items-start gap-2 md:gap-4 ${isUser ? 'flex-row-reverse pl-0 md:pl-12' : 'flex-row pr-0 md:pr-12'}`}
       >
-        {/* Avatar — 32x32 per Figma */}
+        {!isUser && (
         <div
           className="flex-shrink-0 flex items-center justify-center overflow-hidden"
           style={{
-            width: 'var(--avatar-md)',
-            height: 'var(--avatar-md)',
-            borderRadius: isUser ? 'var(--radius-full)' : 'var(--radius-md)',
-            backgroundColor: isUser ? 'var(--accent-foreground)' : 'var(--background)',
-            color: isUser ? 'var(--accent)' : 'var(--foreground)',
-            fontSize: '11.8px',
-            fontWeight: 500,
-            lineHeight: '16px',
+            borderRadius: 'var(--radius-full)',
+            backgroundColor: 'var(--background)',
+            color: 'var(--foreground)',
           }}
         >
-          {isUser ? 'AB' : (
-            <div className="flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-full bg-white text-black shadow-sm relative overflow-hidden">
-              <GurekAvatarIcon size={32} />
+            <div className="flex h-5 w-5 sm:h-8 sm:w-8 shrink-0 select-none items-center justify-center rounded-full bg-white text-black shadow-sm relative overflow-hidden">
+              {/* 20px on mobile, 32px on sm+ */}
+              <span className="sm:hidden"><GurekAvatarIcon size={20} /></span>
+              <span className="hidden sm:block"><GurekAvatarIcon size={32} /></span>
             </div>
-          )}
         </div>
+          )}
 
         {/* Bubble Container */}
         <div className="flex flex-col flex-1 min-w-0" style={{ gap: 'var(--space-2)' }}>

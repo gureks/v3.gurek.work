@@ -11,7 +11,7 @@ const MainLayout: React.FC = () => {
       
       <main className="flex-1 flex flex-col relative w-full h-full overflow-hidden">
         {/* Content Area — pt-[60px] on mobile for MobileMenu header height */}
-        <div className="flex-1 w-full h-full overflow-y-auto relative mx-auto max-w-content pt-[60px] md:pt-0">
+        <div className="flex-1 w-full h-full overflow-y-auto relative mx-auto max-w-content pt-[120px] md:pt-0">
           <Outlet />
         </div>
       </main>
