@@ -1,5 +1,5 @@
 import { useAppStore } from '../../store/useAppStore';
-import { SearchIcon, NightmodeIcon, ShareIcon } from '../../assets/custom-icons';
+import { SearchIcon, NightmodeIcon, LightmodeIcon, ShareIcon } from '../../assets/custom-icons';
 import { HEADER_CTA } from '../../config/nav.config';
 
 export function Header() {
@@ -12,11 +12,11 @@ export function Header() {
         <button className="flex items-center justify-center transition-colors hover:bg-black/10 dark:hover:bg-white/10 text-foreground backdrop-blur-[4px] shrink-0" style={{ width: '36px', height: '36px', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--background-elevated)', padding: '8px' }}>
           <SearchIcon size={20} />
         </button>
-        <button 
+        <button
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
           className="flex items-center justify-center transition-colors hover:bg-black/10 dark:hover:bg-white/10 text-foreground backdrop-blur-[4px] shrink-0" 
           style={{ width: '36px', height: '36px', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--background-elevated)', padding: '8px' }}>
-          <NightmodeIcon size={20} />
+          {theme !== 'dark' ? <NightmodeIcon size={20} /> : <LightmodeIcon size={20} />}
         </button>
         <button className="flex items-center justify-center transition-colors hover:bg-black/10 dark:hover:bg-white/10 text-foreground backdrop-blur-[4px] shrink-0" style={{ width: '36px', height: '36px', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--background-elevated)', padding: '8px' }}>
           <ShareIcon size={20} />
@@ -26,14 +26,11 @@ export function Header() {
         {HEADER_CTA.visible && (
           <a
             href={HEADER_CTA.href}
-            className="flex items-center justify-center transition-opacity hover:opacity-90 overflow-clip shrink-0"
+            className="flex items-center justify-center px-[16px] p-2 transition-opacity hover:opacity-90 overflow-clip shrink-0"
             style={{
-              width: '125px',
-              height: '36px',
-              padding: '8px',
               borderRadius: 'var(--radius-sm)',
               backgroundColor: 'var(--accent)',
-              color: 'var(--accent-foreground)',
+              color: 'var(--foreground)',
               gap: '4px',
               fontSize: '14px',
               fontWeight: 500,

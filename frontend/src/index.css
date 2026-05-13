@@ -21,6 +21,9 @@
 
   /* Accent */
   --color-accent: #006eff;
+  /* --color-accent: #6C64FE; */
+  /* --color-accent-light: #E2E0FF; */
+  --color-accent-light: #66A8FF;
 
   /* Semantic Tokens — Dark mode (default) */
   --background: var(--color-neutral-950);
@@ -117,7 +120,7 @@
   --border-subtle: #d4d4d4;
   --border-input: #e5e5e5;
 
-  --accent: var(--color-accent);
+  --accent: var(--color-accent-light);
   --accent-foreground: var(--color-white);
 
   --overlay-light: rgba(255, 255, 255, 0.20);

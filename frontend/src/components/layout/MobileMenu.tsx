@@ -4,7 +4,7 @@ import { NAV_PRIMARY, NAV_SOCIAL, isSeparator, type NavItemConfig } from '../../
 import {
   HomeIcon, ProjectsIcon, ResumeIcon, BuildsIcon, PromptsIcon,
   PlaygroundIcon, FpvIcon, InstagramIcon, LinkedinIcon, GithubIcon,
-  EmailIcon, PhoneIcon, GurekAvatarIcon, HamburgerIcon, NightmodeIcon, CloseIcon
+  EmailIcon, PhoneIcon, GurekAvatarIcon, HamburgerIcon, NightmodeIcon, LightmodeIcon, CloseIcon
 } from '../../assets/custom-icons';
 import { useAppStore } from '../../store/useAppStore';
 
@@ -67,7 +67,7 @@ const MobileMenu: React.FC = () => {
                     onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
                     className="bg-[var(--background-tooltip)] flex items-center justify-center p-[8px] rounded-[8px] text-foreground hover:bg-white/10 transition-colors"
                   >
-                    <NightmodeIcon size={20} />
+                    {theme !== 'dark' ? <NightmodeIcon size={20} /> : <LightmodeIcon size={20} />}
                   </button>
                 )}
                 

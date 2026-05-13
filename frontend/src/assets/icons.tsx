@@ -22,6 +22,7 @@ import {
   EmailIcon,
   SearchIcon,
   NightmodeIcon,
+  LightmodeIcon,
   ShareIcon,
   PhoneIcon,
   CaretdownIcon,
@@ -53,6 +54,7 @@ export const NavIcons: Record<string, IconType> = {
 export const HeaderIcons = {
   search: SearchIcon as IconType,
   theme: NightmodeIcon as IconType,
+  themeLight: LightmodeIcon as IconType,
   share: ShareIcon as IconType,
   phone: PhoneIcon as IconType,
   caretDown: CaretdownIcon as IconType,

@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { PROJECT_REGISTRY, ProjectEntry } from '../../data/projects';
 import { useNavigate } from 'react-router-dom';
-import { EmailIcon,ProjectsIcon, LinkedinIcon, InstagramIcon, CaretdownIcon } from '../../assets/custom-icons';
+import { EmailIcon,ProjectsIcon, LinkedinIcon, ResumeIcon, InstagramIcon, CaretdownIcon } from '../../assets/custom-icons';
 
 import { Carousel } from './Carousel';
 import { ProjectGallery } from './ProjectGallery';
 import { ProjectHero } from './ProjectHero';
 import { ProjectMetrics } from './ProjectMetrics';
 
-export type RichContentType = 'tools' | 'skills' | 'stats' | 'resume' | 'experience' | 'education' | 'leadership' | 'contact' | 'projects' | 'carousel' | 'gallery' | 'hero' | 'metrics' | 'affiliations';
+export type RichContentType = 'tools' | 'skills' | 'stats' | 'resume' | 'experience' | 'education' | 'leadership' | 'contact' | 'projects' | 'carousel' | 'gallery' | 'hero' | 'metrics' | 'affiliations' | 'certifications';
 
 interface RichContentContainerProps {
   type: RichContentType;
@@ -58,6 +58,8 @@ export function RichContentContainer({ type, data }: RichContentContainerProps) 
       return <ExperienceTimeline />;
     case 'education':
       return <EducationTimeline />;
+    case 'certifications':
+      return <CertificationsTimeline />;
     case 'leadership':
       return <LeadershipTimeline />;
     case 'contact':
@@ -154,7 +156,7 @@ function ToolIcon({ label, icon }: { label: string; icon?: string }) {
 function ToolsCarousel() {
   const tools = [...TOOL_ICONS, ...TOOL_ICONS];
   return (
-    <ChatBubbleWrapper>
+    <ChatBubbleWrapper className='!w-full'>
       <div className="relative overflow-hidden w-full" style={{ height: '48px' }}>
         <div
           className="flex items-start animate-scroll-left"
@@ -216,7 +218,7 @@ const AFFILIATION_ICONS = [
 function AffiliationsCarousel() {
   const affiliations = [...AFFILIATION_ICONS, ...AFFILIATION_ICONS];
   return (
-    <ChatBubbleWrapper>
+    <ChatBubbleWrapper className='!w-full'>
       <div className="relative overflow-hidden w-full">
         <div
           className="flex items-start animate-scroll-left"
@@ -314,7 +316,7 @@ function SkillsCarousel() {
   const row2 = [...allSkills.slice(midPoint), ...allSkills.slice(midPoint)];
 
   return (
-    <ChatBubbleWrapper>
+    <ChatBubbleWrapper className='!w-full'>
       <div className="relative overflow-hidden w-full flex flex-col" style={{ gap: '8px'}}>
         <div className="flex animate-scroll-left" style={{ gap: '8px', width: 'max-content' }}>
           {row1.map((skill, idx) => (
@@ -442,27 +444,41 @@ function StatsContainer() {
  */
 function ResumeDownload() {
   return (
+    <ChatBubbleWrapper>
     <a
       href="/assets/resume/__Gurek Singh - CV.pdf"
       target="_blank"
       rel="noopener noreferrer"
       className="flex items-center justify-between transition-colors"
       style={{
-        backgroundColor: 'var(--background-elevated)',
-        border: '1px solid var(--border)',
-        borderRadius: 'var(--radius-lg)',
+        backgroundColor: 'var(--background-input)',
+        border: '1px solid var(--border-input)',
+        borderRadius: 'var(--radius-sm)',
         padding: 'var(--space-4)',
-        maxWidth: '328px',
         width: '100%',
+        maxWidth: '328px',
+        minWidth: '264px',
+        color: 'var(--foreground)',
+        fontSize: '14px',
+        fontWeight: 500,
+        lineHeight: '20px',
+        cursor: 'pointer',
+      }}
+      onMouseEnter={e => {
+        (e.currentTarget as HTMLAnchorElement).style.background = 'var(--background)';
+        (e.currentTarget as HTMLAnchorElement).style.color = 'var(--foreground)';
+      }}
+      onMouseLeave={e => {
+        (e.currentTarget as HTMLAnchorElement).style.background = 'var(--background-input)';
+        (e.currentTarget as HTMLAnchorElement).style.color = 'var(--foreground-muted)';
       }}
     >
       <span style={{ fontSize: '14px', fontWeight: 500, lineHeight: '20px', color: 'var(--foreground)' }}>
         Download Resume
       </span>
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ color: 'var(--foreground)' }}>
-        <path d="M10 3v10M10 13l-4-4M10 13l4-4M5 17h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-      </svg>
+      <ResumeIcon />
     </a>
+    </ChatBubbleWrapper>
   );
 }
 
@@ -474,7 +490,7 @@ interface TimelineItem {
 }
 
 function AccordionItem({ item, isLast }: { item: TimelineItem; isLast: boolean }) {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const hasDesc = !!item.desc;
   
   return (
@@ -508,7 +524,7 @@ function AccordionItem({ item, isLast }: { item: TimelineItem; isLast: boolean }
         </div>
       )}
       {!isLast && (
-        <div style={{ height: '1px', backgroundColor: 'var(--border-subtle)', width: '100%', margin: '0' }} />
+        <div style={{ height: '1px', backgroundColor: 'var(--background-input)', width: '100%', margin: '0' }} />
       )}
     </div>
   );
@@ -516,7 +532,7 @@ function AccordionItem({ item, isLast }: { item: TimelineItem; isLast: boolean }
 
 function Timeline({ items }: { items: TimelineItem[] }) {
   return (
-    <ChatBubbleWrapper className="gap-2">
+    <ChatBubbleWrapper className="gap-2 !w-full">
       <div className="flex flex-col w-full">
         {items.map((item, idx) => (
            <AccordionItem key={idx} item={item} isLast={idx === items.length - 1} />
@@ -532,21 +548,34 @@ function Timeline({ items }: { items: TimelineItem[] }) {
 function ExperienceTimeline() {
   const experiences: TimelineItem[] = [
     {
-      title: 'UX Designer',
-      date: 'Feb’23 - Present',
+      title: 'Manager II',
+      date: 'Apr’24 - Nov’25',
       company: 'Times Internet Limited',
-      desc: '- Won the TIL AI Innovation Challenge (2024) solo by prototyping an AI feature; currently being integrated into core video tooling\n- Established a unified design system for ET Markets(Web & App), increasing developer velocity and cross-functional collaboration efficiency'
+      desc: "- Scaled ET Masterclasses to INR 20Cr+ ARR through rapid discovery-to-ship cycles; achieved a 30% conversion uplift and scaled learners per batch from 350 to 2,000+; maintained an NPS of 4.7/5 and drove high referral-driven growth \n - Designed and deployed an AI avatar product using LLM-driven workflows to automate video production, reducing production time by 80% and cost by 60%; autonomous agent pipeline handled anchor-led explainers, summaries, product reviews, and social content \n - Architected product development for the 'Times Intelligence Layer' - transformed 15 years of editorial data into a scalable GenAI engine; leveraged hybrid RAG and multi-LLM routing; indexed 2.43M+ articles, optimized <5s P95 latency and 88% query accuracy"
+    },
+    {
+      title: 'Manager I',
+      date: 'Apr’24 - Apr’25',
+      company: 'Times Internet Limited',
+      // desc: "- Won the TIL AI Innovation Challenge (2024)  solo by prototyping an AI feature; currently being integrated into core video tooling \n - Established a unified design system for ET Markets(Web & App), increasing developer velocity and cross-functional collaboration efficiency"
+    },
+    {
+      title: 'Associate - UX Design',
+      date: 'Feb’23 - Apr’24',
+      company: 'Times Internet Limited',
+      desc: ""
     },
     {
       title: 'Design Lead & Founding Partner',
       date: 'Aug’20 - Aug’22',
       company: 'Diseno Media',
+      desc: "Soft-launched and bootstrapped a multi-disciplinary design agency based in Delhi; specialising in Web, UI/UX, and Motion Design \n - Led and Delivered projects for well-known clientele like Ernst & Young, GlaxoSmithKline, Bare Anatomy, and more"
     },
     {
       title: 'Digital Lead',
       date: 'Dec’19 - May’20',
       company: "Let's Do It, India",
-    },
+    }
   ];
 
   return <Timeline items={experiences} />;
@@ -563,7 +592,14 @@ function EducationTimeline() {
       title: 'AISSCE - CBSE',
       date: 'Mar’15',
       company: 'The Air Force School, Subroto Park',
-    },
+    }
+  ];
+
+  return <Timeline items={education} />;
+}
+
+function CertificationsTimeline() {
+  const certifications: TimelineItem[] = [
     {
       title: 'Agents, MCP, and Claude Code',
       date: '2026',
@@ -586,7 +622,7 @@ function EducationTimeline() {
     },
   ];
 
-  return <Timeline items={education} />;
+  return <Timeline items={certifications} />;
 }
 
 function LeadershipTimeline() {
@@ -647,6 +683,7 @@ function ContactCards() {
   ];
 
   return (
+    <ChatBubbleWrapper>
     <div className="flex flex-col gap-2 w-full max-w-[328px]">
       {contacts.map((contact, idx) => (
         <a
@@ -656,21 +693,36 @@ function ContactCards() {
           rel="noopener noreferrer"
           className="flex items-center justify-between transition-colors"
           style={{
-            backgroundColor: 'var(--background-elevated)',
-            border: '1px solid var(--border)',
+            backgroundColor: 'var(--background-input)',
+            border: '1px solid var(--border-input)',
             borderRadius: 'var(--radius-sm)',
-            padding: '13px 17px',
+            padding: 'var(--space-4)',
             width: '100%',
-            boxShadow: '0px 4px 6px -4px rgba(0,0,0,0.1), 0px 10px 15px -3px rgba(0,0,0,0.1)'
+            maxWidth: '328px',
+            minWidth: '264px',
+            color: 'var(--foreground)',
+            fontSize: '14px',
+            fontWeight: 500,
+            lineHeight: '20px',
+            cursor: 'pointer',
+          }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLAnchorElement).style.background = 'var(--background)';
+            (e.currentTarget as HTMLAnchorElement).style.color = 'var(--foreground)';
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLAnchorElement).style.background = 'var(--background-input)';
+            (e.currentTarget as HTMLAnchorElement).style.color = 'var(--foreground-muted)';
           }}
         >
-          <span style={{ fontSize: '14px', fontWeight: 500, lineHeight: '16px', color: 'var(--accent-foreground)', textAlign: 'center' }}>
+          <span style={{ fontSize: '14px', fontWeight: 500, lineHeight: '16px', color: 'var(--foreground)', textAlign: 'center' }}>
             {contact.label}
           </span>
           {contact.icon}
         </a>
       ))}
     </div>
+    </ChatBubbleWrapper>
   );
 }
 
