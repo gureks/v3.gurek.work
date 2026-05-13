@@ -30,6 +30,7 @@ function ChatBubbleWrapper({ children, className = '' }: { children: React.React
         borderRadius: '0 var(--radius-lg) var(--radius-lg) var(--radius-lg)',
         padding: 'var(--space-4)',
         width: 'fit-content',
+        maxWidth: '100%'
       }}
     >
       {children}
