@@ -8,7 +8,7 @@ import { ProjectGallery } from './ProjectGallery';
 import { ProjectHero } from './ProjectHero';
 import { ProjectMetrics } from './ProjectMetrics';
 
-export type RichContentType = 'tools' | 'skills' | 'stats' | 'resume' | 'experience' | 'education' | 'leadership' | 'contact' | 'projects' | 'carousel' | 'gallery' | 'hero' | 'metrics';
+export type RichContentType = 'tools' | 'skills' | 'stats' | 'resume' | 'experience' | 'education' | 'leadership' | 'contact' | 'projects' | 'carousel' | 'gallery' | 'hero' | 'metrics' | 'affiliations';
 
 interface RichContentContainerProps {
   type: RichContentType;
@@ -226,6 +226,7 @@ function AffiliationsCarousel() {
         >
           {affiliations.map((affiliation, idx) => (
              <div
+              key={idx}
               className="flex items-center justify-center shrink-0 relative"
               style={{
                 width: 'auto',

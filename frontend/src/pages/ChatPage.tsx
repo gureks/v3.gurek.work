@@ -32,7 +32,7 @@ export interface ChatPageProps {
   initialSequence?: ChatSequenceMessage[];
 }
 
-export function ChatPage({ templatedComponent, introMessage, initialSequence }: ChatPageProps = {}) {
+export function ChatPage({ templatedComponent, initialSequence }: ChatPageProps = {}) {
   useSEO({
     title: 'Chat — Gurek Singh',
     description: 'Chat with Gurek\'s AI Twin — ask about his work, projects, skills, and experience.',

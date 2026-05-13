@@ -1,5 +1,5 @@
 import { useAppStore } from '../../store/useAppStore';
-import { SearchIcon, NightmodeIcon, ShareIcon, PhoneIcon } from '../../assets/custom-icons';
+import { SearchIcon, NightmodeIcon, ShareIcon } from '../../assets/custom-icons';
 import { HEADER_CTA } from '../../config/nav.config';
 
 export function Header() {

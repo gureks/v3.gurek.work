@@ -4,7 +4,7 @@ import { useChatStore, type ChatMessage } from '../store/useChatStore';
 import { ChatInput } from '../components/chat/ChatInput';
 import { MessageBubble } from '../components/chat/MessageBubble';
 import { TypingIndicator } from '../components/chat/TypingIndicator';
-import { Header } from '../components/layout/Header';
+import { SuggestionItem } from './ChatPage';
 import { RichContentContainer } from '../components/rich-content/RichContentContainer';
 import { useSEO } from '../hooks/useSEO';
 
@@ -70,6 +70,15 @@ const ProjectsPage: React.FC = () => {
     sendMessage(content, pathname, navigate);
   };
 
+  const handleSuggestionClick = (item: string | SuggestionItem) => {
+    if (typeof item === 'object' && item.redirect) {
+      navigate(item.redirect);
+      return;
+    }
+    const label = typeof item === 'string' ? item : item.label;
+    handleSend(label);
+  };
+
 
   return (
     <div className="flex flex-col flex-1 relative h-full">
@@ -84,7 +93,7 @@ const ProjectsPage: React.FC = () => {
               <MessageBubble 
                 key={msg.id} 
                 message={msg} 
-                onSuggestionClick={handleSend} 
+                onSuggestionClick={handleSuggestionClick} 
                 isLastAssistantMessage={isLastAssistant} 
               />
             );
