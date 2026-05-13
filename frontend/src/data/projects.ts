@@ -16,8 +16,8 @@ export interface ProjectEntry {
 
 export const PROJECT_REGISTRY: ProjectEntry[] = [
   { 
-    id: 'et-epaper', 
-    slug: 'et-epaper', 
+    id: 'epaper', 
+    slug: 'epaper', 
     title: 'Improving the Reading Experience for India’s Largest Daily', 
     shortDescription: 'Making ePapers Actually Readable for print-first readers in a digital world',
     coverImage: '/9e03e2b4a665a12c8b87ff25eb44c28f326f423e.png',

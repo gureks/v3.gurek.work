@@ -1,4 +1,4 @@
-Pre-launch checklist for [Project Name]:
+Pre-launch checklist:
 
 Security:
 - [ ] All API routes protected

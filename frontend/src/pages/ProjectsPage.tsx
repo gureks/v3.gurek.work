@@ -73,8 +73,6 @@ const ProjectsPage: React.FC = () => {
 
   return (
     <div className="flex flex-col flex-1 relative h-full">
-      {/* Header */}
-      <Header />
 
       {/* Chat Area */}
       <main className="flex-1 overflow-y-auto flex flex-col items-center pb-[140px] md:pb-[130px]">

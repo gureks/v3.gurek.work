@@ -4,6 +4,7 @@ import { sendQuery } from '../services/api';
 import { getSystemContext } from '../utils/chat';
 import { sanitizeUserInput, validateLLMResponse, validateRedirectPath } from '../utils/security';
 import { RichContentContainer, RichContentType } from '../components/rich-content/RichContentContainer';
+import type { SuggestionItem } from '../pages/ChatPage';
 
 import * as React from 'react';
 
@@ -11,7 +12,7 @@ export interface ChatMessage {
   id: string;
   role: 'user' | 'assistant';
   content: string;
-  suggestions?: string[];
+  suggestions?: (string | SuggestionItem)[];
   timestamp: number;
   isError?: boolean;
   component?: React.ReactNode;

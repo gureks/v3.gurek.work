@@ -3,13 +3,14 @@ import { MarkdownRenderer } from './MarkdownRenderer';
 import { RichContentContainer } from '../rich-content/RichContentContainer';
 import { GurekAvatarIcon } from '@/assets/custom-icons';
 import type { ChatMessage } from '../../store/useChatStore';
+import type { SuggestionItem } from '../../pages/ChatPage';
 
 interface MessageBubbleProps {
   message?: ChatMessage;
   role?: 'system' | 'user';
   children?: React.ReactNode;
   noPadding?: boolean;
-  onSuggestionClick?: (suggestion: string) => void;
+  onSuggestionClick?: (item: string | SuggestionItem) => void;
   isLastAssistantMessage?: boolean;
 }
 
@@ -126,34 +127,37 @@ export function MessageBubble({
             paddingLeft: 'var(--space-12)',
           }}
         >
-          {message.suggestions.map((suggestion, index) => (
-            <button
-              key={index}
-              onClick={() => onSuggestionClick?.(suggestion)}
-              className="flex items-center justify-center shrink-0 transition-opacity hover:opacity-80 active:opacity-60"
-              style={{
-                backgroundColor: 'var(--background-input-80)',
-                border: '1px solid var(--border-input)',
-                borderRadius: '16px',
-                paddingLeft: '14px',
-                paddingRight: '14px',
-                paddingTop: '6px',
-                paddingBottom: '6px',
-                minHeight: '32px',
-                backdropFilter: 'blur(8px)',
-                WebkitBackdropFilter: 'blur(8px)',
-                fontSize: '12px',
-                fontWeight: 400,
-                lineHeight: '16px',
-                color: 'var(--foreground)',
-                cursor: 'pointer',
-                whiteSpace: 'normal',
-                textAlign: 'left',
-              }}
-            >
-              {suggestion}
-            </button>
-          ))}
+          {message.suggestions.map((item, index) => {
+            const label = typeof item === 'string' ? item : item.label;
+            return (
+              <button
+                key={index}
+                onClick={() => onSuggestionClick?.(item)}
+                className="flex items-center justify-center shrink-0 transition-opacity hover:opacity-80 active:opacity-60"
+                style={{
+                  backgroundColor: 'var(--background-input-80)',
+                  border: '1px solid var(--border-input)',
+                  borderRadius: '16px',
+                  paddingLeft: '14px',
+                  paddingRight: '14px',
+                  paddingTop: '6px',
+                  paddingBottom: '6px',
+                  minHeight: '32px',
+                  backdropFilter: 'blur(8px)',
+                  WebkitBackdropFilter: 'blur(8px)',
+                  fontSize: '12px',
+                  fontWeight: 400,
+                  lineHeight: '16px',
+                  color: 'var(--foreground)',
+                  cursor: 'pointer',
+                  whiteSpace: 'normal',
+                  textAlign: 'left',
+                }}
+              >
+                {label}
+              </button>
+            );
+          })}
         </div>
       )}
     </motion.div>

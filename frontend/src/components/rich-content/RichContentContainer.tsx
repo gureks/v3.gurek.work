@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { PROJECT_REGISTRY, ProjectEntry } from '../../data/projects';
 import { useNavigate } from 'react-router-dom';
-import { EmailIcon, LinkedinIcon, InstagramIcon, CaretdownIcon } from '../../assets/custom-icons';
+import { EmailIcon,ProjectsIcon, LinkedinIcon, InstagramIcon, CaretdownIcon } from '../../assets/custom-icons';
 
 import { Carousel } from './Carousel';
 import { ProjectGallery } from './ProjectGallery';
@@ -29,7 +29,7 @@ function ChatBubbleWrapper({ children, className = '' }: { children: React.React
         border: '1px solid var(--border)',
         borderRadius: '0 var(--radius-lg) var(--radius-lg) var(--radius-lg)',
         padding: 'var(--space-4)',
-        width: '100%',
+        width: 'fit-content',
       }}
     >
       {children}
@@ -45,6 +45,8 @@ export function RichContentContainer({ type, data }: RichContentContainerProps) 
   switch (type) {
     case 'tools':
       return <ToolsCarousel />;
+    case 'affiliations':
+      return <AffiliationsCarousel />;
     case 'skills':
       return <SkillsCarousel />;
     case 'stats':
@@ -60,7 +62,7 @@ export function RichContentContainer({ type, data }: RichContentContainerProps) 
     case 'contact':
       return <ContactCards />;
     case 'projects':
-      return <ProjectsGallery />;
+      return <ProjectsGallery initialCount={data?.initialCount} />;
     case 'carousel':
       return <Carousel slides={Array.isArray(data) ? data : []} />;
     case 'gallery':
@@ -87,31 +89,31 @@ export function RichContentContainer({ type, data }: RichContentContainerProps) 
  * Overflow hidden with fade gradients on left/right edges (32px wide)
  */
 const TOOL_ICONS = [
-  { name: 'figma', label: 'Figma', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/figma/figma-original.svg' },
-  { name: 'notion', label: 'Notion', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/notion/notion-original.svg' },
-  { name: 'miro', label: 'Miro' }, 
-  { name: 'jira', label: 'Jira', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/jira/jira-original.svg' },
-  { name: 'github', label: 'GitHub', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg' },
-  { name: 'python', label: 'Python', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg' },
-  { name: 'fastapi', label: 'FastAPI', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/fastapi/fastapi-original.svg' },
-  { name: 'react', label: 'React', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg' },
-  { name: 'css', label: 'CSS', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg' },
-  { name: 'vscode', label: 'VS Code', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vscode/vscode-original.svg' },
-  { name: 'antigravity', label: 'Antigravity' },
-  { name: 'claude', label: 'Claude' },
-  { name: 'openai', label: 'OpenAI' },
-  { name: 'terminal', label: 'Terminal' },
-  { name: 'docker', label: 'Docker', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/docker/docker-original.svg' },
-  { name: 'obsidian', label: 'Obsidian' },
-  { name: 'n8n', label: 'n8n' },
-  { name: 'supabase', label: 'Supabase', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/supabase/supabase-original.svg' },
-  { name: 'postgres', label: 'Postgres', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postgresql/postgresql-original.svg' },
-  { name: 'pinecone', label: 'Pinecone' },
-  { name: 'langchain', label: 'Langchain' },
-  { name: 'illustrator', label: 'Illustrator', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/illustrator/illustrator-plain.svg' },
-  { name: 'photoshop', label: 'Photoshop', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/photoshop/photoshop-plain.svg' },
-  { name: 'aftereffects', label: 'After Effects', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/aftereffects/aftereffects-plain.svg' },
-  { name: 'framer', label: 'Framer', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/framermotion/framermotion-original.svg' },
+  { name: 'figma', label: 'Figma', icon: '/assets/tools/figma.svg' },
+  { name: 'notion', label: 'Notion', icon: '/assets/tools/notion.svg' },
+  { name: 'miro', label: 'Miro', icon: '/assets/tools/miro.svg'}, 
+  { name: 'jira', label: 'Jira', icon: '/assets/tools/jira.svg' },
+  { name: 'github', label: 'GitHub', icon: '/assets/tools/github.svg' },
+  { name: 'python', label: 'Python', icon: '/assets/tools/python.svg' },
+  { name: 'fastapi', label: 'FastAPI', icon: '/assets/tools/fastapi.svg' },
+  { name: 'react', label: 'React', icon: '/assets/tools/reactjs.svg' },
+  { name: 'css', label: 'CSS', icon: '/assets/tools/css.svg' },
+  { name: 'vscode', label: 'VS Code', icon: '/assets/tools/vscode.svg' },
+  { name: 'antigravity', label: 'Antigravity', icon: '/assets/tools/antigravity.svg' },
+  { name: 'claude', label: 'Claude', icon: '/assets/tools/claude.svg' },
+  { name: 'openai', label: 'OpenAI', icon: '/assets/tools/openai.svg' },
+  { name: 'terminal', label: 'Terminal', icon: '/assets/tools/terminal.svg' },
+  { name: 'docker', label: 'Docker', icon: '/assets/tools/docker.svg' },
+  { name: 'obsidian', label: 'Obsidian', icon: '/assets/tools/obsidian.svg' },
+  { name: 'n8n', label: 'n8n', icon: '/assets/tools/n8n.svg' },
+  { name: 'supabase', label: 'Supabase', icon: '/assets/tools/supabase.svg' },
+  { name: 'postgres', label: 'Postgres', icon: '/assets/tools/postgres.svg' },
+  { name: 'pinecone', label: 'Pinecone', icon: '/assets/tools/pinecone.svg' },
+  { name: 'langchain', label: 'Langchain', icon: '/assets/tools/langchain.svg' },
+  { name: 'illustrator', label: 'Illustrator', icon: '/assets/tools/illustrator.svg' },
+  { name: 'photoshop', label: 'Photoshop', icon: '/assets/tools/photoshop.svg' },
+  { name: 'aftereffects', label: 'After Effects', icon: '/assets/tools/ae.svg' },
+  { name: 'framer', label: 'Framer', icon: '/assets/tools/framer.svg' },
 ];
 
 function ToolIcon({ label, icon }: { label: string; icon?: string }) {
@@ -197,6 +199,100 @@ function ToolsCarousel() {
   );
 }
 
+
+/**
+ * affiliationsCarousel
+ */
+const AFFILIATION_ICONS = [
+  { name: 'ET', label: 'The Economic Times', icon: '/assets/affiliations/et.png' },
+    { name: 'IIITD', label: 'IIIT Delhi', icon: '/assets/affiliations/iiitd.png' },
+  { name: 'EY', label: 'Ernst & Young', icon: '/assets/affiliations/ey.png'}, 
+  { name: 'GSK', label: 'GlaxoSmithKline', icon: '/assets/affiliations/gsk.png' },
+    { name: 'TOI', label: 'The Times of India', icon: '/assets/affiliations/toi.png' },
+  { name: 'LetsDoIt', label: 'Lets Do It', icon: '/assets/affiliations/ldii.png' },
+];
+
+function AffiliationsCarousel() {
+  const affiliations = [...AFFILIATION_ICONS, ...AFFILIATION_ICONS];
+  return (
+    <ChatBubbleWrapper>
+      <div className="relative overflow-hidden w-full">
+        <div
+          className="flex items-start animate-scroll-left"
+          style={{
+            gap: 'var(--space-2)',
+            width: 'max-content',
+          }}
+        >
+          {affiliations.map((affiliation, idx) => (
+             <div
+              className="flex items-center justify-center shrink-0 relative"
+              style={{
+                width: 'auto',
+              }}
+            >
+              <div
+                className="flex items-center justify-center shrink-0 relative"
+                style={{
+                  backgroundColor: 'var(--background-input)',
+                  border: '1px solid var(--border-input)',
+                  borderRadius: 'var(--radius-lg)',
+                  padding: '8px',
+                }}
+              >
+              {affiliation.icon ? (
+                <div className="relative shrink-0" style={{ width: 'auto', height: '48px' }}>
+                  <img src={affiliation.icon} alt={affiliation.label} className="w-full h-full object-contain" style={{ borderRadius: 'var(--radius-sm)' }}/>
+                </div>
+              ) : (
+                <span
+                  style={{
+                    fontSize: '10px',
+                    fontWeight: 500,
+                    color: 'var(--foreground)',
+                    textAlign: 'center',
+                    lineHeight: '12px',
+                  }}
+                >
+                  {affiliation.label}
+                </span>
+              )}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Left fade gradient */}
+        <div
+          style={{
+            position: 'absolute',
+            left: -1,
+            top: 0,
+            bottom: 0,
+            width: '32px',
+            background: 'linear-gradient(to right, var(--background-tooltip), rgba(64,64,64,0))',
+            pointerEvents: 'none',
+            zIndex: 1,
+          }}
+        />
+        {/* Right fade gradient */}
+        <div
+          style={{
+            position: 'absolute',
+            right: -1,
+            top: 0,
+            bottom: 0,
+            width: '32px',
+            background: 'linear-gradient(to left, var(--background-tooltip), rgba(64,64,64,0))',
+            pointerEvents: 'none',
+            zIndex: 1,
+          }}
+        />
+      </div>
+    </ChatBubbleWrapper>
+  );
+}
+
 /**
  * SkillsCarousel — skill pills with similar styling to suggestion pills
  */
@@ -217,7 +313,7 @@ function SkillsCarousel() {
 
   return (
     <ChatBubbleWrapper>
-      <div className="relative overflow-hidden w-full flex flex-col" style={{ gap: '8px', paddingTop: 'var(--space-1)', height: '68px' }}>
+      <div className="relative overflow-hidden w-full flex flex-col" style={{ gap: '8px'}}>
         <div className="flex animate-scroll-left" style={{ gap: '8px', width: 'max-content' }}>
           {row1.map((skill, idx) => (
             <div
@@ -345,7 +441,7 @@ function StatsContainer() {
 function ResumeDownload() {
   return (
     <a
-      href="/resume.pdf"
+      href="/assets/resume/__Gurek Singh - CV.pdf"
       target="_blank"
       rel="noopener noreferrer"
       className="flex items-center justify-between transition-colors"
@@ -677,15 +773,57 @@ function ProjectCard({ project, navigate }: { project: ProjectEntry, navigate: (
   );
 }
 
-function ProjectsGallery() {
+function ProjectsGallery({ initialCount }: { initialCount?: number }) {
   const navigate = useNavigate();
-  const projects = PROJECT_REGISTRY.filter(p => p.coverImage && p.stats);
-  
+  const allProjects = PROJECT_REGISTRY.filter(p => p.coverImage && p.stats);
+  const [showAll, setShowAll] = useState(false);
+
+  const projects =
+    initialCount && !showAll ? allProjects.slice(0, initialCount) : allProjects;
+  const hasMore = initialCount !== undefined && !showAll && allProjects.length > initialCount;
+
   return (
     <div className="flex flex-col w-full relative" style={{ gap: 'var(--space-2)' }}>
       {projects.map(p => (
         <ProjectCard key={p.id} project={p} navigate={navigate} />
       ))}
+      {hasMore && (
+        <ChatBubbleWrapper>
+        <button
+          onClick={() => setShowAll(true)}
+          className="flex items-center justify-between transition-colors"
+          style={{
+            backgroundColor: 'var(--background-input)',
+            border: '1px solid var(--border-input)',
+            borderRadius: 'var(--radius-lg)',
+            padding: 'var(--space-4)',
+            maxWidth: '328px',
+            minWidth: '264px',
+            width: '100%',
+            color: 'var(--foreground)',
+            fontSize: '14px',
+            lineHeight: '20px',
+            fontWeight: 500,
+            cursor: 'pointer',
+            transition: 'background 0.15s, color 0.15s',
+          }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLButtonElement).style.background = 'var(--background)';
+            (e.currentTarget as HTMLButtonElement).style.color = 'var(--foreground)';
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLButtonElement).style.background = 'var(--background-input)';
+            (e.currentTarget as HTMLButtonElement).style.color = 'var(--foreground-muted)';
+          }}
+        >
+          <span style={{ fontSize: '14px', fontWeight: 500, lineHeight: '20px', color: 'var(--foreground)' }}>
+            Show More Project{allProjects.length - initialCount !== 1 ? 's' : ''}
+            {/* {allProjects.length - initialCount}  */}
+            </span>
+          <ProjectsIcon size={20} />
+        </button>
+        </ChatBubbleWrapper>
+      )}
     </div>
   );
 }

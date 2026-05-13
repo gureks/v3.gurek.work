@@ -1,0 +1,1003 @@
+diff --git a/.gitignore b/.gitignore
+index 179ab96..5166ffb 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -23,6 +23,7 @@ dist-ssr
+ *.njsproj
+ *.sln
+ *.sw?
++*.DS_Store
+ 
+ # Environment Variables — NEVER commit secrets
+ .env
+diff --git a/PRODUCTION - CHECKLIST.md b/PRODUCTION - CHECKLIST.md
+index 709e061..1a3e5f5 100644
+--- a/PRODUCTION - CHECKLIST.md	
++++ b/PRODUCTION - CHECKLIST.md	
+@@ -1,4 +1,4 @@
+-Pre-launch checklist for [Project Name]:
++Pre-launch checklist:
+ 
+ Security:
+ - [ ] All API routes protected
+diff --git a/PRODUCTION - TODO.md b/PRODUCTION - TODO.md
+index 75bec2c..d935ddb 100644
+--- a/PRODUCTION - TODO.md	
++++ b/PRODUCTION - TODO.md	
+@@ -131,4 +131,240 @@ app.use(helmet({
+ Testing:
+ - Penetration testing
+ - Security audit
+-- Dependency vulnerability scanning
+\ No newline at end of file
++- Dependency vulnerability scanning
++
++5. Configure separate environments for [Project Name]:
++
++Environments:
++1. Development (local)
++2. Staging (pre-production)
++3. Production
++
++Environment Variables:
++- Separate .env files
++- .env.development
++- .env.staging
++- .env.production
++
++Backend:
++- Different database URLs
++- Different API keys
++- Different CORS origins
++- Different log levels
++
++Frontend:
++- Different API URLs
++- Different analytics IDs
++- Different feature flags
++
++Deployment:
++- Use environment variables in hosting platform
++- Never commit production secrets
++- Use CI/CD to inject env vars
++
++6. Dockerize [Project Name]:
++
++Benefits:
++- Consistent environments
++- Easy deployment
++- Scalability
++
++7. Deploy backend to production for [Project Name]:
++
++Platform Options:
++1. Railway (easiest)
++2. Render
++3. Fly.io
++4. AWS (advanced)
++5. DigitalOcean
++
++Railway Deployment:
++1. Connect GitHub repo
++2. Add environment variables
++3. Deploy automatically
++4. Get deployment URL
++
++Requirements:
++- package.json with start script
++- Environment variables configured
++- Database connection URL
++- PORT from environment
++
++Post-Deployment:
++- Test all API endpoints
++- Monitor logs
++- Set up alerts
++- Configure custom domain (optional)
++
++Scaling:
++- Auto-scaling configuration
++- Load balancing
++- Health checks
++
++8. Deploy frontend to production for [Project Name]:
++
++Vercel Deployment (Recommended):
++1. Import GitHub repo
++2. Configure build settings:
++   - Framework: Next.js/React
++   - Build command: npm run build
++   - Output directory: dist or .next
++3. Add environment variables
++4. Deploy
++
++Environment Variables:
++- VITE_API_URL (backend URL)
++- Next: NEXT_PUBLIC_API_URL
++
++Post-Deployment:
++- Test all pages
++- Check API connectivity
++- Test authentication flow
++- Verify production API URL
++
++Custom Domain:
++- Add domain in Vercel
++- Configure DNS records
++- Enable HTTPS (automatic)
++- Redirect www to non-www (or vice versa)
++
++Performance:
++- Enable Vercel Analytics
++- Configure caching
++- Optimize images
++
++9. Set up monitoring for [Project Name]:
++
++Application Monitoring:
++- Install Sentry for error tracking
++- Track exceptions and errors
++- User impact metrics
++- Performance monitoring
++
++Backend Logging:
++- Structured logging (Winston/Pino)
++- Log levels: error, warn, info, debug
++- Log important events
++- Don't log sensitive data
++
++Frontend Monitoring:
++- Error boundaries
++- Track JavaScript errors
++- Performance metrics (Web Vitals)
++
++Alerts:
++- Email/Slack on critical errors
++- Database connection failures
++- API errors above threshold
++- Server resource alerts
++
++Metrics to Track:
++- Response times
++- Error rates
++- User activity
++- Database query performance
++
++10. Ensure accessibility for [Project Name]:
++
++ARIA Labels:
++```tsx
++<button aria-label="Close modal" onClick={close}>
++  <X />
++</button>
++
++<input
++  type="text"
++  aria-label="Search items"
++  aria-describedby="search-help"
++/>
++<span id="search-help">Enter at least 2 characters</span>
++```
++
++Keyboard Navigation:
++- Tab through all interactive elements
++- Enter to activate buttons
++- Escape to close modals
++- Arrow keys for navigation
++
++Focus Management:
++- Visible focus indicators
++- Trap focus in modals
++- Return focus after modal closes
++- Skip to main content link
++
++Screen Readers:
++- Semantic HTML (header, nav, main, footer)
++- alt text for images
++- Descriptive link text
++- ARIA live regions for dynamic content
++
++Color Contrast:
++- Minimum 4.5:1 for normal text
++- Minimum 3:1 for large text
++- Don't rely on color alone
++
++Testing:
++- Test with keyboard only
++- Use screen reader (NVDA/JAWS)
++- Automated tools (axe DevTools)
++
++11. Add multi-language support to [Project Name]:
++
++Install i18next:
++```bash
++npm install i18next react-i18next
++```
++
++Setup:
++```tsx
++import i18n from 'i18next';
++import { initReactI18next } from 'react-i18next';
++
++i18n.use(initReactI18next).init({
++  resources: {
++    en: {
++      translation: {
++        welcome: "Welcome",
++        login: "Login",
++        signup: "Sign Up"
++      }
++    },
++    es: {
++      translation: {
++        welcome: "Bienvenido",
++        login: "Iniciar sesión",
++        signup: "Registrarse"
++      }
++    }
++  },
++  lng: 'en',
++  fallbackLng: 'en'
++});
++```
++
++Usage:
++```tsx
++import { useTranslation } from 'react-i18next';
++
++function Component() {
++  const { t, i18n } = useTranslation();
++  
++  return (
++    <div>
++      <h1>{t('welcome')}</h1>
++      <button onClick={() => i18n.changeLanguage('es')}>
++        Español
++      </button>
++    </div>
++  );
++}
++```
++
++Features:
++- Language selector
++- Save preference
++- Date/number formatting
++- RTL support (Arabic, Hebrew)
++- Dynamic content translation
++
++12. 
+\ No newline at end of file
+diff --git a/frontend/src/assets/custom-icons.tsx b/frontend/src/assets/custom-icons.tsx
+index 82a8206..4048654 100644
+--- a/frontend/src/assets/custom-icons.tsx
++++ b/frontend/src/assets/custom-icons.tsx
+@@ -94,8 +94,7 @@ export const NightmodeIcon: React.FC<IconProps> = ({ size = 20, className }) =>
+ 
+ export const ShareIcon: React.FC<IconProps> = ({ size = 20, className }) => (
+   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 20 20" className={className} overflow="visible">
+-  <path d="M10.0007 3.03711V11.8704M6.66732 6.37044L10.0007 3.03711L13.334 6.37044M3.33398 11.3704V16.0371C3.33398 16.4791 3.50958 16.9031 3.82214 17.2156C4.1347 17.5282 4.55862 17.7038 5.00065 17.7038H15.0007C15.4427 17.7038 15.8666 17.5282 16.1792 17.2156C16.4917 16.9031 16.6673 16.4791 16.6673 16.0371V11.3704" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+-
++  <path d="M2.58398 16.0371V11.3701C2.58416 10.9561 2.91988 10.6201 3.33398 10.6201C3.74809 10.6201 4.08381 10.9561 4.08398 11.3701V16.0371C4.08398 16.2802 4.18063 16.5136 4.35254 16.6855C4.52443 16.8574 4.75794 16.9541 5.00098 16.9541H15.001C15.2438 16.954 15.4766 16.8572 15.6484 16.6855C15.8203 16.5136 15.917 16.2802 15.917 16.0371V11.3701C15.9172 10.9562 16.253 10.6203 16.667 10.6201C17.0811 10.6201 17.4168 10.9561 17.417 11.3701V16.0371C17.417 16.678 17.1631 17.2929 16.71 17.7461C16.2568 18.1992 15.6418 18.454 15.001 18.4541H5.00098C4.36011 18.4541 3.74519 18.1992 3.29199 17.7461C2.83878 17.2929 2.58398 16.678 2.58398 16.0371ZM9.25098 11.8701V4.84668L7.19727 6.90039C6.90437 7.19328 6.42961 7.19328 6.13672 6.90039C5.84415 6.60747 5.84393 6.13263 6.13672 5.83984L9.4707 2.50684L9.58496 2.41309C9.70721 2.33165 9.85191 2.28711 10.001 2.28711C10.1998 2.2872 10.3907 2.36626 10.5312 2.50684L13.8643 5.83984C14.1571 6.13268 14.157 6.60748 13.8643 6.90039C13.5714 7.19328 13.0966 7.19328 12.8037 6.90039L10.751 4.84766V11.8701C10.751 12.2842 10.415 12.6199 10.001 12.6201C9.58676 12.6201 9.25098 12.2843 9.25098 11.8701Z" fill="currentColor"/>
+   </svg>
+ );
+ 
+diff --git a/frontend/src/components/chat/MessageBubble.tsx b/frontend/src/components/chat/MessageBubble.tsx
+index e0df20c..9f07320 100644
+--- a/frontend/src/components/chat/MessageBubble.tsx
++++ b/frontend/src/components/chat/MessageBubble.tsx
+@@ -3,13 +3,14 @@ import { MarkdownRenderer } from './MarkdownRenderer';
+ import { RichContentContainer } from '../rich-content/RichContentContainer';
+ import { GurekAvatarIcon } from '@/assets/custom-icons';
+ import type { ChatMessage } from '../../store/useChatStore';
++import type { SuggestionItem } from '../../pages/ChatPage';
+ 
+ interface MessageBubbleProps {
+   message?: ChatMessage;
+   role?: 'system' | 'user';
+   children?: React.ReactNode;
+   noPadding?: boolean;
+-  onSuggestionClick?: (suggestion: string) => void;
++  onSuggestionClick?: (item: string | SuggestionItem) => void;
+   isLastAssistantMessage?: boolean;
+ }
+ 
+@@ -126,34 +127,37 @@ export function MessageBubble({
+             paddingLeft: 'var(--space-12)',
+           }}
+         >
+-          {message.suggestions.map((suggestion, index) => (
+-            <button
+-              key={index}
+-              onClick={() => onSuggestionClick?.(suggestion)}
+-              className="flex items-center justify-center shrink-0 transition-opacity hover:opacity-80 active:opacity-60"
+-              style={{
+-                backgroundColor: 'var(--background-input-80)',
+-                border: '1px solid var(--border-input)',
+-                borderRadius: '16px',
+-                paddingLeft: '14px',
+-                paddingRight: '14px',
+-                paddingTop: '6px',
+-                paddingBottom: '6px',
+-                minHeight: '32px',
+-                backdropFilter: 'blur(8px)',
+-                WebkitBackdropFilter: 'blur(8px)',
+-                fontSize: '12px',
+-                fontWeight: 400,
+-                lineHeight: '16px',
+-                color: 'var(--foreground)',
+-                cursor: 'pointer',
+-                whiteSpace: 'normal',
+-                textAlign: 'left',
+-              }}
+-            >
+-              {suggestion}
+-            </button>
+-          ))}
++          {message.suggestions.map((item, index) => {
++            const label = typeof item === 'string' ? item : item.label;
++            return (
++              <button
++                key={index}
++                onClick={() => onSuggestionClick?.(item)}
++                className="flex items-center justify-center shrink-0 transition-opacity hover:opacity-80 active:opacity-60"
++                style={{
++                  backgroundColor: 'var(--background-input-80)',
++                  border: '1px solid var(--border-input)',
++                  borderRadius: '16px',
++                  paddingLeft: '14px',
++                  paddingRight: '14px',
++                  paddingTop: '6px',
++                  paddingBottom: '6px',
++                  minHeight: '32px',
++                  backdropFilter: 'blur(8px)',
++                  WebkitBackdropFilter: 'blur(8px)',
++                  fontSize: '12px',
++                  fontWeight: 400,
++                  lineHeight: '16px',
++                  color: 'var(--foreground)',
++                  cursor: 'pointer',
++                  whiteSpace: 'normal',
++                  textAlign: 'left',
++                }}
++              >
++                {label}
++              </button>
++            );
++          })}
+         </div>
+       )}
+     </motion.div>
+diff --git a/frontend/src/components/layout/Header.tsx b/frontend/src/components/layout/Header.tsx
+index 042e5a0..da478ab 100644
+--- a/frontend/src/components/layout/Header.tsx
++++ b/frontend/src/components/layout/Header.tsx
+@@ -1,5 +1,5 @@
+ import { useAppStore } from '../../store/useAppStore';
+-import { SearchIcon, NightmodeIcon, ShareIcon } from '../../assets/custom-icons';
++import { SearchIcon, NightmodeIcon, ShareIcon, PhoneIcon } from '../../assets/custom-icons';
+ import { HEADER_CTA } from '../../config/nav.config';
+ 
+ export function Header() {
+@@ -48,13 +48,11 @@ export function Header() {
+         )}
+ 
+         {/* User Pill */}
+-        <div className="hidden sm:flex items-center shrink-0 border border-solid border-[var(--border)] drop-shadow-[0px_1px_1px_rgba(0,0,0,0.05)] max-w-[180px]" style={{ height: '36px', padding: '8px', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--background-elevated)', gap: '8px' }}>
++        {/* <div className="hidden sm:flex items-center shrink-0 border border-solid border-[var(--border)] drop-shadow-[0px_1px_1px_rgba(0,0,0,0.05)] max-w-[180px]" style={{ height: '36px', padding: '8px', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--background-elevated)', gap: '8px' }}>
+           <div className="flex items-center justify-center font-medium text-[color:var(--foreground)]" style={{ width: '20px', height: '20px', borderRadius: '32px', backgroundColor: 'var(--accent)', fontSize: '7.375px', lineHeight: '10px' }}>AB</div>
+           <span className="font-normal text-[color:var(--foreground-muted)] whitespace-nowrap" style={{ fontSize: '14px', lineHeight: '20px' }}>FirstName</span>
+-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+-            <path d="M4.79883 6.104L8.0003 9.30547L11.2018 6.104" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+-          </svg>
+-        </div>
++          <PhoneIcon size={20} />
++        </div> */}
+       </div>
+     </header>
+   );
+diff --git a/frontend/src/components/layout/MainLayout.tsx b/frontend/src/components/layout/MainLayout.tsx
+index d45b556..dbce555 100644
+--- a/frontend/src/components/layout/MainLayout.tsx
++++ b/frontend/src/components/layout/MainLayout.tsx
+@@ -2,14 +2,16 @@ import React from 'react';
+ import { Outlet } from 'react-router-dom';
+ import DesktopSidebar from './DesktopSidebar';
+ import MobileMenu from './MobileMenu';
++import { Header } from './Header';
+ 
+ const MainLayout: React.FC = () => {
+   return (
+     <div className="flex flex-col md:flex-row bg-background text-foreground h-screen overflow-hidden" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+       <DesktopSidebar />
+       <MobileMenu />
+-      
+       <main className="flex-1 flex flex-col relative w-full h-full overflow-hidden">
++        <Header />
++
+         {/* Content Area — pt-[60px] on mobile for MobileMenu header height */}
+         <div className="flex-1 w-full h-full overflow-y-auto relative mx-auto max-w-content pt-[120px] md:pt-0">
+           <Outlet />
+diff --git a/frontend/src/components/rich-content/RichContentContainer.tsx b/frontend/src/components/rich-content/RichContentContainer.tsx
+index 65831a2..e0132f0 100644
+--- a/frontend/src/components/rich-content/RichContentContainer.tsx
++++ b/frontend/src/components/rich-content/RichContentContainer.tsx
+@@ -1,7 +1,7 @@
+ import { useState } from 'react';
+ import { PROJECT_REGISTRY, ProjectEntry } from '../../data/projects';
+ import { useNavigate } from 'react-router-dom';
+-import { EmailIcon, LinkedinIcon, InstagramIcon, CaretdownIcon } from '../../assets/custom-icons';
++import { EmailIcon,ProjectsIcon, LinkedinIcon, InstagramIcon, CaretdownIcon } from '../../assets/custom-icons';
+ 
+ import { Carousel } from './Carousel';
+ import { ProjectGallery } from './ProjectGallery';
+@@ -29,7 +29,7 @@ function ChatBubbleWrapper({ children, className = '' }: { children: React.React
+         border: '1px solid var(--border)',
+         borderRadius: '0 var(--radius-lg) var(--radius-lg) var(--radius-lg)',
+         padding: 'var(--space-4)',
+-        width: '100%',
++        width: 'fit-content',
+       }}
+     >
+       {children}
+@@ -45,6 +45,8 @@ export function RichContentContainer({ type, data }: RichContentContainerProps)
+   switch (type) {
+     case 'tools':
+       return <ToolsCarousel />;
++    case 'affiliations':
++      return <AffiliationsCarousel />;
+     case 'skills':
+       return <SkillsCarousel />;
+     case 'stats':
+@@ -60,7 +62,7 @@ export function RichContentContainer({ type, data }: RichContentContainerProps)
+     case 'contact':
+       return <ContactCards />;
+     case 'projects':
+-      return <ProjectsGallery />;
++      return <ProjectsGallery initialCount={data?.initialCount} />;
+     case 'carousel':
+       return <Carousel slides={Array.isArray(data) ? data : []} />;
+     case 'gallery':
+@@ -87,31 +89,31 @@ export function RichContentContainer({ type, data }: RichContentContainerProps)
+  * Overflow hidden with fade gradients on left/right edges (32px wide)
+  */
+ const TOOL_ICONS = [
+-  { name: 'figma', label: 'Figma', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/figma/figma-original.svg' },
+-  { name: 'notion', label: 'Notion', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/notion/notion-original.svg' },
+-  { name: 'miro', label: 'Miro' }, 
+-  { name: 'jira', label: 'Jira', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/jira/jira-original.svg' },
+-  { name: 'github', label: 'GitHub', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg' },
+-  { name: 'python', label: 'Python', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg' },
+-  { name: 'fastapi', label: 'FastAPI', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/fastapi/fastapi-original.svg' },
+-  { name: 'react', label: 'React', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg' },
+-  { name: 'css', label: 'CSS', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg' },
+-  { name: 'vscode', label: 'VS Code', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vscode/vscode-original.svg' },
+-  { name: 'antigravity', label: 'Antigravity' },
+-  { name: 'claude', label: 'Claude' },
+-  { name: 'openai', label: 'OpenAI' },
+-  { name: 'terminal', label: 'Terminal' },
+-  { name: 'docker', label: 'Docker', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/docker/docker-original.svg' },
+-  { name: 'obsidian', label: 'Obsidian' },
+-  { name: 'n8n', label: 'n8n' },
+-  { name: 'supabase', label: 'Supabase', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/supabase/supabase-original.svg' },
+-  { name: 'postgres', label: 'Postgres', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postgresql/postgresql-original.svg' },
+-  { name: 'pinecone', label: 'Pinecone' },
+-  { name: 'langchain', label: 'Langchain' },
+-  { name: 'illustrator', label: 'Illustrator', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/illustrator/illustrator-plain.svg' },
+-  { name: 'photoshop', label: 'Photoshop', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/photoshop/photoshop-plain.svg' },
+-  { name: 'aftereffects', label: 'After Effects', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/aftereffects/aftereffects-plain.svg' },
+-  { name: 'framer', label: 'Framer', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/framermotion/framermotion-original.svg' },
++  { name: 'figma', label: 'Figma', icon: '/assets/tools/figma.svg' },
++  { name: 'notion', label: 'Notion', icon: '/assets/tools/notion.svg' },
++  { name: 'miro', label: 'Miro', icon: '/assets/tools/miro.svg'}, 
++  { name: 'jira', label: 'Jira', icon: '/assets/tools/jira.svg' },
++  { name: 'github', label: 'GitHub', icon: '/assets/tools/github.svg' },
++  { name: 'python', label: 'Python', icon: '/assets/tools/python.svg' },
++  { name: 'fastapi', label: 'FastAPI', icon: '/assets/tools/fastapi.svg' },
++  { name: 'react', label: 'React', icon: '/assets/tools/reactjs.svg' },
++  { name: 'css', label: 'CSS', icon: '/assets/tools/css.svg' },
++  { name: 'vscode', label: 'VS Code', icon: '/assets/tools/vscode.svg' },
++  { name: 'antigravity', label: 'Antigravity', icon: '/assets/tools/antigravity.svg' },
++  { name: 'claude', label: 'Claude', icon: '/assets/tools/claude.svg' },
++  { name: 'openai', label: 'OpenAI', icon: '/assets/tools/openai.svg' },
++  { name: 'terminal', label: 'Terminal', icon: '/assets/tools/terminal.svg' },
++  { name: 'docker', label: 'Docker', icon: '/assets/tools/docker.svg' },
++  { name: 'obsidian', label: 'Obsidian', icon: '/assets/tools/obsidian.svg' },
++  { name: 'n8n', label: 'n8n', icon: '/assets/tools/n8n.svg' },
++  { name: 'supabase', label: 'Supabase', icon: '/assets/tools/supabase.svg' },
++  { name: 'postgres', label: 'Postgres', icon: '/assets/tools/postgres.svg' },
++  { name: 'pinecone', label: 'Pinecone', icon: '/assets/tools/pinecone.svg' },
++  { name: 'langchain', label: 'Langchain', icon: '/assets/tools/langchain.svg' },
++  { name: 'illustrator', label: 'Illustrator', icon: '/assets/tools/illustrator.svg' },
++  { name: 'photoshop', label: 'Photoshop', icon: '/assets/tools/photoshop.svg' },
++  { name: 'aftereffects', label: 'After Effects', icon: '/assets/tools/ae.svg' },
++  { name: 'framer', label: 'Framer', icon: '/assets/tools/framer.svg' },
+ ];
+ 
+ function ToolIcon({ label, icon }: { label: string; icon?: string }) {
+@@ -197,6 +199,100 @@ function ToolsCarousel() {
+   );
+ }
+ 
++
++/**
++ * affiliationsCarousel
++ */
++const AFFILIATION_ICONS = [
++  { name: 'ET', label: 'The Economic Times', icon: '/assets/affiliations/et.png' },
++    { name: 'IIITD', label: 'IIIT Delhi', icon: '/assets/affiliations/iiitd.png' },
++  { name: 'EY', label: 'Ernst & Young', icon: '/assets/affiliations/ey.png'}, 
++  { name: 'GSK', label: 'GlaxoSmithKline', icon: '/assets/affiliations/gsk.png' },
++    { name: 'TOI', label: 'The Times of India', icon: '/assets/affiliations/toi.png' },
++  { name: 'LetsDoIt', label: 'Lets Do It', icon: '/assets/affiliations/ldii.png' },
++];
++
++function AffiliationsCarousel() {
++  const affiliations = [...AFFILIATION_ICONS, ...AFFILIATION_ICONS];
++  return (
++    <ChatBubbleWrapper>
++      <div className="relative overflow-hidden w-full">
++        <div
++          className="flex items-start animate-scroll-left"
++          style={{
++            gap: 'var(--space-2)',
++            width: 'max-content',
++          }}
++        >
++          {affiliations.map((affiliation, idx) => (
++             <div
++              className="flex items-center justify-center shrink-0 relative"
++              style={{
++                width: 'auto',
++              }}
++            >
++              <div
++                className="flex items-center justify-center shrink-0 relative"
++                style={{
++                  backgroundColor: 'var(--background-input)',
++                  border: '1px solid var(--border-input)',
++                  borderRadius: 'var(--radius-lg)',
++                  padding: '8px',
++                }}
++              >
++              {affiliation.icon ? (
++                <div className="relative shrink-0" style={{ width: 'auto', height: '48px' }}>
++                  <img src={affiliation.icon} alt={affiliation.label} className="w-full h-full object-contain" style={{ borderRadius: 'var(--radius-sm)' }}/>
++                </div>
++              ) : (
++                <span
++                  style={{
++                    fontSize: '10px',
++                    fontWeight: 500,
++                    color: 'var(--foreground)',
++                    textAlign: 'center',
++                    lineHeight: '12px',
++                  }}
++                >
++                  {affiliation.label}
++                </span>
++              )}
++              </div>
++            </div>
++          ))}
++        </div>
++
++        {/* Left fade gradient */}
++        <div
++          style={{
++            position: 'absolute',
++            left: -1,
++            top: 0,
++            bottom: 0,
++            width: '32px',
++            background: 'linear-gradient(to right, var(--background-tooltip), rgba(64,64,64,0))',
++            pointerEvents: 'none',
++            zIndex: 1,
++          }}
++        />
++        {/* Right fade gradient */}
++        <div
++          style={{
++            position: 'absolute',
++            right: -1,
++            top: 0,
++            bottom: 0,
++            width: '32px',
++            background: 'linear-gradient(to left, var(--background-tooltip), rgba(64,64,64,0))',
++            pointerEvents: 'none',
++            zIndex: 1,
++          }}
++        />
++      </div>
++    </ChatBubbleWrapper>
++  );
++}
++
+ /**
+  * SkillsCarousel — skill pills with similar styling to suggestion pills
+  */
+@@ -217,7 +313,7 @@ function SkillsCarousel() {
+ 
+   return (
+     <ChatBubbleWrapper>
+-      <div className="relative overflow-hidden w-full flex flex-col" style={{ gap: '8px', paddingTop: 'var(--space-1)', height: '68px' }}>
++      <div className="relative overflow-hidden w-full flex flex-col" style={{ gap: '8px'}}>
+         <div className="flex animate-scroll-left" style={{ gap: '8px', width: 'max-content' }}>
+           {row1.map((skill, idx) => (
+             <div
+@@ -345,7 +441,7 @@ function StatsContainer() {
+ function ResumeDownload() {
+   return (
+     <a
+-      href="/resume.pdf"
++      href="/assets/resume/__Gurek Singh - CV.pdf"
+       target="_blank"
+       rel="noopener noreferrer"
+       className="flex items-center justify-between transition-colors"
+@@ -677,15 +773,57 @@ function ProjectCard({ project, navigate }: { project: ProjectEntry, navigate: (
+   );
+ }
+ 
+-function ProjectsGallery() {
++function ProjectsGallery({ initialCount }: { initialCount?: number }) {
+   const navigate = useNavigate();
+-  const projects = PROJECT_REGISTRY.filter(p => p.coverImage && p.stats);
+-  
++  const allProjects = PROJECT_REGISTRY.filter(p => p.coverImage && p.stats);
++  const [showAll, setShowAll] = useState(false);
++
++  const projects =
++    initialCount && !showAll ? allProjects.slice(0, initialCount) : allProjects;
++  const hasMore = initialCount !== undefined && !showAll && allProjects.length > initialCount;
++
+   return (
+     <div className="flex flex-col w-full relative" style={{ gap: 'var(--space-2)' }}>
+       {projects.map(p => (
+         <ProjectCard key={p.id} project={p} navigate={navigate} />
+       ))}
++      {hasMore && (
++        <ChatBubbleWrapper>
++        <button
++          onClick={() => setShowAll(true)}
++          className="flex items-center justify-between transition-colors"
++          style={{
++            backgroundColor: 'var(--background-input)',
++            border: '1px solid var(--border-input)',
++            borderRadius: 'var(--radius-lg)',
++            padding: 'var(--space-4)',
++            maxWidth: '328px',
++            minWidth: '264px',
++            width: '100%',
++            color: 'var(--foreground)',
++            fontSize: '14px',
++            lineHeight: '20px',
++            fontWeight: 500,
++            cursor: 'pointer',
++            transition: 'background 0.15s, color 0.15s',
++          }}
++          onMouseEnter={e => {
++            (e.currentTarget as HTMLButtonElement).style.background = 'var(--background)';
++            (e.currentTarget as HTMLButtonElement).style.color = 'var(--foreground)';
++          }}
++          onMouseLeave={e => {
++            (e.currentTarget as HTMLButtonElement).style.background = 'var(--background-input)';
++            (e.currentTarget as HTMLButtonElement).style.color = 'var(--foreground-muted)';
++          }}
++        >
++          <span style={{ fontSize: '14px', fontWeight: 500, lineHeight: '20px', color: 'var(--foreground)' }}>
++            Show More Project{allProjects.length - initialCount !== 1 ? 's' : ''}
++            {/* {allProjects.length - initialCount}  */}
++            </span>
++          <ProjectsIcon size={20} />
++        </button>
++        </ChatBubbleWrapper>
++      )}
+     </div>
+   );
+ }
+diff --git a/frontend/src/data/projects.ts b/frontend/src/data/projects.ts
+index 9b47b8b..f041f95 100644
+--- a/frontend/src/data/projects.ts
++++ b/frontend/src/data/projects.ts
+@@ -16,8 +16,8 @@ export interface ProjectEntry {
+ 
+ export const PROJECT_REGISTRY: ProjectEntry[] = [
+   { 
+-    id: 'et-epaper', 
+-    slug: 'et-epaper', 
++    id: 'epaper', 
++    slug: 'epaper', 
+     title: 'Improving the Reading Experience for India’s Largest Daily', 
+     shortDescription: 'Making ePapers Actually Readable for print-first readers in a digital world',
+     coverImage: '/9e03e2b4a665a12c8b87ff25eb44c28f326f423e.png',
+diff --git a/frontend/src/pages/ChatPage.tsx b/frontend/src/pages/ChatPage.tsx
+index 03f9186..1bb4c79 100644
+--- a/frontend/src/pages/ChatPage.tsx
++++ b/frontend/src/pages/ChatPage.tsx
+@@ -6,15 +6,23 @@ import { ChatInput } from '../components/chat/ChatInput';
+ import { MessageBubble } from '../components/chat/MessageBubble';
+ import { RichContentContainer } from '../components/rich-content/RichContentContainer';
+ import { TypingIndicator } from '../components/chat/TypingIndicator';
+-import { Header } from '../components/layout/Header';
+ import { useSEO } from '../hooks/useSEO';
+ 
++/** A suggestion pill that can either send a chat message or navigate directly to a route. */
++export interface SuggestionItem {
++  label: string;
++  /** If set, clicking this pill navigates directly to this route instead of calling the LLM. */
++  redirect?: string;
++}
++
+ export interface ChatSequenceMessage {
+   role: 'user' | 'assistant';
+   content: string;
+   component?: React.ReactNode;
+   richContentType?: string;
+-  suggestions?: string[];
++  /** Optional data forwarded to RichContentContainer (e.g. { initialCount: 3 }) */
++  richContentData?: Record<string, unknown>;
++  suggestions?: (string | SuggestionItem)[];
+   delayMs?: number;
+ }
+ 
+@@ -34,6 +42,7 @@ export function ChatPage({ templatedComponent, introMessage, initialSequence }:
+   const location = useLocation();
+   const navigate = useNavigate();
+   const bottomRef = useRef<HTMLDivElement>(null);
++  const lastMessageRef = useRef<HTMLDivElement>(null);
+ 
+   const pathname = location.pathname;
+   const messages = sessions[pathname] || [];
+@@ -51,82 +60,115 @@ export function ChatPage({ templatedComponent, introMessage, initialSequence }:
+   }, [location.key]);
+ 
+   useEffect(() => {
+-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
++    if (isLoading) {
++      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
++    } else if (lastMessageRef.current) {
++      // Scroll to the top of the new message so it can be read from the beginning
++      lastMessageRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
++    } else {
++      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
++    }
+   }, [messages, isLoading]);
+ 
+   // Home page default sequence
+   const defaultHomeSequence: ChatSequenceMessage[] = [
+-    { role: 'assistant', content: "Hola! I'm Gurek - Product Generalist, UX Systems Designer and an AI-Native Builder.", delayMs: 800 },
+-    { role: 'assistant', content: "Versatile product thinker with 5+ years of experience across Product Strategy, AI-led Feature Development, UX Design, and qualitative product-led experience improvements.", delayMs: 500 },
++    { role: 'user', content: "All those wander aren't lost! Some bump into a portfolio agent and here I am talking to it...", delayMs: 0 },
++    { role: 'assistant', content: "Hola! I'm Gurek - Product Generalist, UX Systems Designer and an AI-Native Builder.", delayMs: 1500 },
++    { role: 'assistant', content: "Versatile product thinker with 5+ years of experience across Product Strategy, AI-led Feature Development, UX Design, and qualitative product-led experience improvements.", delayMs: 1500 },
+     { role: 'assistant', content: "Currently focused on AI-driven personalised content systems, Vector DBs, RAGs, graph knowledge bases, and stock market UX.", delayMs: 800 },
+-    { role: 'user', content: "What are the tools you work with?", delayMs: 600 },
+-    { role: 'assistant', content: "This is my toolbox:", richContentType: 'tools', delayMs: 500 },
+-    { role: 'assistant', content: "Using it I can be a jack of all trades!", richContentType: 'skills', delayMs: 800 },
+-    { role: 'user', content: "What are some of the metrics that you have achieved?", delayMs: 500 },
+-    { role: 'assistant', content: "Here’s a gallery of projects currently available. Just a click away to dive deeper into any of them!", richContentType: 'projects', suggestions: ["Dive deeper into Growfast", "Can you describe his role in the Times Intelligence Layer", "What was the impact of ePaper?", "Tell me more about ET Markets Design System?", "Where can I reach you?"], delayMs: 800 }
++    { role: 'user', content: "What are the tools you work with?", delayMs: 1500 },
++    { role: 'assistant', content: "Well my current toolbox is:", richContentType: 'tools', delayMs: 1000 },
++    { role: 'assistant', content: "Using it I can be a jack of all trades!", richContentType: 'skills', delayMs: 1500 },
++    { role: 'assistant', content: "and I've been associated with", richContentType: 'affiliations', delayMs: 1500 },
++    { role: 'user', content: "Can I see some of your past work?", delayMs: 2500 },
++    { role: 'assistant', content: "Here's a gallery of projects currently available. Just a click away to dive deeper into any of them!", richContentType: 'projects', richContentData: { initialCount: 3 }, delayMs: 2000 },
++    {
++      role: 'assistant',
++      content: "Happy to meet you! I didn't catch your name? Please introduce yourself. Or just go ahead, ask me anything!",
++      delayMs: 3000,
++      suggestions: [
++        { label: "Tell me about yourself", redirect: '/about' },
++        { label: "What revenue impact have you made?", redirect: '/projects/growfast' },
++        { label: "Describe your experience with LLMs, RAGs, and Generative AI?", redirect: '/projects/times-intel' },
++        { label: "Walk me through your design thinking process?", redirect: '/projects/epaper' },
++        { label: "Why this type of portfolio?" },
++        { label: "Walk me through your resume", redirect: '/about' },
++      ],
++    },
+   ];
+ 
+   const sequenceToRun = initialSequence || (pathname === '/' ? defaultHomeSequence : null);
+ 
+   useEffect(() => {
+-    // Run sequence if the chat is completely empty
+-    if (sequenceToRun && messages.length === 0 && !isLoading && !sequenceStarted.current) {
+-      sequenceStarted.current = true;
+-      const runSequence = async () => {
+-        for (let i = 0; i < sequenceToRun.length; i++) {
+-          const msg = sequenceToRun[i];
+-          const delay = msg.delayMs || 800;
+-
+-          if (msg.role === 'assistant') {
+-            useChatStore.setState({ isLoading: true });
+-            await new Promise(r => setTimeout(r, delay));
+-            useChatStore.setState({ isLoading: false });
+-          } else {
+-            await new Promise(r => setTimeout(r, delay));
+-          }
+-
+-          useChatStore.setState(state => {
+-            const currentSessions = { ...state.sessions };
+-            const currentMessages = currentSessions[pathname] || [];
+-            return {
+-              sessions: {
+-                ...currentSessions,
+-                [pathname]: [...currentMessages, { 
+-                  id: crypto.randomUUID(), 
+-                  role: msg.role as 'user' | 'assistant', 
+-                  content: msg.content, 
+-                  component: msg.component || (msg.richContentType ? <RichContentContainer type={msg.richContentType as any} /> : undefined),
+-                  richContentType: msg.richContentType,
+-                  suggestions: msg.suggestions || [],
+-                  timestamp: Date.now() 
+-                }]
+-              }
+-            };
+-          });
++    if (!sequenceToRun || isLoading || sequenceStarted.current) return;
++
++    // Run from the beginning (empty) or resume from where it was interrupted (partial).
++    const startIndex = messages.length;
++    if (startIndex >= sequenceToRun.length) return; // already complete
++
++    sequenceStarted.current = true;
++    const runSequence = async () => {
++      for (let i = startIndex; i < sequenceToRun.length; i++) {
++        const msg = sequenceToRun[i];
++        const delay = msg.delayMs || 800;
++
++        if (msg.role === 'assistant') {
++          useChatStore.setState({ isLoading: true });
++          await new Promise(r => setTimeout(r, delay));
++          useChatStore.setState({ isLoading: false });
++        } else {
++          await new Promise(r => setTimeout(r, delay));
+         }
+-      };
+-      runSequence();
+-    }
++
++        useChatStore.setState(state => {
++          const currentSessions = { ...state.sessions };
++          const currentMessages = currentSessions[pathname] || [];
++          return {
++            sessions: {
++              ...currentSessions,
++              [pathname]: [...currentMessages, {
++                id: crypto.randomUUID(),
++                role: msg.role as 'user' | 'assistant',
++                content: msg.content,
++                component: msg.component || (msg.richContentType ? <RichContentContainer type={msg.richContentType as any} data={msg.richContentData} /> : undefined),
++                richContentType: msg.richContentType,
++                suggestions: msg.suggestions || [],
++                timestamp: Date.now()
++              }]
++            }
++          };
++        });
++      }
++    };
++    runSequence();
+   }, [pathname, messages.length, isLoading, sequenceToRun]);
+ 
+   const handleSend = (content: string) => {
+     sendMessage(content, pathname, navigate);
+   };
+ 
++  /** Handles a suggestion pill click — navigates directly if a redirect is set, otherwise sends to LLM. */
++  const handleSuggestionClick = (item: string | SuggestionItem) => {
++    if (typeof item === 'object' && item.redirect) {
++      navigate(item.redirect);
++      return;
++    }
++    const label = typeof item === 'string' ? item : item.label;
++    handleSend(label);
++  };
++
+ 
+ 
+   return (
+     <div className="flex flex-col flex-1 relative h-full">
+-      {/* Header */}
+-      <Header />
+ 
+       {/* Chat Area Container */}
+-      <main className="flex-1 overflow-y-auto flex flex-col items-center pb-[140px] md:pb-[130px]">
++      <main className="flex-1 overflow-y-auto flex flex-col items-center pt-8 pb-[140px] md:pb-[130px]">
+         {messages.length === 0 && !isLoading ? (
+           /* Empty State matching System Chat Bubble */
+           <div className="flex flex-col flex-1 text-left justify-end w-full pb-[40px] items-center">
+-            <div className="flex items-start gap-4 w-full px-4 md:px-0" style={{ maxWidth: '654px' }}>
+-              {/* Bot Avatar */}
++            {/* <div className="flex items-start gap-4 w-full px-4 md:px-0" style={{ maxWidth: '654px' }}>
++              {/* Bot Avatar /}
+               <div className="flex-shrink-0 flex items-center justify-center" style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: 'transparent' }}>
+                 <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-foreground">
+                   <circle cx="16" cy="16" r="14" stroke="currentColor" strokeWidth="2"/>
+@@ -134,7 +176,7 @@ export function ChatPage({ templatedComponent, introMessage, initialSequence }:
+                   <circle cx="16" cy="12" r="4" stroke="currentColor" strokeWidth="2"/>
+                 </svg>
+               </div>
+-              {/* Intro Message */}
++              {/* Intro Message /}
+               <div
+                 className="flex flex-col flex-1 text-left text-foreground"
+                 style={{
+@@ -148,7 +190,7 @@ export function ChatPage({ templatedComponent, introMessage, initialSequence }:
+                   {introMessage || `Hi, I'm Gurek.\n\nLet's start by knowing each other!\nWhat's your name and profession?`}
+                 </p>
+               </div>
+-            </div>
++            </div> */}
+             {templatedComponent && (
+               <div className="w-full mt-4">
+                 {templatedComponent}
+@@ -166,13 +208,15 @@ export function ChatPage({ templatedComponent, introMessage, initialSequence }:
+             {messages.map((msg, idx) => {
+               const lastAssistantIndex = messages.map(m => m.role).lastIndexOf('assistant');
+               const isLastAssistant = msg.role === 'assistant' && idx === lastAssistantIndex;
++              const isLastMessage = idx === messages.length - 1;
+               return (
+-                <MessageBubble 
+-                  key={msg.id} 
+-                  message={msg} 
+-                  onSuggestionClick={handleSend} 
+-                  isLastAssistantMessage={isLastAssistant} 
+-                />
++                <div key={msg.id} ref={isLastMessage ? lastMessageRef : null}>
++                  <MessageBubble 
++                    message={msg} 
++                    onSuggestionClick={handleSuggestionClick} 
++                    isLastAssistantMessage={isLastAssistant} 
++                  />
++                </div>
+               );
+             })}
+             {isLoading && <TypingIndicator />}
+diff --git a/frontend/src/pages/ProjectsPage.tsx b/frontend/src/pages/ProjectsPage.tsx
+index bfaecee..91010f1 100644
+--- a/frontend/src/pages/ProjectsPage.tsx
++++ b/frontend/src/pages/ProjectsPage.tsx
+@@ -73,8 +73,6 @@ const ProjectsPage: React.FC = () => {
+ 
+   return (
+     <div className="flex flex-col flex-1 relative h-full">
+-      {/* Header */}
+-      <Header />
+ 
+       {/* Chat Area */}
+       <main className="flex-1 overflow-y-auto flex flex-col items-center pb-[140px] md:pb-[130px]">
+diff --git a/frontend/src/store/useChatStore.ts b/frontend/src/store/useChatStore.ts
+index 57a5621..cc6aa4a 100644
+--- a/frontend/src/store/useChatStore.ts
++++ b/frontend/src/store/useChatStore.ts
+@@ -4,6 +4,7 @@ import { sendQuery } from '../services/api';
+ import { getSystemContext } from '../utils/chat';
+ import { sanitizeUserInput, validateLLMResponse, validateRedirectPath } from '../utils/security';
+ import { RichContentContainer, RichContentType } from '../components/rich-content/RichContentContainer';
++import type { SuggestionItem } from '../pages/ChatPage';
+ 
+ import * as React from 'react';
+ 
+@@ -11,7 +12,7 @@ export interface ChatMessage {
+   id: string;
+   role: 'user' | 'assistant';
+   content: string;
+-  suggestions?: string[];
++  suggestions?: (string | SuggestionItem)[];
+   timestamp: number;
+   isError?: boolean;
+   component?: React.ReactNode;
+diff --git a/frontend/src/utils/chat.ts b/frontend/src/utils/chat.ts
+index e09afad..16cd369 100644
+--- a/frontend/src/utils/chat.ts
++++ b/frontend/src/utils/chat.ts
+@@ -7,7 +7,7 @@ import { PROJECT_REGISTRY } from '../data/projects';
+  */
+ export const getPageContext = (pathname: string): string => {
+   if (pathname === '/') {
+-    return 'User is on the home chat page — no templated content is displayed yet.';
++    return 'User is on the home page — no templated content is displayed yet.';
+   }
+   if (pathname === '/projects') {
+     const titles = PROJECT_REGISTRY.map(p => p.title).join(', ');

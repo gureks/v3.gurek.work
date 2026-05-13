@@ -23,6 +23,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+*.DS_Store
 
 # Environment Variables — NEVER commit secrets
 .env

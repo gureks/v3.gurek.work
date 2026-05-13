@@ -7,7 +7,7 @@ import { PROJECT_REGISTRY } from '../data/projects';
  */
 export const getPageContext = (pathname: string): string => {
   if (pathname === '/') {
-    return 'User is on the home chat page — no templated content is displayed yet.';
+    return 'User is on the home page — no templated content is displayed yet.';
   }
   if (pathname === '/projects') {
     const titles = PROJECT_REGISTRY.map(p => p.title).join(', ');

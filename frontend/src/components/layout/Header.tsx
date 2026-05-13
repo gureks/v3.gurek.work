@@ -1,5 +1,5 @@
 import { useAppStore } from '../../store/useAppStore';
-import { SearchIcon, NightmodeIcon, ShareIcon } from '../../assets/custom-icons';
+import { SearchIcon, NightmodeIcon, ShareIcon, PhoneIcon } from '../../assets/custom-icons';
 import { HEADER_CTA } from '../../config/nav.config';
 
 export function Header() {
@@ -48,13 +48,11 @@ export function Header() {
         )}
 
         {/* User Pill */}
-        <div className="hidden sm:flex items-center shrink-0 border border-solid border-[var(--border)] drop-shadow-[0px_1px_1px_rgba(0,0,0,0.05)] max-w-[180px]" style={{ height: '36px', padding: '8px', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--background-elevated)', gap: '8px' }}>
+        {/* <div className="hidden sm:flex items-center shrink-0 border border-solid border-[var(--border)] drop-shadow-[0px_1px_1px_rgba(0,0,0,0.05)] max-w-[180px]" style={{ height: '36px', padding: '8px', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--background-elevated)', gap: '8px' }}>
           <div className="flex items-center justify-center font-medium text-[color:var(--foreground)]" style={{ width: '20px', height: '20px', borderRadius: '32px', backgroundColor: 'var(--accent)', fontSize: '7.375px', lineHeight: '10px' }}>AB</div>
           <span className="font-normal text-[color:var(--foreground-muted)] whitespace-nowrap" style={{ fontSize: '14px', lineHeight: '20px' }}>FirstName</span>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
-            <path d="M4.79883 6.104L8.0003 9.30547L11.2018 6.104" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </div>
+          <PhoneIcon size={20} />
+        </div> */}
       </div>
     </header>
   );
