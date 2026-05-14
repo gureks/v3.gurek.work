@@ -1,9 +1,6 @@
+/* eslint-disable react-refresh/only-export-components */
 import React from 'react';
 import type { ChatSequenceMessage } from '../ChatPage';
-import { ProjectHero } from '../../components/rich-content/ProjectHero';
-import { ProjectMetrics } from '../../components/rich-content/ProjectMetrics';
-import { ProjectGallery } from '../../components/rich-content/ProjectGallery';
-import { Carousel } from '../../components/rich-content/Carousel';
 
 const imgHero = "/assets/projects/epaper/fd0b2da01413441fa046b98efad20c7c55b55f14.png";
 const imgGallery1 = "/assets/projects/epaper/d4123ebfa4c539388d400a85481fcceb5e993461.png";
@@ -21,6 +18,7 @@ const imgCta = "/assets/projects/epaper/c8ff4798b0bdf7b53de03a7016f987e3d712617d
 const imgFree = "/assets/projects/epaper/d47380dc4b7b2d68e37b0235deed9fa0a24496e3.png";
 const imgPaywallFlow = "/assets/projects/epaper/5a6714049dae51216e0f5334531d0695c887ebcd.png";
 
+// BubbleWrapper used for components that don't have a dedicated richContentType yet (like outcomes)
 const BubbleWrapper = ({ children, noPadding }: { children: React.ReactNode, noPadding?: boolean }) => (
   <div
     className="text-foreground flex flex-col"
@@ -40,20 +38,16 @@ const BubbleWrapper = ({ children, noPadding }: { children: React.ReactNode, noP
   </div>
 );
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const epaperSequence: ChatSequenceMessage[] = [
   {
     role: 'assistant',
     content: '',
-    component: (
-      <BubbleWrapper>
-        <ProjectHero 
-          title="Making ePapers Actually Readable."
-          subtitle=" How we improved ET's ePaper experience for print-first readers in a digital world"
-          imageUrl={imgHero}
-        />
-      </BubbleWrapper>
-    ),
+    richContentType: 'hero',
+    richContentData: {
+      title: "Making ePapers Actually Readable.",
+      subtitle: " How we improved ET's ePaper experience for print-first readers in a digital world",
+      imageUrl: imgHero
+    },
     delayMs: 800
   },
   {
@@ -87,17 +81,12 @@ export const epaperSequence: ChatSequenceMessage[] = [
   {
     role: 'assistant',
     content: '',
-    component: (
-      <BubbleWrapper noPadding>
-        <ProjectMetrics 
-          metrics={[
-            { value: '+37% ↑', label: 'Retention Rate', trend: 'positive' },
-            { value: '- 40% ↓', label: 'Reported Friction', trend: 'negative' },
-            { value: '+21% ↑', label: 'Subscription Conversion', trend: 'positive' }
-          ]}
-        />
-      </BubbleWrapper>
-    ),
+    richContentType: 'metrics',
+    richContentData: [
+      { value: '+37% ↑', label: 'Retention Rate', trend: 'positive' },
+      { value: '- 40% ↓', label: 'Reported Friction', trend: 'negative' },
+      { value: '+21% ↑', label: 'Subscription Conversion', trend: 'positive' }
+    ],
     delayMs: 600
   },
   {
@@ -123,39 +112,36 @@ export const epaperSequence: ChatSequenceMessage[] = [
   {
     role: 'assistant',
     content: "Initial Release:",
-    component: (
-      <div className="flex flex-col gap-[var(--space-6)] w-full">
-         <ProjectGallery 
-            items={[
-              { imageUrl: imgGallery1, caption: 'Quick Launch ePaper Landing' },
-              { imageUrl: imgGallery2, caption: 'Elements in Hover and Focus' },
-              { imageUrl: imgGallery3, caption: 'Paywall Blocker' }
-            ]}
-         />
-         <div className="w-full overflow-hidden">
-           <Carousel 
-             slides={[
-               {
-                 image: imgGallery1,
-                 caption: "Coachmarks for first-time users",
-                 description: "Guided new readers: how to zoom, navigate, and download PDFs.\nReduced first-use confusion."
-               },
-               {
-                 image: imgGallery1,
-                 caption: "Coachmarks for first-time users",
-                 description: "Guided new readers: how to zoom, navigate, and download PDFs.\nReduced first-use confusion."
-               },
-               {
-                 image: imgGallery1,
-                 caption: "Coachmarks for first-time users",
-                 description: "Guided new readers: how to zoom, navigate, and download PDFs.\nReduced first-use confusion."
-               }
-             ]}
-           />
-         </div>
-      </div>
-    ),
+    richContentType: 'gallery',
+    richContentData: [
+      { imageUrl: imgGallery1, caption: 'Quick Launch ePaper Landing' },
+      { imageUrl: imgGallery2, caption: 'Elements in Hover and Focus' },
+      { imageUrl: imgGallery3, caption: 'Paywall Blocker' }
+    ],
     delayMs: 1200
+  },
+  {
+    role: 'assistant',
+    content: '',
+    richContentType: 'carousel',
+    richContentData: [
+      {
+        image: imgGallery1,
+        caption: "Coachmarks for first-time users",
+        description: "Guided new readers: how to zoom, navigate, and download PDFs.\nReduced first-use confusion."
+      },
+      {
+        image: imgGallery1,
+        caption: "Coachmarks for first-time users",
+        description: "Guided new readers: how to zoom, navigate, and download PDFs.\nReduced first-use confusion."
+      },
+      {
+        image: imgGallery1,
+        caption: "Coachmarks for first-time users",
+        description: "Guided new readers: how to zoom, navigate, and download PDFs.\nReduced first-use confusion."
+      }
+    ],
+    delayMs: 800
   },
   {
     role: 'user',
@@ -170,24 +156,12 @@ export const epaperSequence: ChatSequenceMessage[] = [
   {
     role: 'assistant',
     content: '',
-    component: (
-      <BubbleWrapper>
-        <div className="flex flex-col gap-4">
-          <div className="border-l-2 border-[#ff4a4a] pl-2 text-[14px]">
-            <p className="m-0 font-bold">Covers most of the screen</p>
-            <p className="m-0 text-[var(--foreground-muted)]">Just give us PDF download instead</p>
-          </div>
-          <div className="border-l-2 border-[#ff9e4a] pl-2 text-[14px]">
-            <p className="m-0 font-bold">Abrupt paywall interruptions</p>
-            <p className="m-0 text-[var(--foreground-muted)]">Takes forever to load</p>
-          </div>
-          <div className="border-l-2 border-[#ff4a4a] pl-2 text-[14px]">
-            <p className="m-0 font-bold">Small fonts & clunky zoom</p>
-            <p className="m-0 text-[var(--foreground-muted)]">Disrupts the “flipping a newspaper” expectation</p>
-          </div>
-        </div>
-      </BubbleWrapper>
-    ),
+    richContentType: 'feedback',
+    richContentData: [
+      { label: 'Covers most of the screen', subtitle: 'Just give us PDF download instead', type: 'critical' },
+      { label: 'Abrupt paywall interruptions', subtitle: 'Takes forever to load', type: 'warning' },
+      { label: 'Small fonts & clunky zoom', subtitle: 'Disrupts the “flipping a newspaper” expectation', type: 'critical' }
+    ],
     delayMs: 800
   },
   {
@@ -203,61 +177,58 @@ export const epaperSequence: ChatSequenceMessage[] = [
   {
     role: 'assistant',
     content: "Improvements Introduced:",
-    component: (
-      <div className="flex flex-col gap-[var(--space-6)] w-full">
-         <ProjectGallery 
-            items={[
-              { imageUrl: imgNav, caption: 'Navigation optimized for smaller screens' },
-              { imageUrl: imgHover, caption: 'Improved Hover States' },
-              { imageUrl: imgDigital, caption: 'Switchable Digital View' },
-              { imageUrl: imgError, caption: 'Better Error & Empty States' },
-              { imageUrl: imgPaywall, caption: 'Simpler Paywall Copywriting' }
-            ]}
-         />
-         <div className="w-full overflow-hidden">
-           <Carousel 
-             slides={[
-               {
-                 image: imgTopBar,
-                 caption: "Top bar navigation",
-                 description: "Inspired by actual newspaper headers: “Front Page”, “Times Nation”, “Times City”."
-               },
-               {
-                 image: imgCoach,
-                 caption: "Coachmarks for first-time users - Reduced first-use confusion.",
-                 description: "Guided new readers: how to zoom, navigate, and download PDFs."
-               },
-               {
-                 image: imgFree,
-                 caption: "Free Preview Refined - Paid vs free download states clearly differentiated.",
-                 description: "Timer bar showed free preview duration → added transparency."
-               },
-               {
-                 image: imgPaywallFlow,
-                 caption: "Paywall Flows Redefined - Clear value proposition, to conversion transfer",
-                 description: "Removed the redundant plans page causing additional confusion"
-               },
-               {
-                 image: imgPageFlip,
-                 caption: "Page Flip Navigation",
-                 description: "For users looking to skip directly to their page"
-               },
-               {
-                 image: imgTopBar,
-                 caption: "Bottom bar redesign - Aligned with accessibility for 45+ users.",
-                 description: "Larger, high-contrast icons for Search, Zoom, Download."
-               },
-               {
-                 image: imgCta,
-                 caption: "On-hover CTA simplified - Lower cognitive load.",
-                 description: "Replaced red overlay with a subtle grey highlight + “Read this Article” button."
-               }
-             ]}
-           />
-         </div>
-      </div>
-    ),
+    richContentType: 'gallery',
+    richContentData: [
+      { imageUrl: imgNav, caption: 'Navigation optimized for smaller screens' },
+      { imageUrl: imgHover, caption: 'Improved Hover States' },
+      { imageUrl: imgDigital, caption: 'Switchable Digital View' },
+      { imageUrl: imgError, caption: 'Better Error & Empty States' },
+      { imageUrl: imgPaywall, caption: 'Simpler Paywall Copywriting' }
+    ],
     delayMs: 1200
+  },
+  {
+    role: 'assistant',
+    content: '',
+    richContentType: 'carousel',
+    richContentData: [
+      {
+        image: imgTopBar,
+        caption: "Top bar navigation",
+        description: "Inspired by actual newspaper headers: “Front Page”, “Times Nation”, “Times City”."
+      },
+      {
+        image: imgCoach,
+        caption: "Coachmarks for first-time users - Reduced first-use confusion.",
+        description: "Guided new readers: how to zoom, navigate, and download PDFs."
+      },
+      {
+        image: imgFree,
+        caption: "Free Preview Refined - Paid vs free download states clearly differentiated.",
+        description: "Timer bar showed free preview duration → added transparency."
+      },
+      {
+        image: imgPaywallFlow,
+        caption: "Paywall Flows Redefined - Clear value proposition, to conversion transfer",
+        description: "Removed the redundant plans page causing additional confusion"
+      },
+      {
+        image: imgPageFlip,
+        caption: "Page Flip Navigation",
+        description: "For users looking to skip directly to their page"
+      },
+      {
+        image: imgTopBar,
+        caption: "Bottom bar redesign - Aligned with accessibility for 45+ users.",
+        description: "Larger, high-contrast icons for Search, Zoom, Download."
+      },
+      {
+        image: imgCta,
+        caption: "On-hover CTA simplified - Lower cognitive load.",
+        description: "Replaced red overlay with a subtle grey highlight + “Read this Article” button."
+      }
+    ],
+    delayMs: 800
   },
   {
     role: 'user',

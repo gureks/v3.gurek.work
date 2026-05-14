@@ -112,7 +112,7 @@ export function MessageBubble({
           
           {(message?.component || message?.richContentType) && (
             <div className="w-full flex flex-col mt-2">
-              {message?.component || (message?.richContentType && <RichContentContainer type={message.richContentType as Parameters<typeof RichContentContainer>[0]['type']} />)}
+              {message?.component || (message?.richContentType && <RichContentContainer type={message.richContentType as Parameters<typeof RichContentContainer>[0]['type']} data={message?.richContentData} />)}
             </div>
           )}
         </div>
