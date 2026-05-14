@@ -7,8 +7,9 @@ import { Carousel } from './Carousel';
 import { ProjectGallery } from './ProjectGallery';
 import { ProjectHero } from './ProjectHero';
 import { ProjectMetrics } from './ProjectMetrics';
+import { ProjectFeedbackList } from './ProjectFeedbackList';
 
-export type RichContentType = 'tools' | 'skills' | 'stats' | 'resume' | 'experience' | 'education' | 'leadership' | 'contact' | 'projects' | 'carousel' | 'gallery' | 'hero' | 'metrics' | 'affiliations' | 'certifications';
+export type RichContentType = 'tools' | 'skills' | 'stats' | 'resume' | 'experience' | 'education' | 'leadership' | 'contact' | 'projects' | 'carousel' | 'gallery' | 'hero' | 'metrics' | 'affiliations' | 'certifications' | 'feedback';
 
 interface RichContentContainerProps {
   type: RichContentType;
@@ -74,6 +75,8 @@ export function RichContentContainer({ type, data }: RichContentContainerProps) 
       return <ProjectHero {...data} />;
     case 'metrics':
       return <ProjectMetrics metrics={data} />;
+    case 'feedback':
+      return <ProjectFeedbackList items={data} />;
     default:
       return null;
   }
