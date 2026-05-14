@@ -8,8 +8,9 @@ import { ProjectGallery } from './ProjectGallery';
 import { ProjectHero } from './ProjectHero';
 import { ProjectMetrics } from './ProjectMetrics';
 import { ProjectFeedbackList } from './ProjectFeedbackList';
+import { ProjectDisclaimer } from './ProjectDisclaimer';
 
-export type RichContentType = 'tools' | 'skills' | 'stats' | 'resume' | 'experience' | 'education' | 'leadership' | 'contact' | 'projects' | 'carousel' | 'gallery' | 'hero' | 'metrics' | 'affiliations' | 'certifications' | 'feedback';
+export type RichContentType = 'tools' | 'skills' | 'stats' | 'resume' | 'experience' | 'education' | 'leadership' | 'contact' | 'projects' | 'carousel' | 'gallery' | 'hero' | 'metrics' | 'affiliations' | 'certifications' | 'feedback' | 'disclaimer';
 
 interface RichContentContainerProps {
   type: RichContentType;
@@ -21,7 +22,7 @@ interface RichContentContainerProps {
  * ChatBubbleWrapper - Wraps rich content in the system chat bubble style
  * (Figma node 190:6223)
  */
-function ChatBubbleWrapper({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+function ChatBubbleWrapper({ children, className = '', noPadding = false }: { children: React.ReactNode; className?: string; noPadding?: boolean }) {
   return (
     <div
       className={`flex flex-col ${className}`}
@@ -29,8 +30,9 @@ function ChatBubbleWrapper({ children, className = '' }: { children: React.React
         backgroundColor: 'var(--background-tooltip)',
         border: '1px solid var(--border)',
         borderRadius: '0 var(--radius-lg) var(--radius-lg) var(--radius-lg)',
-        padding: 'var(--space-4)',
+        padding: noPadding ? '0' : 'var(--space-4)',
         width: 'fit-content',
+        overflow: 'hidden',
         maxWidth: '100%'
       }}
     >
@@ -72,11 +74,13 @@ export function RichContentContainer({ type, data }: RichContentContainerProps) 
     case 'gallery':
       return <ProjectGallery items={data} />;
     case 'hero':
-      return <ProjectHero {...data} />;
+      return <ChatBubbleWrapper className="!w-full"><ProjectHero {...data} /></ChatBubbleWrapper>;
     case 'metrics':
-      return <ProjectMetrics metrics={data} />;
+      return <ChatBubbleWrapper className="!w-full" noPadding><ProjectMetrics metrics={data} /></ChatBubbleWrapper>;
     case 'feedback':
-      return <ProjectFeedbackList items={data} />;
+      return <ChatBubbleWrapper className="!w-full"><ProjectFeedbackList items={data} /></ChatBubbleWrapper>;
+    case 'disclaimer':
+      return <ChatBubbleWrapper className="!w-full"><ProjectDisclaimer text={data} /></ChatBubbleWrapper>;
     default:
       return null;
   }
