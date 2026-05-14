@@ -144,6 +144,8 @@ export interface ValidatedLLMResponse {
   response: string;
   suggestions: string[];
   richContent?: string | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  richContentData?: any | null;
 }
 
 export function validateLLMResponse(raw: unknown): ValidatedLLMResponse | null {
@@ -160,5 +162,6 @@ export function validateLLMResponse(raw: unknown): ValidatedLLMResponse | null {
     response: sanitizeLLMResponse(response),
     suggestions: validateSuggestions(obj.suggestions),
     richContent: typeof obj.richContent === 'string' ? obj.richContent : null,
+    richContentData: obj.richContentData !== undefined ? obj.richContentData : null,
   };
 }

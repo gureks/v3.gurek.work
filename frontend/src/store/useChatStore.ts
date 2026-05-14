@@ -17,6 +17,8 @@ export interface ChatMessage {
   isError?: boolean;
   component?: React.ReactNode;
   richContentType?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  richContentData?: any;
 }
 
 interface ChatState {
@@ -32,7 +34,8 @@ interface ChatState {
 
 const RETRY_DELAYS = [500, 1000, 2000];
 
-function cleanAndParseJSON(raw: string): { redirect: string | null; response: string; suggestions: string[]; richContent?: RichContentType | null } {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function cleanAndParseJSON(raw: string): { redirect: string | null; response: string; suggestions: string[]; richContent?: RichContentType | null; richContentData?: any } {
   // Strip markdown code fences
   let cleaned = raw.trim();
   cleaned = cleaned.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/g, '').trim();
@@ -51,6 +54,7 @@ function cleanAndParseJSON(raw: string): { redirect: string | null; response: st
     response: validated.response,
     suggestions: validated.suggestions,
     richContent: validated.richContent as RichContentType | null,
+    richContentData: validated.richContentData,
   };
 }
 
@@ -124,7 +128,8 @@ export const useChatStore = create<ChatState>()(
           const replyText = response.response.trim();
 
           // Attempt to parse JSON response with retry logic
-          let parsedResponse: { redirect: string | null; response: string; suggestions: string[]; richContent?: RichContentType | null } | undefined;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          let parsedResponse: { redirect: string | null; response: string; suggestions: string[]; richContent?: RichContentType | null; richContentData?: any } | undefined;
           let rawText = replyText;
           try {
             parsedResponse = cleanAndParseJSON(rawText);
@@ -161,7 +166,8 @@ export const useChatStore = create<ChatState>()(
                   redirect: null, 
                   response: sanitizeUserInput(cleanText) || "I'm sorry, I don't have specific information on that. Can I show you Gurek's projects instead?", 
                   suggestions: ["Show me projects", "Tell me about his experience"],
-                  richContent: null
+                  richContent: null,
+                  richContentData: null,
                 };
               } else {
                 throw new Error('Response could not be parsed after retries');
@@ -170,7 +176,8 @@ export const useChatStore = create<ChatState>()(
           }
 
           // At this point parsedResponse is always defined (or we threw above)
-          const parsed = parsedResponse as { redirect: string | null; response: string; suggestions: string[]; richContent?: RichContentType | null };
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const parsed = parsedResponse as { redirect: string | null; response: string; suggestions: string[]; richContent?: RichContentType | null; richContentData?: any };
 
           // Handle redirect flows
           if (parsed.redirect && navigate) {
@@ -186,7 +193,9 @@ export const useChatStore = create<ChatState>()(
                 content: parsed.response,
                 suggestions: parsed.suggestions || [],
                 timestamp: Date.now(),
-                component: parsed.richContent ? React.createElement(RichContentContainer, { type: parsed.richContent as RichContentType }) : undefined,
+                richContentType: parsed.richContent || undefined,
+                richContentData: parsed.richContentData,
+                component: parsed.richContent ? React.createElement(RichContentContainer, { type: parsed.richContent as RichContentType, data: parsed.richContentData }) : undefined,
               };
               set((state) => ({
                 sessions: {
@@ -222,7 +231,9 @@ export const useChatStore = create<ChatState>()(
             content: parsed.response || '',
             suggestions: parsed.suggestions || [],
             timestamp: Date.now(),
-            component: parsed.richContent ? React.createElement(RichContentContainer, { type: parsed.richContent as RichContentType }) : undefined,
+            richContentType: parsed.richContent || undefined,
+            richContentData: parsed.richContentData,
+            component: parsed.richContent ? React.createElement(RichContentContainer, { type: parsed.richContent as RichContentType, data: parsed.richContentData }) : undefined,
           };
 
           set((state) => {
