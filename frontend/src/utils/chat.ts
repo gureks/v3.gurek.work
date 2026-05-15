@@ -19,9 +19,6 @@ export const getPageContext = (pathname: string): string => {
   if (pathname === '/playground') {
     return 'User is browsing the interactive playground gallery.';
   }
-  if (pathname === '/experience') {
-    return 'User is viewing the professional experience and career timeline.';
-  }
   if (pathname === '/contact') {
     return 'User is viewing the contact information and ways to get in touch.';
   }
@@ -68,7 +65,6 @@ ${getPageContext(pathname)}
   * /projects : Project Gallery showcasing built works
   * /about : Resume, work experience, and professional background (Use this for all resume/about queries)
   * /playground : Interactive playground gallery
-  * /experience : Detailed professional experience and career timeline
   * /contact : Contact information and ways to reach out
 ${projectRoutes}
 
@@ -76,22 +72,23 @@ ${projectRoutes}
 Analyze the user's query and choose ONE behavior:
 
 REDIRECT ONLY (redirect set, response is brief navigation context):
-- User explicitly asks to "show", "view", "browse", "see", "go to", or "take me to" a section (e.g., /projects, /about, /playground)
-- User asks a vague question best answered by a whole page (e.g., "what have you built?", "tell me about yourself")
+- User explicitly asks to navigate to a full top-level page (e.g., "go to the projects page", "take me to about").
 
 REDIRECT + ANSWER (both redirect AND substantive response):
-- User asks about a specific project by name AND wants to explore it → redirect to /project/<slug>, response summarizes the project
-- User asks specific questions about experience/resume while wanting to see the full page → redirect to /about, response highlights key points
+- User asks to explore a specific project case study by name AND wants to read the full case study → redirect to /project/<slug>, response summarizes it.
+- User asks for resume/CV → redirect to /about, use "resume" richContent.
 
 CHAT ONLY (redirect is null, answer inline):
-- User asks a specific technical question (e.g., "what tech stack did you use?")
-- User asks about a concept, role, or general career topic
-- User is already on the relevant page — NEVER redirect to ${pathname}
+- User asks to "show", "view", or "see" items (e.g., "show me your projects", "show me your experience", "show me a gallery"). IMPORTANT: If you can satisfy the request by rendering a Rich Content Component inline, DO NOT REDIRECT.
+- User asks a specific technical or contextual question.
+- User asks about a concept, role, or general career topic.
+- User is already on the relevant page — NEVER redirect to ${pathname}.
 
-IMPORTANT: Redirection is the PREFERRED way to show sections. If a user wants to see projects or the about page, ALWAYS provide the redirect path.
+IMPORTANT: Rendering components inline via "richContent" is the PREFERRED way to show sections (like projects or experience) without breaking the chat flow. Only use redirection if they specifically want to navigate to a page.
 
 [AVAILABLE RICH CONTENT COMPONENTS]
 You can augment your response by returning a specific rich content component. If you choose to render a rich component, specify its ID in the "richContent" field and provide any necessary structured data in "richContentData".
+IMPORTANT: If the component requires data (like "metrics", "feedback", "gallery", "carousel"), you MUST extract or synthesize the exact information from your knowledge base and format it correctly in "richContentData" according to the schema below.
 Component IDs:
   * "tools" : Carousel of tool icons
   * "skills" : Carousel of skill pills
