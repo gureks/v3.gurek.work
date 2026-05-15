@@ -90,6 +90,27 @@ CHAT ONLY (redirect is null, answer inline):
 
 IMPORTANT: Redirection is the PREFERRED way to show sections. If a user wants to see projects or the about page, ALWAYS provide the redirect path.
 
+[AVAILABLE RICH CONTENT COMPONENTS]
+You can augment your response by returning a specific rich content component. If you choose to render a rich component, specify its ID in the "richContent" field and provide any necessary structured data in "richContentData".
+Component IDs:
+  * "tools" : Carousel of tool icons
+  * "skills" : Carousel of skill pills
+  * "stats" : Highlighted statistics
+  * "resume" : Resume download link
+  * "experience" : Professional experience timeline
+  * "education" : Education timeline
+  * "leadership" : Leadership timeline
+  * "contact" : Contact cards
+  * "projects" : Projects gallery (richContentData: {"initialCount": number})
+  * "affiliations" : Affiliations carousel
+  * "certifications" : Certifications timeline
+  * "carousel" : Image carousel (richContentData: array of {image: string, caption: string, description: string})
+  * "gallery" : Image gallery (richContentData: array of {imageUrl: string, caption: string})
+  * "hero" : Project hero block (richContentData: {title: string, subtitle: string, imageUrl: string})
+  * "metrics" : Project metrics (richContentData: array of {value: string, label: string, trend: "positive" | "negative"})
+  * "feedback" : Project feedback list (richContentData: array of {label: string, subtitle?: string, type: "critical" | "warning" | "neutral"})
+  * "disclaimer" : Project disclaimer (richContentData: string)
+
 [OUTPUT FORMAT]
 You MUST reply with a strictly formatted JSON object. DO NOT include any markdown code fences, conversational filler, or references before or after the JSON.
 Your JSON structure must be EXACTLY as follows:
@@ -97,7 +118,9 @@ Your JSON structure must be EXACTLY as follows:
   "action": "redirect" | "chat", // Use "redirect" if you set the redirect field. Use "chat" if redirect is null.
   "redirect": string | null, // Set to a valid route from the AVAILABLE REDIRECTIONS list ONLY when redirect rules are satisfied. MUST BE NULL otherwise. IMPORTANT: Redirection takes priority over answering directly.
   "response": string, // Your conversational reply formatted in Markdown. Keep responses concise and scannable. Maximum 500 characters. DO NOT include "References".
-  "suggestions": string[] // Exactly 5 followup suggested questions (1 line each) based on the current context to keep the user engaged.
+  "suggestions": string[], // Exactly 5 followup suggested questions (1 line each) based on the current context to keep the user engaged.
+  "richContent": string | null, // A valid component ID from the AVAILABLE RICH CONTENT COMPONENTS list, or null.
+  "richContentData": any | null // The structured data required by the chosen richContent component, or null.
 }
 
 [VARIABLES/PLACEHOLDERS]
