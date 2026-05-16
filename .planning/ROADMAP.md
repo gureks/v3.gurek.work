@@ -87,10 +87,13 @@ Plans:
 
 ### Phase 7: Implement project pages either templated or rich chat component modular and easily templatized. epaper project figma ready here - https://www.figma.com/design/L95Qbm2qizmTPnyWstPwdP/v2.gurek.work?node-id=322-13318&t=ZMD9k4dSZHxWhlWX-11
 
-**Goal:** [To be planned]
+**Goal:** Implement a modular, data-driven "Chat Case Study" system using `RichContentContainer`.
 **Requirements**: TBD
 **Depends on:** Phase 6
-**Plans:** 0 plans
+**Plans:** 4 plans
 
 Plans:
-- [ ] TBD (run /gsd-plan-phase 7 to break down)
+- [ ] 1. Create ProjectFeedbackList Component
+- [ ] 2. Register Project Components in RichContentContainer
+- [ ] 3. Refactor EpaperProject to Data-Driven Sequence
+- [ ] 4. Verify and Polish Project walkthrough
