@@ -100,6 +100,14 @@ Throughout the development, several "hidden" technical hurdles were overcome thr
 **Decision:** Standardized all rich UI elements into a single `RichContentContainer`.
 **Reasoning:** To avoid code bloat and maintain Figma parity, a registry-based system was created where components (Galleries, Timelines, Project Gems) are dynamically injected into chat bubbles based on the message metadata.
 
+### E. LLM Evaluation & Visual Testing Pipeline
+**Decision:** Engineered a dual-layered testing suite using Vitest (headless LLM eval) and Playwright (Visual E2E testing).
+**Reasoning:** To prevent "over-redirection" heuristics and ensure stable UI rendering, automated tests simulate user conversation flows across states. They verify that the LLM reliably returns the precise `RichContentData` schema required to render dynamic components rather than blindly navigating to fallback pages.
+
+### F. Intelligent Session State & Caching
+**Decision:** Migrated chat persistence to `sessionStorage` with automatic expiration, reload-wipes, and deployment-version cache invalidation.
+**Reasoning:** AI chat history can easily become stale or hit browser size limits. By introducing a 12-hour expiry, capping history to 50 items, and attaching Vite build-timestamps to the Zustand state, the user is guaranteed a fresh conversational context without accumulating technical debt in their local browser. Additionally, state injection logic ensures that when an AI *does* redirect a user, the initial user prompt seamlessly carries over to the new page to maintain narrative continuity.
+
 ---
 
 *This process document serves as a testament to the engineering rigour and design-centric approach taken to build the Digital Brain.*

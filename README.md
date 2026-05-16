@@ -58,8 +58,8 @@ Detailed project logs and case studies are available in the root directory:
 - [x] Phase 3: Responsive Shell & Navigation
 - [x] Phase 4: Project Gems & Interactive Galleries
 - [x] Phase 5: Prompt Templating & Redirection
-- [ ] Phase 6: Pixel-Perfect Polish & Rich Component Templating (Ongoing)
-- [ ] Phase 7: Advanced Project Templating (Planned)
+- [x] Phase 6: Pixel-Perfect Polish & Rich Component Templating
+- [x] Phase 7: Advanced Project Templating, Automated Evals & Session State Handling
 
 ---
 
