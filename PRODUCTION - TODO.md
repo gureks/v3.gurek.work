@@ -367,4 +367,14 @@ Features:
 - RTL support (Arabic, Hebrew)
 - Dynamic content translation
 
-12. 
+12. Ensure GDPR/CCPA Privacy Compliance for Chat History Logs:
+
+Overview:
+- The chat history logging (Notion Integration) collects user IP addresses and location via Vercel headers.
+- IP addresses are considered Personally Identifiable Information (PII) under GDPR and CCPA.
+
+Tasks:
+- Add a cookie/privacy banner to gain explicit consent for tracking IP and Session Data.
+- Alternatively, hash the IP addresses using a secure salt before storing them to anonymize the data.
+- Add an explicit Privacy Policy page explaining what data is logged and for what purpose.
+- Give users a way to request deletion of their chat session history.
