@@ -168,9 +168,9 @@ export const useChatStore = create<ChatState>()(
                 const cleanText = rawText.replace(/\[no-context\]/g, '').trim();
                 parsedResponse = { 
                   redirect: null, 
-                  response: sanitizeUserInput(cleanText) || "I'm sorry, I don't have specific information on that. Can I show you Gurek's projects instead?", 
-                  suggestions: ["Show me projects", "Tell me about his experience"],
-                  richContent: null,
+                  response: sanitizeUserInput(cleanText) || "I couldn't process that request properly. I can't respond to this, but Gurek would be able to help.", 
+                  suggestions: [],
+                  richContent: 'contact',
                   richContentData: null,
                 };
               } else {
@@ -285,9 +285,11 @@ export const useChatStore = create<ChatState>()(
           const errorMessage: ChatMessage = {
             id: crypto.randomUUID(),
             role: 'assistant',
-            content: "I couldn't process that request. Please try again.",
+            content: "I'm having trouble connecting to my backend right now. I can't respond to this, but Gurek would be able to help you out directly.",
             timestamp: Date.now(),
             isError: true,
+            richContentType: 'contact',
+            component: React.createElement(RichContentContainer, { type: 'contact' }),
           };
 
           set((state) => {
