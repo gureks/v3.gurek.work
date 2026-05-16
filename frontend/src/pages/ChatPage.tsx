@@ -85,7 +85,7 @@ export function ChatPage({ templatedComponent, initialSequence }: ChatPageProps 
     { role: 'user', content: "All those who wander aren't lost! Some bump into a portfolio agent and here I am talking to it...", delayMs: 1500 },
     {
       role: 'assistant',
-      content: "Happy to meet you! I didn't catch your name? Please introduce yourself. Or just go ahead, ask me anything!",
+      content: "Happy to meet you! I didn't catch your name? Please introduce yourself and what you do. Or just go ahead, ask me anything!",
       delayMs: 3000,
       suggestions: [
         { label: "Tell me about yourself", redirect: '/about' },

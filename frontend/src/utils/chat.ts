@@ -5,7 +5,10 @@ import { PROJECT_REGISTRY } from '../data/projects';
  * viewing on the given page/route. Used to inject page context into
  * the LLM system prompt so responses are relevant and non-redundant.
  */
-export const getPageContext = (pathname: string): string => {
+export const getPageContext = (pathname?: string): string => {
+  if (!pathname) {
+    return 'User is on an unknown page.';
+  }
   if (pathname === '/') {
     return 'User is on the home page — no templated content is displayed yet.';
   }
@@ -117,7 +120,9 @@ Your JSON structure must be EXACTLY as follows:
   "response": string, // Your conversational reply formatted in Markdown. Keep responses concise and scannable. Maximum 500 characters. DO NOT include "References".
   "suggestions": string[], // Exactly 5 followup suggested questions (1 line each) based on the current context to keep the user engaged.
   "richContent": string | null, // A valid component ID from the AVAILABLE RICH CONTENT COMPONENTS list, or null.
-  "richContentData": any | null // The structured data required by the chosen richContent component, or null.
+  "richContentData": any | null, // The structured data required by the chosen richContent component, or null.
+  "extracted_user_name": string | null, // Extract the user's name if they introduce themselves, otherwise null.
+  "extracted_user_role": string | null // Extract the user's profession or work profile if mentioned, otherwise null.
 }
 
 [VARIABLES/PLACEHOLDERS]

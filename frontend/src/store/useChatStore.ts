@@ -5,6 +5,7 @@ import { getSystemContext } from '../utils/chat';
 import { sanitizeUserInput, validateLLMResponse, validateRedirectPath } from '../utils/security';
 import { RichContentContainer, RichContentType } from '../components/rich-content/RichContentContainer';
 import type { SuggestionItem } from '../pages/ChatPage';
+import { logChatToNotion } from '../services/cms';
 
 import * as React from 'react';
 
@@ -23,6 +24,9 @@ export interface ChatMessage {
 
 interface ChatState {
   sessions: Record<string, ChatMessage[]>;
+  globalSessionId: string;
+  userName: string | null;
+  userRole: string | null;
   isLoading: boolean;
   retryAttempt: number | null;
   activeSessionId: string;
@@ -36,7 +40,7 @@ interface ChatState {
 const RETRY_DELAYS = [500, 1000, 2000];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function cleanAndParseJSON(raw: string): { redirect: string | null; response: string; suggestions: string[]; richContent?: RichContentType | null; richContentData?: any } {
+function cleanAndParseJSON(raw: string): { redirect: string | null; response: string; suggestions: string[]; richContent?: RichContentType | null; richContentData?: any; extracted_user_name?: string | null; extracted_user_role?: string | null } {
   // Strip markdown code fences
   let cleaned = raw.trim();
   cleaned = cleaned.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/g, '').trim();
@@ -56,6 +60,8 @@ function cleanAndParseJSON(raw: string): { redirect: string | null; response: st
     suggestions: validated.suggestions,
     richContent: validated.richContent as RichContentType | null,
     richContentData: validated.richContentData,
+    extracted_user_name: validated.extracted_user_name,
+    extracted_user_role: validated.extracted_user_role,
   };
 }
 
@@ -63,6 +69,9 @@ export const useChatStore = create<ChatState>()(
   persist(
     (set, get) => ({
       sessions: {},
+      globalSessionId: crypto.randomUUID(),
+      userName: null,
+      userRole: null,
       isLoading: false,
       retryAttempt: null,
       activeSessionId: '/',
@@ -133,7 +142,7 @@ export const useChatStore = create<ChatState>()(
 
           // Attempt to parse JSON response with retry logic
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          let parsedResponse: { redirect: string | null; response: string; suggestions: string[]; richContent?: RichContentType | null; richContentData?: any } | undefined;
+          let parsedResponse: { redirect: string | null; response: string; suggestions: string[]; richContent?: RichContentType | null; richContentData?: any; extracted_user_name?: string | null; extracted_user_role?: string | null } | undefined;
           let rawText = replyText;
           try {
             parsedResponse = cleanAndParseJSON(rawText);
@@ -181,7 +190,15 @@ export const useChatStore = create<ChatState>()(
 
           // At this point parsedResponse is always defined (or we threw above)
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const parsed = parsedResponse as { redirect: string | null; response: string; suggestions: string[]; richContent?: RichContentType | null; richContentData?: any };
+          const parsed = parsedResponse as { redirect: string | null; response: string; suggestions: string[]; richContent?: RichContentType | null; richContentData?: any; extracted_user_name?: string | null; extracted_user_role?: string | null };
+
+          // Update user details if extracted
+          if (parsed.extracted_user_name || parsed.extracted_user_role) {
+            set((state) => ({
+              userName: parsed.extracted_user_name || state.userName,
+              userRole: parsed.extracted_user_role || state.userRole,
+            }));
+          }
 
           // Handle redirect flows
           if (parsed.redirect && navigate) {
@@ -280,6 +297,13 @@ export const useChatStore = create<ChatState>()(
               retryAttempt: null,
               lastActivity: Date.now(),
             };
+          });
+
+          logChatToNotion({
+            sessionId: get().globalSessionId,
+            userName: get().userName,
+            userRole: get().userRole,
+            messages: [userMessage, assistantMessage]
           });
         } catch (error) {
           const errorMessage: ChatMessage = {

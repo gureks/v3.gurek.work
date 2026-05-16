@@ -146,6 +146,8 @@ export interface ValidatedLLMResponse {
   richContent?: string | null;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   richContentData?: any | null;
+  extracted_user_name?: string | null;
+  extracted_user_role?: string | null;
 }
 
 export function validateLLMResponse(raw: unknown): ValidatedLLMResponse | null {
@@ -163,5 +165,7 @@ export function validateLLMResponse(raw: unknown): ValidatedLLMResponse | null {
     suggestions: validateSuggestions(obj.suggestions),
     richContent: typeof obj.richContent === 'string' ? obj.richContent : null,
     richContentData: obj.richContentData !== undefined ? obj.richContentData : null,
+    extracted_user_name: typeof obj.extracted_user_name === 'string' ? obj.extracted_user_name : null,
+    extracted_user_role: typeof obj.extracted_user_role === 'string' ? obj.extracted_user_role : null,
   };
 }
