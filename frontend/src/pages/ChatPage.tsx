@@ -21,7 +21,8 @@ export interface ChatSequenceMessage {
   component?: React.ReactNode;
   richContentType?: string;
   /** Optional data forwarded to RichContentContainer (e.g. { initialCount: 3 }) */
-  richContentData?: Record<string, unknown>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  richContentData?: any;
   suggestions?: (string | SuggestionItem)[];
   delayMs?: number;
 }
@@ -72,7 +73,6 @@ export function ChatPage({ templatedComponent, initialSequence }: ChatPageProps 
 
   // Home page default sequence
   const defaultHomeSequence: ChatSequenceMessage[] = [
-    { role: 'user', content: "All those wander aren't lost! Some bump into a portfolio agent and here I am talking to it...", delayMs: 0 },
     { role: 'assistant', content: "Hola! I'm Gurek - Product Generalist, UX Systems Designer and an AI-Native Builder.", delayMs: 1500 },
     { role: 'assistant', content: "Versatile product thinker with 5+ years of experience across Product Strategy, AI-led Feature Development, UX Design, and qualitative product-led experience improvements.", delayMs: 1500 },
     { role: 'assistant', content: "Currently focused on AI-driven personalised content systems, Vector DBs, RAGs, graph knowledge bases, and stock market UX.", delayMs: 800 },
@@ -82,6 +82,7 @@ export function ChatPage({ templatedComponent, initialSequence }: ChatPageProps 
     { role: 'assistant', content: "and I've been associated with", richContentType: 'affiliations', delayMs: 1500 },
     { role: 'user', content: "Can I see some of your past work?", delayMs: 2500 },
     { role: 'assistant', content: "Here's a gallery of projects currently available. Just a click away to dive deeper into any of them!", richContentType: 'projects', richContentData: { initialCount: 3 }, delayMs: 2000 },
+    { role: 'user', content: "All those who wander aren't lost! Some bump into a portfolio agent and here I am talking to it...", delayMs: 1500 },
     {
       role: 'assistant',
       content: "Happy to meet you! I didn't catch your name? Please introduce yourself. Or just go ahead, ask me anything!",

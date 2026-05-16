@@ -10,6 +10,9 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  define: {
+    __APP_VERSION__: Date.now(),
+  },
   build: {
     // Target modern browsers for smaller bundle
     target: 'es2020',
