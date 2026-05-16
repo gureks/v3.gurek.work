@@ -49,6 +49,11 @@ The project followed a disciplined **"Get Stuff Done" (GSD)** workflow, breaking
 - Implemented **Prompt Templating**: Shifting orchestration logic to the frontend to keep the backend immutable.
 - Built **Dynamic Redirection**: The AI can now "sense" when a user needs to see a specific page and trigger a route transition automatically.
 
+### Phase 6: Telemetry, Persistence & Testing
+- Developed an asynchronous **Notion Logging Pipeline** using Vercel Serverless Functions to securely track chat sessions.
+- Bypassed Notion SDK limitations by implementing direct REST API calls for database schema manipulation and record insertion.
+- Engineered a robust testing suite using **Vitest** for store state/API validation and **Playwright** for E2E visual flow verification.
+
 ---
 
 ## 4. Technical Implementation Details

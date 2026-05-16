@@ -22,6 +22,7 @@ Built for speed and design fidelity.
 - **Animations:** Framer Motion for micro-interactions and typing indicators.
 - **Security:** DOMPurify for sanitizing AI-generated markdown/HTML.
 - **Orchestration:** Frontend-led prompt templating for deterministic navigation and persona control.
+- **Telemetry & Testing:** Serverless (Vercel) integration with Notion REST API for asynchronous chat logging, tested via Vitest & Playwright.
 
 ### 2. Backend Services (FastAPI + LightRAG)
 - **Engine:** LightRAG for Retrieval-Augmented Generation.
@@ -60,6 +61,7 @@ Detailed project logs and case studies are available in the root directory:
 - [x] Phase 5: Prompt Templating & Redirection
 - [x] Phase 6: Pixel-Perfect Polish & Rich Component Templating
 - [x] Phase 7: Advanced Project Templating, Automated Evals & Session State Handling
+- [x] Phase 8: Serverless Telemetry, Asynchronous Notion Persistence & Test Coverage
 
 ---
 
