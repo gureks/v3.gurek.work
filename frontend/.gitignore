@@ -26,3 +26,57 @@ dist-ssr
 # Environment Variables
 .env
 .env.*
+
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Node modules & build output
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.DS_Store
+
+# Environment Variables — NEVER commit secrets
+.env
+.env.*
+!.env.example
+
+# LightRAG backend (self-contained, not deployed via Vercel)
+LightRAG/*
+
+# Agent scratch/temp files
+frontend/.agents/
+.agents/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+# Playwright
+playwright-report/
+test-results/
+
