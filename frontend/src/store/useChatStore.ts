@@ -26,6 +26,7 @@ interface ChatState {
   isLoading: boolean;
   retryAttempt: number | null;
   activeSessionId: string;
+  lastActivity: number;
   setActiveSession: (pathname: string) => void;
   injectMessages: (pathname: string, messages: ChatMessage[]) => void;
   sendMessage: (content: string, pathname: string, navigate?: (path: string, options?: { state?: Record<string, unknown> }) => void) => Promise<void>;
@@ -65,6 +66,7 @@ export const useChatStore = create<ChatState>()(
       isLoading: false,
       retryAttempt: null,
       activeSessionId: '/',
+      lastActivity: Date.now(),
 
       setActiveSession: (pathname: string) =>
         set((state) => ({
@@ -81,6 +83,7 @@ export const useChatStore = create<ChatState>()(
             ...state.sessions,
             [pathname]: [...(state.sessions[pathname] || []), ...messages],
           },
+          lastActivity: Date.now(),
         })),
 
       sendMessage: async (content: string, pathname: string, navigate?: (path: string, options?: { state?: Record<string, unknown> }) => void) => {
@@ -106,6 +109,7 @@ export const useChatStore = create<ChatState>()(
             },
             isLoading: true,
             retryAttempt: null,
+            lastActivity: Date.now(),
           };
         });
 
@@ -197,14 +201,26 @@ export const useChatStore = create<ChatState>()(
                 richContentData: parsed.richContentData,
                 component: parsed.richContent ? React.createElement(RichContentContainer, { type: parsed.richContent as RichContentType, data: parsed.richContentData }) : undefined,
               };
-              set((state) => ({
-                sessions: {
-                  ...state.sessions,
-                  [pathname]: [...(state.sessions[pathname] || []), assistantMessage],
-                },
-                isLoading: false,
-                retryAttempt: null,
-              }));
+              set((state) => {
+                const nextSessions = { ...state.sessions };
+                nextSessions[pathname] = [...(nextSessions[pathname] || []), assistantMessage];
+                
+                // If redirecting to a new page, carry over the conversation history so it shows up there
+                if (safeRedirect !== pathname) {
+                  nextSessions[safeRedirect] = [
+                    ...(nextSessions[safeRedirect] || []),
+                    { ...userMessage, id: crypto.randomUUID() },
+                    { ...assistantMessage, id: crypto.randomUUID() }
+                  ];
+                }
+                
+                return {
+                  sessions: nextSessions,
+                  isLoading: false,
+                  retryAttempt: null,
+                  lastActivity: Date.now(),
+                };
+              });
               // Brief delay so user sees the response before redirect
               await new Promise(resolve => setTimeout(resolve, 1500));
               navigate(safeRedirect, {
@@ -213,7 +229,24 @@ export const useChatStore = create<ChatState>()(
               return;
             } else {
               // REDIRECT ONLY: navigate immediately, skip adding empty response message
-              set({ isLoading: false, retryAttempt: null });
+              set((state) => {
+                const nextSessions = { ...state.sessions };
+                
+                // Carry over the user message to the new page so they know what triggered it
+                if (safeRedirect !== pathname) {
+                  nextSessions[safeRedirect] = [
+                    ...(nextSessions[safeRedirect] || []),
+                    { ...userMessage, id: crypto.randomUUID() }
+                  ];
+                }
+
+                return {
+                  sessions: nextSessions,
+                  isLoading: false, 
+                  retryAttempt: null,
+                  lastActivity: Date.now(),
+                };
+              });
               navigate(safeRedirect, {
                 state: {
                   suggestions: parsed.suggestions,
@@ -245,6 +278,7 @@ export const useChatStore = create<ChatState>()(
               },
               isLoading: false,
               retryAttempt: null,
+              lastActivity: Date.now(),
             };
           });
         } catch (error) {
@@ -265,6 +299,7 @@ export const useChatStore = create<ChatState>()(
               },
               isLoading: false,
               retryAttempt: null,
+              lastActivity: Date.now(),
             };
           });
         }
@@ -276,25 +311,50 @@ export const useChatStore = create<ChatState>()(
             ...state.sessions,
             [pathname]: [],
           },
+          lastActivity: Date.now(),
         })),
     }),
     {
       name: 'chat-storage',
+      version: typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 1,
       storage: {
         getItem: (name) => {
-          const str = localStorage.getItem(name);
+          const str = sessionStorage.getItem(name);
           return str ? JSON.parse(str) : null;
         },
-        setItem: (name, value) => localStorage.setItem(name, JSON.stringify(value)),
-        removeItem: (name) => localStorage.removeItem(name),
+        setItem: (name, value) => sessionStorage.setItem(name, JSON.stringify(value)),
+        removeItem: (name) => sessionStorage.removeItem(name),
+      },
+      onRehydrateStorage: () => {
+        return (state, error) => {
+          if (error || !state) return;
+
+          // 1. 12-hour expiry check
+          const TWELVE_HOURS = 12 * 60 * 60 * 1000;
+          if (Date.now() - state.lastActivity > TWELVE_HOURS) {
+            useChatStore.setState({ sessions: {}, lastActivity: Date.now() });
+            return;
+          }
+
+          // 2. Hard refresh check
+          const isReload = window.performance
+            ? (performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming)?.type === 'reload'
+            : false;
+            
+          if (isReload) {
+            useChatStore.setState({ sessions: {}, lastActivity: Date.now() });
+          }
+        };
       },
       partialize: (state) => {
         // Strip non-serializable `component` field from messages before persisting
         const cleanSessions: Record<string, ChatMessage[]> = {};
         for (const [key, msgs] of Object.entries(state.sessions)) {
-          cleanSessions[key] = msgs.map(({ component, ...rest }) => rest);
+          // Keep only the last 50 messages to prevent QuotaExceededError
+          const trimmedMsgs = msgs.slice(-50);
+          cleanSessions[key] = trimmedMsgs.map(({ component, ...rest }) => rest);
         }
-        return { sessions: cleanSessions } as unknown as ChatState;
+        return { sessions: cleanSessions, lastActivity: state.lastActivity } as unknown as ChatState;
       },
     }
   )
