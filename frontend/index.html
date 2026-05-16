@@ -15,30 +15,15 @@
       - font-src   'self' fonts.gstatic.com
       - connect-src 'self' localhost:* (API calls; tighten to domain in prod)
       - frame-src  'none'          : Block iframes entirely
-      - object-src 'none'          : Block <object>/<embed>
+      - object-src 'none'          : Block object/embed tags
       - base-uri   'self'          : Prevent base tag hijacking
       - form-action 'self'         : Restrict form targets
     -->
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="
-        default-src 'self';
-        script-src 'self' 'unsafe-inline' 'unsafe-eval';
-        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-        img-src 'self' data: https: blob:;
-        font-src 'self' https://fonts.gstatic.com;
-        connect-src 'self' http://localhost:* https://localhost:* https://gurek.work https://v2.gurek.work wss://localhost:*;
-        frame-src 'none';
-        object-src 'none';
-        base-uri 'self';
-        form-action 'self';
-        upgrade-insecure-requests;
-      "
-    />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http://localhost:* https://localhost:* https://gurek.work https://v2.gurek.work wss://localhost:*; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
 
     <!-- Primary SEO Meta -->
-    <title>Gurek Singh — Product Generalist & AI-Native Builder</title>
+    <title>Gurek Singh — Product Generalist &amp; AI-Native Builder</title>
     <meta name="description" content="Gurek Singh — Product Generalist, UX Systems Designer, and AI-Native Builder with 5+ years across Product Strategy, AI Feature Development, and Design Systems." />
     <meta name="keywords" content="Gurek Singh, Product Manager, UX Designer, AI Builder, Design Systems, LightRAG, Portfolio" />
     <meta name="author" content="Gurek Singh" />
@@ -48,7 +33,7 @@
     <!-- Open Graph (Facebook, LinkedIn) -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://gurek.work/" />
-    <meta property="og:title" content="Gurek Singh — Product Generalist & AI-Native Builder" />
+    <meta property="og:title" content="Gurek Singh — Product Generalist &amp; AI-Native Builder" />
     <meta property="og:description" content="Versatile product thinker with 5+ years of experience across Product Strategy, AI-led Feature Development, UX Design, and AI-Native systems." />
     <meta property="og:image" content="https://gurek.work/og-image.jpg" />
     <meta property="og:image:width" content="1200" />
@@ -60,7 +45,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@gureksingh" />
     <meta name="twitter:creator" content="@gureksingh" />
-    <meta name="twitter:title" content="Gurek Singh — Product Generalist & AI-Native Builder" />
+    <meta name="twitter:title" content="Gurek Singh — Product Generalist &amp; AI-Native Builder" />
     <meta name="twitter:description" content="Versatile product thinker with 5+ years across Product Strategy, AI Feature Development, and UX Design." />
     <meta name="twitter:image" content="https://gurek.work/og-image.jpg" />
 
