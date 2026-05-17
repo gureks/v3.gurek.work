@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { NAV_PRIMARY, NAV_SOCIAL, NAV_LOGO, isSeparator, type NavEntry, type NavItemConfig } from '../../config/nav.config';
 import {
   HomeIcon, ProjectsIcon, ResumeIcon, BuildsIcon, PromptsIcon,
@@ -71,13 +72,13 @@ export function NavSidebar({ activeRoute = '/' }: NavSidebarProps) {
       {/* Logo — top of nav */}
       {NAV_LOGO.visible && (
         <div className="flex flex-col items-start justify-center w-full p-[8px]">
-          <a
-            href={NAV_LOGO.href}
+          <Link
+            to={NAV_LOGO.href}
             className="flex items-center justify-center w-full py-[8px]"
           >
             {/* Gurek logo */}
             <GurekAvatarIcon size={32} />
-          </a>
+          </Link>
         </div>
       )}
 
@@ -106,12 +107,20 @@ export function NavSidebar({ activeRoute = '/' }: NavSidebarProps) {
           const isActive = item.id === activeId;
           const isHovered = item.id === hoveredId;
 
+          const isInternal = !item.external && !item.comingSoon && !item.disabled && !item.href.startsWith('mailto:');
+          const LinkComponent = isInternal ? Link : 'a';
+          const linkProps = isInternal
+            ? { to: item.href }
+            : {
+                href: item.comingSoon ? '#' : item.href,
+                target: item.external ? '_blank' : undefined,
+                rel: item.external ? 'noopener noreferrer' : undefined,
+              };
+
           return (
             <div key={item.id} className="flex flex-col items-start px-[8px] py-[12px] relative w-full shrink-0">
-              <a
-                href={item.comingSoon ? '#' : item.href}
-                target={item.external ? '_blank' : undefined}
-                rel={item.external ? 'noopener noreferrer' : undefined}
+              <LinkComponent
+                {...(linkProps as any)}
                 className="relative flex items-center justify-center px-[12px] py-[8px] gap-[12px] transition-colors w-full shrink-0"
                 style={{
                   borderRadius: 'var(--radius-lg)',
@@ -148,7 +157,7 @@ export function NavSidebar({ activeRoute = '/' }: NavSidebarProps) {
                     )}
                   </span>
                 )}
-              </a>
+              </LinkComponent>
             </div>
           );
         })}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { NAV_PRIMARY, NAV_SOCIAL, isSeparator, type NavItemConfig } from '../../config/nav.config';
 import {
   HomeIcon, ProjectsIcon, ResumeIcon, BuildsIcon, PromptsIcon,
@@ -25,11 +25,17 @@ const ICON_MAP: Record<string, React.FC<{ size?: number | string; className?: st
 const MobileMenu: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { theme, setTheme } = useAppStore();
 
   const handleNavClick = (href: string) => {
-    // If we had a real router navigate, we'd use it here, but href works for now
-    window.location.href = href;
+    if (href.startsWith('http') || href.startsWith('mailto:')) {
+      window.open(href, '_blank', 'noopener,noreferrer');
+    } else if (href === '#') {
+      // Do nothing
+    } else {
+      navigate(href);
+    }
     setIsOpen(false);
   };
 

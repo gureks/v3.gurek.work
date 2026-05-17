@@ -3,6 +3,24 @@
   "outputDirectory": "dist",
   "installCommand": "npm install",
   "framework": "vite",
+  "rewrites": [
+    {
+      "source": "/projects",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/about",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/playground",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/project/:name",
+      "destination": "/index.html"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
