@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import * as Sentry from '@sentry/react';
 import { sendQuery } from '../services/api';
 import { getSystemContext } from '../utils/chat';
 import { sanitizeUserInput, validateLLMResponse, validateRedirectPath } from '../utils/security';
@@ -129,61 +130,57 @@ export const useChatStore = create<ChatState>()(
             content: sanitizeUserInput(m.content),
           }));
 
-          const response = await sendQuery({
-            query: content,
-            user_prompt: systemContext,
-            response_type: 'a strictly formatted JSON object exactly matching the requested OUTPUT FORMAT. Do not use Markdown fences outside the JSON.',
-            include_references: false,
-            mode: 'mix',
-            conversation_history: history,
-          });
-
-          const replyText = response.response.trim();
-
-          // Attempt to parse JSON response with retry logic
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          // Attempt to send query and parse JSON with a unified 3-strike retry logic
           let parsedResponse: { redirect: string | null; response: string; suggestions: string[]; richContent?: RichContentType | null; richContentData?: any; extracted_user_name?: string | null; extracted_user_role?: string | null } | undefined;
-          let rawText = replyText;
-          try {
-            parsedResponse = cleanAndParseJSON(rawText);
-          } catch (parseErr) {
-            // Retry loop with exponential backoff
-            let retrySuccess = false;
-            for (let attempt = 0; attempt < RETRY_DELAYS.length; attempt++) {
-              set({ retryAttempt: attempt + 1 });
-              await new Promise(resolve => setTimeout(resolve, RETRY_DELAYS[attempt]));
-              try {
-                const retryResponse = await sendQuery({
-                  query: content,
-                  user_prompt: systemContext,
-                  response_type: 'a strictly formatted JSON object exactly matching the requested OUTPUT FORMAT. Do not use Markdown fences outside the JSON.',
-                  include_references: false,
-                  mode: 'mix',
-                  conversation_history: history,
-                });
-                rawText = retryResponse.response.trim();
-                parsedResponse = cleanAndParseJSON(rawText);
-                retrySuccess = true;
-                break;
-              } catch (retryErr) {
-                // Continue to next attempt
+          let lastError: Error | undefined;
+          let rawText = '';
+          const maxAttempts = 3;
+
+          for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+            try {
+              if (attempt > 1) {
+                set({ retryAttempt: attempt - 1 });
+                await new Promise(resolve => setTimeout(resolve, RETRY_DELAYS[attempt - 2] || 1000));
               }
-            }
-            set({ retryAttempt: null });
-            if (!retrySuccess) {
-              // Graceful degradation — render raw text as markdown if it looks like prose
-              if (rawText && rawText.length > 10 && /[a-zA-Z\s]/.test(rawText)) {
-                // Filter out technical [no-context] strings from the UI
-                const cleanText = rawText.replace(/\[no-context\]/g, '').trim();
-                parsedResponse = { 
-                  redirect: null, 
-                  response: sanitizeUserInput(cleanText) || "I couldn't process that request properly. I can't respond to this, but Gurek would be able to help.", 
-                  suggestions: [],
-                  richContent: 'contact',
-                  richContentData: null,
-                };
-              } else {
-                throw new Error('Response could not be parsed after retries');
+
+              const response = await sendQuery({
+                query: content,
+                user_prompt: systemContext,
+                response_type: 'a strictly formatted JSON object exactly matching the requested OUTPUT FORMAT. Do not use Markdown fences outside the JSON.',
+                include_references: false,
+                mode: 'mix',
+                conversation_history: history,
+              });
+
+              rawText = response.response.trim();
+              parsedResponse = cleanAndParseJSON(rawText);
+              
+              set({ retryAttempt: null });
+              break; // Success!
+            } catch (err) {
+              lastError = err as Error;
+              console.warn(`[chat] Attempt ${attempt} failed:`, err);
+              
+              if (attempt === maxAttempts) {
+                set({ retryAttempt: null });
+                // 3 strikes: capture exception in Sentry for immediate notification
+                Sentry.captureException(new Error(`LightRAG API failed after 3 consecutive attempts: ${lastError.message}`), {
+                  extra: { query: content, pathname, attempt, rawText }
+                });
+
+                // Graceful degradation fallback if we received raw prose text
+                if (rawText && rawText.length > 10 && /[a-zA-Z\s]/.test(rawText)) {
+                  const cleanText = rawText.replace(/\[no-context\]/g, '').trim();
+                  parsedResponse = { 
+                    redirect: null, 
+                    response: sanitizeUserInput(cleanText) || "I couldn't process that request properly. I can't respond to this, but Gurek would be able to help.", 
+                    suggestions: [],
+                    richContent: 'contact',
+                    richContentData: null,
+                  };
+                } else {
+                  throw lastError;
+                }
               }
             }
           }
