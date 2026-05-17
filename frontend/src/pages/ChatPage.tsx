@@ -93,6 +93,7 @@ export function ChatPage({ templatedComponent, initialSequence }: ChatPageProps 
         { label: "Describe your experience with LLMs, RAGs, and Generative AI?", redirect: '/projects/times-intel' },
         { label: "Walk me through your design thinking process?", redirect: '/projects/epaper' },
         { label: "Why this type of portfolio?" },
+        { label: "I am Groot." },
         { label: "Walk me through your resume", redirect: '/about' },
       ],
     },
