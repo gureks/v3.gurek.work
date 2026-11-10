@@ -9,3 +9,4 @@ jobs:
     steps:
       - name: Ping Render App
         run: curl -s -L -I https://v2.gurek.work/health
+        run: curl -s -L -I https://uncode.gurek.work/health
